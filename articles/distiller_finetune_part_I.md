@@ -15,7 +15,7 @@ This is where techniques like distillation and fine-tuning come into play. These
 
 We’ll break down these concepts in a way that’s easy to understand, without diving too deep into technical jargon. Let’s explore how distillation and fine-tuning are shaping the future of AI.
 
-### What is LLM Distillation?
+### What is LLM Distillation
 In technical terms,distillation is the process of training a smaller, lightweight model to replicate the behavior of a larger, more complex model. The smaller model learns to generate similar outputs while using fewer computational resources. This is achieved by feeding the smaller model examples of the larger model’s responses and training it to match them as closely as possible.
 
 Even though we will yet to take a look at the fine-tune technique, it is necessary to underline one important point: 
@@ -28,7 +28,7 @@ Geoffrey Hinton Introduced knowledge distillation in 2015, which sparked new par
 
 Think of distillation as teaching a brilliant but overly complex professor’s knowledge to a sharp, quick-learning student. The professor (the original LLM) knows everything but is slow and resource-intensive. The student (the distilled model) learns to mimic the professor’s expertise but is smaller, faster, and more efficient.
 
-### Why Distillation?
+### Why Distillation
 Before Ford Model T comes from the pinepline in 1908, cars were luxury products for average family. With pipeline making large scale production, The country are now built on wheels. The same apply to LLMs. 
 
 To unlock the power of AI and bring them into the great popularity among the daily life, a model with the dozens of billions of parameters and one year training is definitely out of our reach, either for personal or for most of the organization. So to have own models with comparable capability to real “large” models, but in a much more economical scale of hardware prerequisites and training time, distillation is salvage here. In short, it has a few advantage: 

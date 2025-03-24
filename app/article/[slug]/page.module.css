@@ -1,7 +1,9 @@
 /* app/article/[slug]/page.module.css */
 .container {
-  display: flex;
-  gap: 50px; /* Add space between sidebar and main content */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box; /* Ensure padding doesn't cause overflow */ 
+  gap:50px;
 }
 
 .main {
@@ -9,13 +11,10 @@
   margin-left: 300px; /* Space for sidebar on larger screens */
   padding: 20px;
   padding-top: 80px; /* Offset for fixed navbar */
-  max-width: 800px;
+  max-width: 1200px;
   z-index:1;
 }
 
-html {
-  scroll-behavior: smooth;
-}
 
 /* Toggle button and checkbox */
 .sidebarToggleCheckbox {

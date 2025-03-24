@@ -16,14 +16,14 @@ If you’ve ever wondered how AI can be made faster, smaller, and more specializ
 
 We have covered distillation in part i and in this part, Let’s explore how fine-tuning are shaping the future of AI and how distillation and fine-tuning can work together to make better.
 
-### What is Fine-Tuning?
+### What is Fine-Tuning
 
 While distillation focuses on making models smaller, fine-tuning is all about making them smarter in specific areas. Imagine you have a general-purpose assistant who’s good at many things but not an expert in any one thing. Fine-tuning is like giving that assistant specialized training to excel in a particular field.
 
 
 In the context of LLMs, fine-tuning involves taking a pre-trained model (which has already learned general language patterns) and training it further on a specific dataset just to make it more capable in the area this dataset is sourced from. This could be anything from medical journals to legal documents, depending on the desired application. The result is a model that’s highly skilled in that particular domain.
 
-### Why Fine-Tune?
+### Why Fine-Tune
 Fine-tuning is particularly useful because it leverages the general language understanding capabilities of the pre-trained model while adapting it to the nuances of a specific task. This approach is more efficient than training a model from scratch, as it requires less computational resources and time
 
 **Efficiency**
@@ -289,7 +289,7 @@ Fine-tuning an LLM for a specific task or set of information is a powerful techn
 In short, while fine-tuning is a powerful process, it requires careful management. We need find way to ensure the benefits outweights the cost
 
 
-## How Do Distillation and Fine-Tuning Work Together?
+## How Do Distillation and Fine-Tuning Work Together
 
 In [Unlock the power of AI-Part I](/article/distiller_finetune_part_I), we discuss the distillation method to help student model learn from a much bigger teacher model, now the basic idea is: can we use distill to get a smaller, more efficient model while still tuning it to address specific type of tasks?
 
