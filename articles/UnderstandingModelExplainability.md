@@ -6,13 +6,13 @@ date: 2023-03-17
 # Understanding Model Explainability：Making AI Decisions Transparent
 --- 
 
-## What is Model Explanability?
+## What is Model Explanability
 Artificial intelligence is becoming a key player in industries ranging from finance to healthcare. But as AI models grow more complex, their decisions often feel like a "black box"—we see the outcomes, but we don’t always understand how they were reached. This is where model explanability comes in. 
 
 Model explanability refers to the ability to interpret and understand how an AI model makes predictions or decisions. 
 Some models, like simple decision trees, are naturally interpretable, while deep learning models and large language models (LLMs) require additional techniques to uncover their reasoning. The goal is to bring transparency, making AI more trustworthy and responsible.
 
-## Why is Model Explanability so Important?
+## Why is Model Explanability so Important
 Explanability is not just a nice-to-have—it’s essential for ensuring AI is ethical, reliable, and aligned with human values. A few scenarios definitely requires you leverage the explanability to achieve your expected goal:
 - Trust building: For businesses and consumers to adopt the decision making by AI. Explanability fosters the confidence so trust towards AI will be built and they won’t feel strong hesitate to adopt it
 - Bias&Fairness Correction: AI model will response and generate output affected by the data is was trained on. So explanability comes to rescue and help correct these issues by pinpointing where the problems are
@@ -57,10 +57,10 @@ Explanability techniques analyze the decision pathways of autonomous systems to 
 
 By improving transparency in AI-driven decision-making, automakers, regulators, and the public can ensure autonomous systems operate safely, reduce risks, and establish clear accountability in the event of accidents.
 
-## How Do We Evaluate Model Explanability?
+## How Do We Evaluate Model Explanability
 The two most frequently used metrics are: SHAP(Shapley Additive Explanation) and LIME (Local Interpretable Model-Agnostic Explanations). We will demonstrate both cases with simple codes. But before we cut to the codes, allow me illustrate what happens underneath with the plain English as simplified as I can.
 
-### What is SHAP?
+### What is SHAP
 
 SHAP is based on game theory and assigns each feature an importance value for a particular prediction. It calculates contributions using Shapley values, which represent the average marginal contribution of a feature across all possible feature combinations.
 
@@ -76,13 +76,13 @@ where:
 
 Let us go through the main steps of the SHAP computation.
 
-#### Step 1: Train a model to predict the output 
+#### Step 1 Train a model to predict the output 
  
 Let's consider a simple example with three features: _F={A,B,C}_ . Assume a model trained with data is : 
 $$
 F=β_0+β_1A+β_2B+β_3C
 $$
-#### Step 2: Consider All Possible Feature Subsets
+#### Step 2 Consider All Possible Feature Subsets
 
 We will calculate the SHAP value for feature A as illustration. Given this pretext, we list down all the subsets(all excluding A):
 - S={}
@@ -90,7 +90,7 @@ We will calculate the SHAP value for feature A as illustration. Given this prete
 - S={C}
 - S={B,C}
 
-#### Step 3: Compute marginal contributions for Each Feature subsets
+#### Step 3 Compute marginal contributions for Each Feature subsets
 For each Sub set, we define the prediction as these:
 - _f({})_ =10
 - _f({B})_ =12
@@ -118,11 +118,11 @@ _f{()}_ =10 provide baseline value while no features are used. Given our model f
 The rest will follow the suite. However, if our model is decision tree or deep network, the subset prediction will vary to a slight degree. 
 - The decision tree requires all features participate in subtree splitting, so the baseline prediction for decision tree is the average value of the target variable in the training data (for regression) or the most frequent class (for classification).
 - And for the deep learning network, NN for instance, the baseline prediction is determined by the bias terms in the output layer when all input features are set to zero (or their default values). In another words, the last layer(output layer) is doing the same way as linear regression will be doing for base predictions.
-#### Step 4: Compute SHAP value for Each Feature subsets 
+#### Step 4 Compute SHAP value for Each Feature subsets 
 Let us calculate the SHAP value for feature A:
 Pardon me for taking a second off from doing the calculation and you shall be savvy enough to solve the equation given all the values in the above 
 
-### Talk is cheap, show me the codes
+### Talk is cheap and show me the codes
 we will get the customer churn dataset from Kaggle and feed into a xgboost model, then construct a SHAP Explainer class, followed charts to visualize the importance of each features.
 ```python   
 #!pip install shap
@@ -222,7 +222,7 @@ Some additional notes:
 - Masking,in some sense, means changing. It can change the word into another word or hide the word from processing 
 - If you don’t want to define own prediction function, using model as the first parameter in the Explainer.
 
-### What is LIME?
+### What is LIME
 LIME (Local Interpretable Model-Agnostic Explanations) is a technique used to explain individual predictions of any black-box model by approximating it with a simpler, interpretable model.
 
 Let’s break this down:
@@ -234,7 +234,7 @@ In plain English, let me put this way:
 
 Any black-box model(Model-Agnostic in this sense) hardly bears any information regarding how the prediction is made, and the LIME will leverage approximation method to retrieve a set of weights(coefficients in linear regression, for example) to clarify on how the prediction is made from individual input(that is what "local" means).  
 
-### How LIME is calculated?
+### How LIME is calculated
 
 First of all, assume we have a sentiment analysis model that predicts whether a review is Positive (1) or Negative (0). Given this review:
 "The movie was absolutely fantastic and wonderful."
@@ -243,13 +243,13 @@ Assume again that our model _f(x)_ predicts Positive (1) with 90% confidence.
 
 Then LIME normally deployed four steps methods to help explain why prediction go that way.
 
-#### Step1:Define the prediction function
+#### Step1 Define the prediction function
 
 The prediction function can be a model or just a function, assume we have a model or function f(x), it works this way per our assumption previously mentioned:
 Review: "The movie was absolutely fantastic and wonderful."
 Model prediction _f(x)_ : 0.9
 
-#### Step2: Generate perturbed samples
+#### Step2 Generate perturbed samples
 
 LIME will randomly marked words and feed them into the model to have a new prediction, as shown below:
 |Perturbed Samples |Model Prediction $f(x_i’)$ |
@@ -261,7 +261,7 @@ LIME will randomly marked words and feed them into the model to have a new predi
 
 This tell us how much the words contribute to the final prediction(by masking them).
 
-#### Step3:Assign Similarity Weights
+#### Step3 Assign Similarity Weights
 we are actually perturbing the text, and we want to know how far the perturbed text are from the original version so we have knowledge on how much the difference between prediction matters.
 LIME uses an exponential kernel function:
 
@@ -280,7 +280,7 @@ We then add the weights into the perturbed sample table as below:
 |"The movie was absolutely [MASK] and wonderful." |0.40 |0.60 |
 |"The movie was absolutely fantastic and [MASK]." |0.75 |0.90 |
 
-#### Step 4:Fit a simple interpretable model
+#### Step 4 Fit a simple interpretable model
 We want to solve a model, by making _g(x)_ the approximation to _f(x)_ and find the model that represent the _f(x)_ with slighest variation. To achieve that, in the machine learning world, we will define the loss function indirectly as below: 
 ![LIME general linear](/lime-g.png )
 
