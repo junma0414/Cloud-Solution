@@ -1,0 +1,46 @@
+/* styles/Navbar.module.css */
+.navbar {
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  height: 60 px;
+  width:100%;
+  top: 0;
+  z-index: 1000;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.2 rem;
+}
+
+.logo {
+  font-size: 5rem;
+  font-weight: bold;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.link {
+  color: #4b5563;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link:hover {
+  color: #2563eb;
+}
+
+.active {
+  font-weight: bold; /* Make the active menu item bold */
+  color: #2563eb; /* Change the color of the active menu item */
+}

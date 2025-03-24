@@ -1,0 +1,80 @@
+/* Main container */
+.main {
+  padding-top: 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  display: none; /* Completely hides the title */
+}
+/* Grid layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Ensures responsiveness */
+  gap: 20px; /* Adds spacing between cards */
+  justify-content: center;
+}
+
+/* Article card container */
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 350px; /* Set max width to prevent too-wide images */
+  height: auto;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+/* Image container */
+.imageContainer {
+  width: 100%;
+  height: 200px; /* Set fixed height */
+  overflow: hidden;
+}
+
+.articleImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures images scale properly */
+}
+
+/* Adjust title font size */
+.articleTitle {
+  font-size: 0.85rem; /* Smaller font size */
+  font-weight: bold; /* Reduce boldness if needed */
+  color: #fff; /* Slightly lighter color */
+  text-align: left;
+}
+
+/* Ensure the card content is properly styled */
+.cardContent {
+  padding: 5px; /* Reduce padding for a more compact look */
+  min-height: 50px; /* Adjust height if needed */
+}
+/* Title section */
+.cardContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2563eb;
+  padding: 5px;
+  min-height: 60px; /* Ensure uniform height */
+  text-align: center;
+}
+
+/* Fix float issues */
+.article-card::after {
+  content: "";
+  display: block;
+  clear: both;
+}
