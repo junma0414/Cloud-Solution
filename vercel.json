@@ -1,8 +1,11 @@
 {
-  "routes": [
-    {
-      "src": "/api/grc",
-      "dest": "/api/grc.py"
+  "functions": {
+    "api/grc.py": {
+      "runtime": "python@3.9"
     }
-  ]
+  },
+  "routes": [{
+    "src": "/api/.*",
+    "dest": "grc.py"
+  }]
 }

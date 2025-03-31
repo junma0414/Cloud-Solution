@@ -193,10 +193,11 @@ export default function SolutionPage() {
                   solution.cta && (
                     <div className="mt-8">
                       <Link 
-                        href={solution.cta} 
+                        href="/contact" 
                         className="bg-blue-600 hover:bg-blue-700 !text-white font-medium py-3 px-6 rounded-lg transition-colors duration-300 block text-center"
                       >
-                        {solution.title === "Solution Not Found" ? "Back to Solutions" : "Contact Us"}
+                        {/*solution.title === "Solution Not Found" ? "Back to Solutions" : "Contact Us"*/}
+                        Contact us
                       </Link>
                     </div>
                   )

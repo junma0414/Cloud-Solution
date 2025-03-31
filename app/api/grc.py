@@ -1,95 +1,133 @@
-from quart import Quart, request, jsonify
-from quart_cors import cors
+
+
+#python -m quart --app grc:app run --port 5000 --reload
+
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from asgiref.wsgi import WsgiToAsgi
 import re
+import requests
 import os
 from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()  # Looks for .env in current directory
+
+
 import logging
-
-# Configure logging
 logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
 
-app = Quart(__name__)
-app = cors(app, allow_origin="*")  # Enable CORS
+
+app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}})  # Enable CORS for all routes
+
+
+import requests
+from openai import OpenAI
+
+
+
+
+#text="this is my last warning"
+
+
+
+import re
+import pandas as pd
+
 
 def reg_parse(line):
-    pattern = r'\*\*(.+?)\*\*\s*:\s*(\d+(?:\.\d+)?)\s*\((.*?)\)'
-    match = re.search(pattern, line)
-    if match:
-        return match.group(1).strip(), float(match.group(2)), match.group(3)
-    return None, None, None
+  pattern=r'\*\*(.+?)\*\*\s*:\s*(\d+(?:\.\d+)?)\s*\((.*?)\)'
+  match = re.search(pattern, line)
+  if match:
+    category = match.group(1)  # "Illegal content"
+    score = match.group(2)     # "0.2"
+    context = match.group(3)
+    return category, score, context
+  else:
+    return None,None,None
+
 
 def parse_evaluation(text):
-    eval_result = []
+    eval_result=[]
     for line in text.split("\n"):
         if ":" in line:
-            key, value, reason = reg_parse(line)
-            if key is not None:
-                eval_result.append({
-                    "cat": key.lower(),
-                    "score": value,
-                    "reason": reason
-                })
+            key, value, reason =reg_parse(line)
+            if(key != None):
+                eval_result.append({"cat":key.strip().lower(), "score":float(value.strip()),"reason":reason})
     return eval_result
 
-#for testing, just run 'set DEEPSEEK_API_KEY=<api_key>'
-async def deepseek_score(text):
-    message = f"""Given the input text below:
-    text: {text}
+def deepseek_score(text):
 
-    Please evaluate the scores(0-1) of the below ten dimensions regarding the risks:
-    Jailbreaking, Illegal content, Hateful content, Harassment,
-    Racism, Sexism, Violence, Sexual content, Harmful content,
-    Unethical content
+  message=f"""Given the input text below:
+     text: {text}
 
-    Give score(0-1) for each category in the following format:
-    **category**: score (reason)"""
+  please evaluate the scores(0-1) of the below ten dimension regarding the risks:
 
-    DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
-    if not DEEPSEEK_API_KEY:
+  Jailbreaking,
+  Illegal content,
+  Hateful content,
+  Harassment,
+  Racism,
+  Sexism,
+  Violence,
+  Sexual content,
+  Harmful content,
+  Unethical content
+
+  Give score(0-1) for each category in the following format and each category will be in one line:
+  **category**: score (reason) """
+    
+  DEEPSEEK_API_URL = "https://api.deepseek.com"
+  DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY") #"sk-0fc81d9a4757417db0d568c490e1202a"
+
+  if not DEEPSEEK_API_KEY:
         raise ValueError("API key is missing. Set DEEPSEEK_API_KEY in Vercel.")
 
-    client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url="https://api.deepseek.com")
+  client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url="https://api.deepseek.com")
 
-    response = client.chat.completions.create(
-        model="deepseek-chat",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant"},
-            {"role": "user", "content": message},
-        ],
-        temperature=0,
-        max_tokens=500,
-        seed=42
-    )
+  response = client.chat.completions.create(
+      model="deepseek-chat",messages=[
+        {"role": "system", "content": "You are a helpful assistant"},
+        {"role": "user", "content": message},
+    ],
+        temperature=0,         # Most important for determinism (0-1)
+        top_p=1,               # Use with temperature=0
+        max_tokens=500,        # Sufficient for your response format
+        seed=42,               # Fixed random seed
+        frequency_penalty=0,
+        presence_penalty=0)
+  
+  score_result=[]
+  score_result=parse_evaluation(response.choices[0].message.content)
+  print(score_result)
+  return score_result
 
-    content = response.choices[0].message.content
-    logger.debug(f"Raw API response: {content}")
-    return parse_evaluation(content)
 
 @app.route('/api/grc', methods=['POST'])
-async def analyze_text():
+def analyze_text():
+    data = request.get_json()
+    text = data.get('text', '')
+    
+    if not text:
+        return jsonify({"error": "No text provided"}), 400
+    
     try:
-        data = await request.get_json()
-        text = data.get('text', '')
-        
-        if not text:
-            return jsonify({"error": "No text provided"}), 400
-        
-        scores = await deepseek_score(text)
-        logger.debug(f"Generated scores: {scores}")
+        scores = deepseek_score(text)
+        logging.debug(f"API Response: {scores}")
 
         if not scores:
             return jsonify({"error": "No valid scores generated"}), 500
-            
-        return jsonify({
-            "records": scores,
-            "count": len(scores)
-        })
+        return jsonify({"records":scores})
     except Exception as e:
-        logger.error(f"Error in analyze_text: {str(e)}", exc_info=True)
         return jsonify({"error": str(e)}), 500
 
-# Vercel needs this named 'app' for ASGI
-app = app
 
-#python -m quart --app grc:app run --port 5000 --reload
+# Vercel requires a function named `handler`
+handler = WsgiToAsgi(app)
+
+#the below is not necessary for serverless in Vercel
+if __name__ == '__main__':
+    #app.run(port=5000)   #comment it for local test
+    import uvicorn        # for local test
+    uvicorn.run("grc:handler", host="0.0.0.0", port=5000, reload=True)   #for local test
