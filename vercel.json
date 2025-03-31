@@ -1,9 +1,7 @@
 {
-  "functions": {
-    "api/grc.py": {
-      "runtime": "python3"
-    }
-  },
+  "builds": [
+    { "src": "api/grc.py", "use": "@vercel/python" }
+  ],
   "routes": [{
     "src": "/api/.*",
     "dest": "/api/grc.py"
