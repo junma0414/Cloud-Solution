@@ -2,10 +2,14 @@
 import Navbar from './components/Navbar.js';
 import styles from './page.module.css';
 
+import Layout from './components/Layout'
+
+
 export default function Home() {
   return (
     <div>
       <Navbar />
+      <Layout>
       <main className={styles.main}>
         {/* Hero Section */}
         <section className={styles.hero}>
@@ -23,6 +27,7 @@ export default function Home() {
           </div>
         </section>
       </main>
+      </Layout>
     </div>
   );
 }

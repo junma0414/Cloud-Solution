@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/grc.py": {
+      "runtime": "python3.9"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/grc",
+      "dest": "/api/grc.py"
+    }
+  ]
+}

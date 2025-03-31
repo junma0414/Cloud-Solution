@@ -1,9 +1,9 @@
 ---
-title: "Understanding Model Explainability" 
+title: "Model Explainability" 
 image: "/explanability-1.jpg"
-date: 2023-03-17
+date: 2025-01-17
 ---
-# Understanding Model Explainability：Making AI Decisions Transparent
+# Making AI Decisions Transparent
 --- 
 
 ## What is Model Explanability

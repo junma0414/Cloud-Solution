@@ -1,0 +1,157 @@
+/* app/article/[slug]/page.module.css */
+.container {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box; /* Ensure padding doesn't cause overflow */ 
+  gap:50px;
+}
+
+.main {
+  flex: 1;
+  margin-left: 50px; /* Space for sidebar on larger screens */
+  padding: 20px;
+  padding-top: 80px; /* Offset for fixed navbar */
+  max-width: 1200px;
+  z-index:1;
+}
+
+
+/* Toggle button and checkbox */
+.sidebarToggleCheckbox {
+  display: none; /* Hide the checkbox */
+  z-index: 1002;
+}
+
+.sidebarToggleButton {
+  display: none;/* Hidden by default */
+  position: fixed;
+  top: 70px; /* Adjust based on your navbar height */
+  left: 20px;
+  z-index: 1001; /* Ensure it's above the sidebar */
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+
+
+/* Sidebar styles */
+.sidebar {
+  width: 250px; /* Width of the sidebar */
+  height: 90% ; /* Full height */
+  position: fixed;
+  left: 0px; 
+  top: 70px; /* Adjust based on your navbar height */
+  background-color: #f4f4f4;
+  padding: 0px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  transition: left 0.3s ease; /* Smooth transition */
+  z-index: 1000; /* Ensure sidebar is above main content */
+}
+
+@media (max-width: 768px) {
+  .main {
+    margin-left: 0; /* Full width on smaller screens */
+  }
+
+  .sidebarToggleButton {
+    display: block; /* Show toggle button on smaller screens */
+  }
+
+ .sidebar {
+    left: -250px; /* Hide sidebar by default on smaller screens */
+  }
+
+  .sidebarToggleCheckbox:checked ~ .sidebar {
+    left: 0; /* Show sidebar when checkbox is checked */
+  }
+}
+
+/* Article content styles */
+.title {
+  font-size: 2.5rem;
+  color: #2563eb;
+  margin-bottom: 2rem;
+}
+
+.articleImage {
+  display: block;
+  margin: 0 auto; /* Centers the image horizontally */
+  max-width: 100%; /* Prevents overflow */
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 8px; /* Optional: rounded corners */
+}
+
+.content {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+.content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin: 1rem 0;
+}
+
+.content h2 {
+  font-size: 1.75rem;
+  color: #2563eb;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.content ul {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+  list-style-type: disc;
+}
+
+.content li {
+  margin-bottom: 0.5rem;
+}
+
+.custom-math {
+  font-size: 18px;
+  color: blue;
+}
+
+/* Scoped table styles */
+.tableWrapper table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.tableWrapper th,
+.tableWrapper td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.tableWrapper th {
+  background-color: #f2f2f2;
+}
+
+
+
+/* Scoped code block styles */
+.codeWrapper pre {
+  background: #2d2d2d;
+  padding: 1rem;
+  border-radius: 5px;
+  overflow-x: auto;
+   margin-bottom: 16px;
+}
+
+.codeWrapper code {
+  font-family: 'Courier New', monospace;
+  color: #f8f8f2;
+}

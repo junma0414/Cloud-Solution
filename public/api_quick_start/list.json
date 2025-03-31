@@ -1,0 +1,12 @@
+[
+  {
+    "name": "api_quick_start.md",
+    "displayName": "Text Risk Scoring API",
+    "description": "Check how much the text contains the toxicity and non-regalutary information"
+  },
+  {
+    "name": "api_quick_start_1.md",
+    "displayName": "Model Explanability Analysis API",
+    "description": "Explain how the inputs contribute the outcome"
+  }
+]

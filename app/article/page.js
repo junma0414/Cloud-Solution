@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import Link from 'next/link';
+import Layout from '../components/Layout';
 
 // Get all articles
 function getArticles() {
@@ -20,6 +21,11 @@ function getArticles() {
         title: data.title,
         image: data.image,  // Pass the image URL
         date: data.date,
+        formattedDate: new Date(data.date).toLocaleDateString('en-US', { // Add formatted date
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })
       };
     });
 
@@ -47,11 +53,13 @@ export default function Article() {
               </div>
               <div className={styles.cardContent}>
                 <h2 className={styles.articleTitle}>{article.title}</h2>
+<span className={styles.articleDate}>{article.formattedDate}</span>
               </div>
             </Link>
           ))}
         </div>
       </main>
+     <Layout />
     </div>
   );
 }

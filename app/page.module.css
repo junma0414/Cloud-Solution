@@ -1,6 +1,6 @@
 /* app/page.module.css */
 .main {
-  padding-top: 60px; /* Offset for fixed navbar */
+  padding-top: 40px; /* Offset for fixed navbar */
 }
 
 .hero {

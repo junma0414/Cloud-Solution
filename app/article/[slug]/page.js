@@ -5,6 +5,7 @@ import 'katex/dist/katex.min.css';
 import { markdownToHtml } from '../../lib/markdownToHtml';
 import Navbar from '../../components/Navbar';
 import Sidebar from '../../components/Sidebar';
+import Layout from '../../components/Layout';
 import styles from './page.module.css';
 import "../../globals.css";
 import matter from 'gray-matter';
@@ -51,7 +52,8 @@ export default async function ArticlePage({ params }) {
             dangerouslySetInnerHTML={{ __html: articleData.content }}
           />
         </main>
-      </div>
+
+       </div>
     </div>
   );
 }

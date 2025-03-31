@@ -1,16 +1,17 @@
 // app/contact/ContactForm.js
-'use client'; // Mark this as a Client Component
+'use client';
 
 import { useState } from 'react';
-import styles from './page.module.css'; // Import the CSS module
+import styles from './contact.module.css'; // Changed to use contact.module.css
 
 export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState({ text: '', type: '' });
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
+    setMessage({ text: '', type: '' });
 
     const formData = new FormData(event.target);
     const data = {
@@ -29,61 +30,67 @@ export default function ContactForm() {
       });
 
       if (response.ok) {
-        setMessage('Message sent successfully!');
+        setMessage({ text: 'Message sent successfully!', type: 'success' });
+        event.target.reset(); // Clear the form
       } else {
-        setMessage('Failed to send message.');
+        setMessage({ text: 'Failed to send message. Please try again.', type: 'error' });
       }
     } catch (error) {
-      setMessage('Failed to send message.');
+      setMessage({ text: 'An error occurred. Please try again later.', type: 'error' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">Your Name</label>
+    <form onSubmit={handleSubmit} className={styles.form}>
+      <div className={styles.formGroup}>
+        <label htmlFor="name" className={styles.label}>Name</label>
         <input
           type="text"
           name="name"
           id="name"
           placeholder="Your Name"
           required
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className={styles.input}
         />
       </div>
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">Your Email</label>
+      <div className={styles.formGroup}>
+        <label htmlFor="email" className={styles.label}>Email</label>
         <input
           type="email"
           name="email"
           id="email"
           placeholder="Your Email"
           required
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className={styles.input}
         />
       </div>
-      <div>
-        <label htmlFor="message" className="block text-sm font-medium text-gray-700">Your Message</label>
+      <div className={styles.formGroup}>
+        <label htmlFor="message" className={styles.label}>Message</label>
         <textarea
           name="message"
           id="message"
           placeholder="Your Message"
           required
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+          className={styles.textarea}
+          rows="5"
         ></textarea>
       </div>
-      <div>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className={styles.submitButton}
+      >
+        {isSubmitting ? 'Sending...' : 'Send Message'}
+      </button>
+      {message.text && (
+        <div 
+          className={`${styles.message} ${message.type === 'success' ? styles.success : styles.error}`}
         >
-          {isSubmitting ? 'Sending...' : 'Contact Me'}
-        </button>
-      </div>
-      {message && <p className="text-sm text-gray-600">{message}</p>}
+          {message.text}
+        </div>
+      )}
     </form>
   );
 }

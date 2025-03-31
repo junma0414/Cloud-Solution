@@ -1,7 +1,7 @@
 ---
 title: "Unlock the power of AI-Part II"
 image: "/finetune.jpg"
-date: 2023-03-22
+date: 2025-03-01
 ---
 # Unlock the power of AI-Part II
 ---

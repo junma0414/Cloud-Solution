@@ -1,7 +1,7 @@
 ---
 title: "Unlock the power of AI-Part I"
-image: "/distillation.png"
-date: 2023-03-20
+image: "/distillation.jpg"
+date: 2025-02-15
 ---
 # Unlock the power of AI - Part I
 ---
@@ -385,7 +385,7 @@ The structure of teacher model is:  BertForSequenceClassification(
 
 
 
-### Student Model: pre-trained or from scratch
+### Student Model is pre-trained or from scratch
 
 Here are some last words for student model: It is totally fine to construct your own student model from scratch with pytorch, tensorflow or other frameworks. Just remember to : 
 - Initiate the parameters so they can directly be used in the distillation

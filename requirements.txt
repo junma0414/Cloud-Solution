@@ -1,0 +1,6 @@
+quart==0.18.4
+quart-cors==0.3.0
+openai>=1.0.0
+python-dotenv>=0.19.0
+openai
+logging

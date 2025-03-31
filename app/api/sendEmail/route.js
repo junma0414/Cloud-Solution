@@ -1,34 +1,45 @@
 // app/api/sendEmail/route.js
-import nodemailer from 'nodemailer';
+import { NextResponse } from 'next/server';
+import { Resend } from 'resend';
 
 export async function POST(request) {
-  const { name, email, message } = await request.json();
+  // Check for API key
+  if (!process.env.RESEND_API_KEY) {
+    return NextResponse.json(
+      { error: "Resend API key not configured" },
+      { status: 500 }
+    );
+  }
 
-  // Configure Nodemailer transporter
-  const transporter = nodemailer.createTransport({
-    service: 'gmail', // or your email service
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  // Email options
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: process.env.EMAIL_USER, // Send to yourself
-    subject: `New Contact Form Submission from ${name}`,
-    text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
-  };
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   try {
-    await transporter.sendMail(mailOptions);
-    return new Response(JSON.stringify({ message: 'Email sent successfully' }), {
-      status: 200,
+    const { name, email, message } = await request.json();
+
+    if (!name || !email || !message) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const { data, error } = await resend.emails.send({
+      from: 'contact@obserpedia.com',
+      to: process.env.TO_EMAIL,
+      subject: `New Contact Form Submission from ${name}`,
+      text: `From: ${name} <${email}>\n\n${message}`,
     });
+
+    if (error) {
+      return NextResponse.json({ error }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, data });
+    
   } catch (error) {
-    return new Response(JSON.stringify({ message: 'Failed to send email' }), {
-      status: 500,
-    });
+    return NextResponse.json(
+      { error: error.message || "Failed to send email" },
+      { status: 500 }
+    );
   }
 }

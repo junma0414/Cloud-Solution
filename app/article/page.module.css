@@ -1,6 +1,7 @@
 /* Main container */
 .main {
   padding-top: 80px;
+  padding-bottom: 80px;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -49,11 +50,27 @@
 }
 
 /* Adjust title font size */
+/* Article title styling */
 .articleTitle {
-  font-size: 0.85rem; /* Smaller font size */
-  font-weight: bold; /* Reduce boldness if needed */
-  color: #fff; /* Slightly lighter color */
-  text-align: left;
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+ color: #fff;
+  flex-grow: 1; /* Allows title to take available space */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align:left;
+  
+}
+
+/* Article date styling */
+.articleDate {
+  font-size: 0.8rem;
+  color: #999;
+  flex-shrink: 0; /* Prevents date from shrinking */
+  margin-left: auto; /* Pushes date to the right */
+  white-space: nowrap;
 }
 
 /* Ensure the card content is properly styled */
@@ -70,6 +87,15 @@
   padding: 5px;
   min-height: 60px; /* Ensure uniform height */
   text-align: center;
+}
+
+/* Container for title and date */
+.titleDateContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline; /* Aligns text on the same baseline */
+  width: 100%;
+  gap: 1rem; /* Space between title and date */
 }
 
 /* Fix float issues */
