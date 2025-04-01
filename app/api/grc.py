@@ -21,6 +21,14 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})  # Enable CORS for all routes
 
+# Add this right after creating your Flask app
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    response.headers.add('Access-Control-Allow-Methods', 'POST')
+    return response
+
 
 import requests
 from openai import OpenAI
@@ -118,16 +126,18 @@ def analyze_text():
 
         if not scores:
             return jsonify({"error": "No valid scores generated"}), 500
-        return jsonify({"records":scores})
+        return jsonify({"success": True, "records":scores})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success":False, "error": str(e)}), 500
 
 
 # Vercel requires a function named `handler`
 handler = WsgiToAsgi(app)
 
-#the below is not necessary for serverless in Vercel
+#the below is not necessary for serverless in 
+
 if __name__ == '__main__':
     #app.run(port=5000)   #comment it for local test
     import uvicorn        # for local test
-    uvicorn.run("grc:handler", host="0.0.0.0", port=5000, reload=True)   #for local test
+    # for local test
+    uvicorn.run("grc:handler", host="0.0.0.0", port=5000, reload=True) 

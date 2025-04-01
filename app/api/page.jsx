@@ -60,7 +60,7 @@ export default function APIPlayground() {
 
     try {
 
-    const API_URL =  process.env.NEXT_PUBLIC_API_URL;
+    const API_URL =  process.env.NEXT_PUBLIC_API_URL||'/api/grc';
          const response = await fetch(API_URL, {
         method: "POST",
         mode:"cors",
@@ -70,6 +70,18 @@ export default function APIPlayground() {
         },
         body: JSON.stringify({ text: inputText }),
       });
+
+     if (!response.ok) {
+      const text = await response.text();
+      let errorMsg = `Request failed with status ${response.status}`;
+      try {
+        const json = JSON.parse(text);
+        errorMsg = json.error || errorMsg;
+      } catch {
+        errorMsg = text || errorMsg;
+      }
+      throw new Error(errorMsg);
+    }
 
       const data = await response.json();
       console.log("Full API response:", data); // Add this line
