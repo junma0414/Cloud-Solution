@@ -1,6 +1,10 @@
 {
+  "version": 2,
+  "builds": [
+    { "src": "backend/grc.py", "use": "@vercel/python" }
+  ],
   "routes": [{
-    "src": "/api/.*",
+    "src": "/api/grc*",
     "dest": "/api/grc.py"
   }]
 }
