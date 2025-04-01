@@ -60,8 +60,8 @@ export default function APIPlayground() {
 
     try {
 
-     const API_URL =  process.env.NEXT_PUBLIC_API_URL;
-      const response = await fetch(API_URL, {
+    const API_URL =  process.env.NEXT_PUBLIC_API_URL;
+         const response = await fetch(API_URL, {
         method: "POST",
         mode:"cors",
         headers: { 
