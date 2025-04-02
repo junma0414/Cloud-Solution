@@ -6,19 +6,24 @@
       "use": "@vercel/next"
     },
     {
-      "src": "api/*.py",
+      "src": "api/grc.py",
       "use": "@vercel/python",
-      "config": { 
-        "maxLambdaSize": "15mb",
-        "runtime": "python3.10"
+      "config": {
+        "runtime": "python3.10",
+        "suppressStream": true
       }
     }
   ],
   "routes": [
     {
-      "src": "/api/grc(.*)",
+      "src": "/api/grc/?$",  // Strict termination with $
       "dest": "/api/grc.py",
-      "methods": ["POST","OPTIONS"]
+      "methods": ["POST", "OPTIONS"]
+    },
+    {
+      "src": "/api/(.*)",
+      "status": 404,
+      "dest": "/404"
     }
   ]
 }

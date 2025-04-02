@@ -107,7 +107,10 @@ def deepseek_score(text):
 
 @app.route('/api/grc', methods=['POST','OPTIONS'])
 def analyze_text():
-
+     # Add this check at the start
+    if request.path != '/api/grc':
+        return jsonify({"error": "Invalid path"}), 400
+        
     if request.method == 'OPTIONS':
         # Handle preflight requests
         response = jsonify({"success": True})
