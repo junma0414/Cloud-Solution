@@ -58,6 +58,11 @@ export default function Navbar() {
   };
 
   const handleGoogleLogin = async () => {
+
+    const redirectUrl = window.location.hostname === 'localhost' 
+    ? 'http://localhost:3000/auth/callback' 
+    : `https://obserpedia.com/auth/callback`;
+
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
