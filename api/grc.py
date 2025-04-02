@@ -153,8 +153,8 @@ handler = WsgiToAsgi(app)
 
 
 if __name__ == '__main__':
-    #app.run(port=5000)   #comment it for local test
-    import uvicorn        # for local test
+    app.run(port=5000)   #comment it for local test
+    #import uvicorn        # for local test
     # for local test
-    uvicorn.run("grc:handler", host="0.0.0.0", port=5000, reload=True) 
+    #uvicorn.run("grc:handler", host="0.0.0.0", port=5000, reload=True) 
 
