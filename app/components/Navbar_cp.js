@@ -9,20 +9,15 @@ import { useState, useEffect } from 'react';
 
 export default function Navbar() {
   const pathname = usePathname();
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
-  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-  const [authMode, setAuthMode] = useState('login');
+  const [showDialog, setShowDialog] = useState(false);
+  const [authMode, setAuthMode] = useState('login'); // 'login' or 'signup'
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
 
   // Check active session
- const [mounted, setMounted] = useState(false); // Add mounted state
-
-  // Check active session
   useEffect(() => {
-    setMounted(true); // Set mounted to true on client side
     const getSession = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
@@ -48,7 +43,7 @@ export default function Navbar() {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        setShowAuthDialog(false);
+        setShowDialog(false);
       }
     } catch (error) {
       alert(error.message);
@@ -60,19 +55,20 @@ export default function Navbar() {
   const handleGoogleLogin = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: window.location.href // Stay on current page after login
-      }
+      options: { redirectTo: `${window.location.origin}/auth/callback` }
     });
   };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    setShowProfileDropdown(false);
   };
 
-  const toggleProfileDropdown = () => {
-    setShowProfileDropdown(!showProfileDropdown);
+  // Define closeDialog function
+  const closeDialog = () => {
+    setShowDialog(false);
+    setEmail('');
+    setPassword('');
+    setLoading(false);
   };
 
   return (
@@ -93,70 +89,46 @@ export default function Navbar() {
         <div className={styles.links}>
           <Link
             href="/"
-            className={`${styles.link} ${mounted && pathname === '/' ? styles.active : ''}`}
+            className={`${styles.link} ${pathname === '/' ? styles.active : ''}`}
           >
             Home
           </Link>
           <Link
             href="/solution"
-            className={`${styles.link} ${mounted && pathname === '/solution' ? styles.active : ''}`}
+            className={`${styles.link} ${pathname === '/solution' ? styles.active : ''}`}
           >
             Solution
           </Link>
           <Link
             href="/article"
-            className={`${styles.link} ${mounted && pathname === '/article' ? styles.active : ''}`}
+            className={`${styles.link} ${pathname === '/docs' ? styles.active : ''}`}
           >
             Docs
           </Link>
           <Link
             href="/api"
-            className={`${styles.link} ${mounted && pathname === '/api' ? styles.active : ''}`}
+            className={`${styles.link} ${pathname === '/api' ? styles.active : ''}`}
           >
             API
           </Link>
           <Link
             href="/contact"
-            className={`${styles.link} ${mounted && pathname === '/contact' ? styles.active : ''}`}
+            className={`${styles.link} ${pathname === '/contact' ? styles.active : ''}`}
           >
             Contact
           </Link>
           
           {/* Auth Button */}
-          {mounted && user ? (
-            <div className={styles.profileContainer}>
-              <button 
-                onClick={toggleProfileDropdown}
-                className={styles.profileButton}
-              >
-         
-                  <Image
-  src={user?.app_metadata?.provider === 'google' ? '/google-logo.png' : '/email.png'}
-  alt="Profile"
-  width={32}
-  height={32}
-  className={styles.profileImage}
-/>
-
-              </button>
-              
-              {showProfileDropdown && (
-                <div className={styles.profileDropdown}>
-                  <div className={styles.dropdownItemDisabled}>Dashboard</div>
-                  <div className={styles.dropdownItemDisabled}>Usage</div>
-                  <div className={styles.dropdownItemDisabled}>API Keys</div>
-                  <div 
-                    className={styles.dropdownItem}
-                    onClick={handleLogout}
-                  >
-                    Log Out
-                  </div>
-                </div>
-              )}
-            </div>
+          {user ? (
+            <button 
+              onClick={handleLogout}
+              className={`${styles.link} ${styles.loginButton}`}
+            >
+              Log Out
+            </button>
           ) : (
             <button 
-              onClick={() => setShowAuthDialog(true)}
+              onClick={() => setShowDialog(true)}
               className={`${styles.link} ${styles.loginButton}`}
             >
               Log In
@@ -166,7 +138,7 @@ export default function Navbar() {
       </div>
 
       {/* Auth Dialog */}
-      {showAuthDialog && (
+      {showDialog && (
         <div className={styles.dialogOverlay}>
           <div className={styles.dialogBox}>
             <h3>{authMode === 'login' ? 'Log In' : 'Sign Up'}</h3>
@@ -201,42 +173,35 @@ export default function Navbar() {
               onClick={handleGoogleLogin}
               className={styles.googleButton}
             >
-              <Image 
-                src="/google-logo.png" // Add your Google logo image
-                width={20}
-                height={20}
-                alt="Google"
-                className={styles.googleIcon}
-              />
               Continue with Google
             </button>
 
             <div className={styles.authToggle}>
               {authMode === 'login' ? (
-                <>
-                  <span>Don't have an account?</span>
+                <span>
+                  Don't have an account?{' '}
                   <button 
                     onClick={() => setAuthMode('signup')}
                     className={styles.toggleButton}
                   >
                     Sign Up
                   </button>
-                </>
+                </span>
               ) : (
-                <>
-                  <span>Already have an account?</span>
+                <span>
+                  Already have an account?{' '}
                   <button 
                     onClick={() => setAuthMode('login')}
                     className={styles.toggleButton}
                   >
                     Log In
                   </button>
-                </>
+                </span>
               )}
             </div>
 
             <button 
-              onClick={() => setShowAuthDialog(false)}
+              onClick={closeDialog}
               className={styles.closeButton}
             >
               Close

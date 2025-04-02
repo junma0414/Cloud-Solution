@@ -4,12 +4,7 @@
     {
       "src": "/api/grc",
       "dest": "/api/grc.py",
-      "methods": ["POST"],
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST",
-        "Access-Control-Allow-Headers": "Content-Type"
-      }
+      "methods": ["POST","OPTIONS"],
     }
   ]
 }

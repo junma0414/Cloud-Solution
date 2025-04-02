@@ -19,15 +19,8 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})  # Enable CORS for all routes
-
-# Add this right after creating your Flask app
-@app.after_request
-def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-    response.headers.add('Access-Control-Allow-Methods', 'POST')
-    return response
+#CORS(app, resources={r"/api/*": {"origins": "*"}})  # Enable CORS for all routes
+CORS(app) #simplified
 
 
 import requests
@@ -112,8 +105,18 @@ def deepseek_score(text):
   return score_result
 
 
-@app.route('/api/grc', methods=['POST'])
+@app.route('/api/grc', methods=['POST','OPTIONS'])
 def analyze_text():
+
+    if request.method == 'OPTIONS':
+        # Handle preflight requests
+        response = jsonify({"success": True})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Headers", "*")
+        response.headers.add("Access-Control-Allow-Methods", "*")
+        return response
+
+
     data = request.get_json()
     text = data.get('text', '')
     
@@ -132,7 +135,15 @@ def analyze_text():
 
 
 # Vercel requires a function named `handler`
+# Comment below for inspection
 handler = WsgiToAsgi(app)
+
+# Vercel-specific handler
+'''def vercel_handler(request):
+    with app.app_context():
+        response = app.full_dispatch_request()(request)
+        return response
+'''
 
 #the below is not necessary for serverless in 
 
