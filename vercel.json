@@ -4,7 +4,7 @@
     {
       "src": "/api/grc",
       "dest": "/api/grc.py",
-      "methods": ["POST","OPTIONS"],
+      "methods": ["POST","OPTIONS"]
     }
   ]
 }
