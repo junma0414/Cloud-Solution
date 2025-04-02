@@ -63,7 +63,6 @@ export default function APIPlayground() {
     const API_URL =  process.env.NEXT_PUBLIC_API_URL||'/api/grc';
          const response = await fetch(API_URL, {
         method: "POST",
-        mode:"cors",
         headers: { 
           "Content-Type": "application/json",
           "Accept": "application/json" 
