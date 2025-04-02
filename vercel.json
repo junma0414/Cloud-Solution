@@ -10,20 +10,15 @@
       "use": "@vercel/python",
       "config": {
         "runtime": "python3.10",
-        "suppressStream": true
+        "maxLambdaSize": "15mb"
       }
     }
   ],
   "routes": [
     {
-      "src": "/api/grc/?$",  // Strict termination with $
+      "src": "/api/grc",
       "dest": "/api/grc.py",
       "methods": ["POST", "OPTIONS"]
-    },
-    {
-      "src": "/api/(.*)",
-      "status": 404,
-      "dest": "/404"
     }
   ]
 }
