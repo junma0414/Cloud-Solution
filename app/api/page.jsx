@@ -60,7 +60,12 @@ export default function APIPlayground() {
 
     try {
 
-    const API_URL =  process.env.NEXT_PUBLIC_API_URL||'/api/grc';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 
+  (process.env.NODE_ENV === 'development' 
+    ? 'http://localhost:3000/api/grc' 
+    : '/api/grc');
+
+    //const API_URL =  process.env.NEXT_PUBLIC_API_URL||'/api/grc';
          const response = await fetch(API_URL, {
         method: "POST",
         headers: { 

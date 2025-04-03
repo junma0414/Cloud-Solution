@@ -17,7 +17,7 @@
   "routes": [
     {
       "src": "/api/grc",
-      "dest": "/api/grc.py",
+      "dest": "/api/index.py",
       "methods": ["POST", "OPTIONS"]
     }
   ]
