@@ -139,7 +139,7 @@ def analyze_text():
 
 # Vercel requires a function named `handler`
 # Comment below for inspection
-# handler = WsgiToAsgi(app)
+handler = WsgiToAsgi(app)
 
 # Vercel-specific handler
 '''def vercel_handler(request):
@@ -152,9 +152,9 @@ def analyze_text():
 
 
 
-if __name__ == '__main__':
-    app.run(port=5000)   #comment it for local test
+'''if __name__ == '__main__':
+    app.run(host='0.0.0.0',port=5000,debug=True)   #comment it for local test
     #import uvicorn        # for local test
     # for local test
-    #uvicorn.run("grc:handler", host="0.0.0.0", port=5000, reload=True) 
-
+    #uvicorn.run("grc:handler", host="0.0.0.0", port=5000, reload=True)
+'''

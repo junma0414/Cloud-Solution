@@ -1,8 +1,9 @@
-from grc import handler
+from .grc import app
 from asgiref.wsgi import WsgiToAsgi
 
-app = handler  # Expose the ASGI handler
+asgi_app = WsgiToAsgi(app)  # Expose the ASGI handler
 
-async def main(request):
+'''async def main(request):
     # This makes it work with Vercel's serverless environment
     return await app(request.scope, request.receive, request.send)
+    '''
