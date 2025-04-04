@@ -1,4 +1,4 @@
-from grc import app
+from .grc import app
 from asgiref.wsgi import WsgiToAsgi
 
 asgi_app = WsgiToAsgi(app)  # Expose the ASGI handler
