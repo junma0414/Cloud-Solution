@@ -1,18 +1,15 @@
 {
-   "version": 2,
-    "builds": [
+  "version": 2,
+  "builds": [
     {
-      "src": "package.json",
-      "use": "@vercel/next"
-    },
-    {
-    "src": "api/index.py",
-    "use": "@vercel/python"
-  }],
+      "src": "api/index.py",
+      "use": "@vercel/python"
+    }
+  ],
   "routes": [
     {
-    "src": "/api/(.*)",
-    "dest": "/api/index.py"
-  }
-]
+      "src": "/api/grc",
+      "dest": "api/index.py"
+    }
+  ]
 }

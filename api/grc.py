@@ -139,7 +139,7 @@ def analyze_text():
 
 # Vercel requires a function named `handler`
 # Comment below for inspection
-handler = WsgiToAsgi(app)
+#handler = WsgiToAsgi(app)
 
 # Vercel-specific handler
 '''def vercel_handler(request):

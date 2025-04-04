@@ -115,8 +115,8 @@ export default function Navbar() {
             Docs
           </Link>
           <Link
-            href="/api"
-            className={`${styles.link} ${mounted && pathname === '/api' ? styles.active : ''}`}
+            href="/api-guide"
+            className={`${styles.link} ${mounted && pathname === '/api-guide' ? styles.active : ''}`}
           >
             API
           </Link>
