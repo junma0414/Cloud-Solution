@@ -8,5 +8,4 @@ openai
 numpy
 pandas
 requests
-re
-dotenv
+
