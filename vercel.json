@@ -5,10 +5,13 @@
       "src": "package.json",
       "use": "@vercel/next"
     },
-    {
+        {
       "src": "api/*.py",
       "use": "@vercel/python",
-      "config": { "runtime": "python-3.9" }
+      "config": {
+        "runtime": "python-3.9",
+        "includeFiles": "api/**"
+      }
     }
   ],
   "routes": [
