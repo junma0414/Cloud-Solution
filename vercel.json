@@ -2,6 +2,10 @@
   "version": 2,
   "builds": [
     {
+      "src": "next.config.ts",
+      "use": "@vercel/next"
+    },
+    {
       "src": "api/index.py",
       "use": "@vercel/python"
     }
