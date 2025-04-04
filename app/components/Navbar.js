@@ -208,8 +208,8 @@ export default function Navbar() {
             >
               <Image 
                 src="/google-logo.png" // Add your Google logo image
-                width={20}
-                height={20}
+                width={16}
+                height={16}
                 alt="Google"
                 className={styles.googleIcon}
               />
