@@ -10,12 +10,13 @@ import requests
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
+import pandas as pd
 
 load_dotenv()  # Looks for .env in current directory
 
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
+#import logging
+#logging.basicConfig(level=logging.DEBUG)
 
 
 app = Flask(__name__)
@@ -23,18 +24,7 @@ app = Flask(__name__)
 CORS(app) #simplified
 
 
-import requests
-from openai import OpenAI
 
-
-
-
-#text="this is my last warning"
-
-
-
-import re
-import pandas as pd
 
 
 def reg_parse(line):
@@ -128,7 +118,7 @@ def analyze_text():
     
     try:
         scores = deepseek_score(text)
-        logging.debug(f"API Response: {scores}")
+        #logging.debug(f"API Response: {scores}")
 
         if not scores:
             return jsonify({"error": "No valid scores generated"}), 500
