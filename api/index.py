@@ -3,7 +3,7 @@ from asgiref.wsgi import WsgiToAsgi
 from flask import Flask
 
 if not isinstance(app, Flask):
-    raise TypeError("Expected Flask app instance but got something else.")
+    raise TypeError(f"Expected Flask app, got {type(app)} → {repr(app)}")
 
 asgi_app = WsgiToAsgi(app)  # Expose the ASGI handler
 
