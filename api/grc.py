@@ -160,7 +160,7 @@ def hello():
     return jsonify({"message": f"{text} API working!"})
 
 
-asgi_app = WsgiToAsgi(app)  # Expose the ASGI handler
+#asgi_app = WsgiToAsgi(app)  # Expose the ASGI handler
 
 # Vercel requires a function named 'handler'
-handler = asgi_app
+handler = app
