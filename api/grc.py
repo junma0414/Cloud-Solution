@@ -73,8 +73,10 @@ def deepseek_score(text):
 
   os.environ.pop("HTTP_PROXY", None)
   os.environ.pop("HTTPS_PROXY", None)
+
+  http_client = httpx.Client()
   
-  client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_API_URL,http_client=httpx.Client(proxies=None))
+  client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_API_URL,http_client=http_client)
 
   response = client.chat.completions.create(
       model="deepseek-chat",messages=[
@@ -153,9 +155,9 @@ def analyze_text():
 
 # for testing purpose
 
-'''if __name__ == "__main__":
+if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
-'''
+
 
 
 '''if __name__ == '__main__':
