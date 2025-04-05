@@ -6,14 +6,14 @@
       "use": "@vercel/next"
     },
         {
-      "src": "api/grc2.py",
+      "src": "api/grc.py",
       "use": "@vercel/python"
       }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "api/grc2.py"
+      "dest": "api/grc.py"
     }
   ]
 }
