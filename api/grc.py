@@ -6,7 +6,6 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from asgiref.wsgi import WsgiToAsgi
 import re
-import requests
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
@@ -148,3 +147,18 @@ def analyze_text():
     # for local test
     #uvicorn.run("grc:handler", host="0.0.0.0", port=5000, reload=True)
 '''
+
+@app.route('/api/hello', methods=['POST', 'OPTIONS'])
+def hello():
+    """Test endpoint to verify API is working."""
+    if request.method == 'OPTIONS':
+        # Handle preflight requests
+        response = jsonify({"success": True})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Headers", "*")
+        response.headers.add("Access-Control-Allow-Methods", "*")
+        return response
+
+    data = request.get_json()
+    text = data.get('text', '')
+    return jsonify({"message": f"{text} API working!"})
