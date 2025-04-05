@@ -6,6 +6,7 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 import pandas as pd
+import httpx
 
 load_dotenv()  # Looks for .env in current directory
 
@@ -15,8 +16,8 @@ load_dotenv()  # Looks for .env in current directory
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "*"}})  # Enable CORS for all routes
-#CORS(app) #simplified
+#CORS(app, resources={r"/api/*": {"origins": "*"}})  # Enable CORS for all routes
+CORS(app) #simplified
 
 
 
@@ -73,7 +74,7 @@ def deepseek_score(text):
   os.environ.pop("HTTP_PROXY", None)
   os.environ.pop("HTTPS_PROXY", None)
   
-  client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_API_URL)
+  client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_API_URL,http_client=httpx.Client(proxies=None))
 
   response = client.chat.completions.create(
       model="deepseek-chat",messages=[
@@ -151,8 +152,8 @@ def analyze_text():
 '''
 
 # for testing purpose
-'''
-if __name__ == "__main__":
+
+'''if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
 '''
 
