@@ -1,7 +1,3 @@
-
-
-#python -m quart --app grc:app run --port 5000 --reload
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from asgiref.wsgi import WsgiToAsgi
@@ -162,3 +158,9 @@ def hello():
     data = request.get_json()
     text = data.get('text', '')
     return jsonify({"message": f"{text} API working!"})
+
+
+asgi_app = WsgiToAsgi(app)  # Expose the ASGI handler
+
+# Vercel requires a function named 'handler'
+handler = asgi_app
