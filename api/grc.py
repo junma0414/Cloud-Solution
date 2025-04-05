@@ -25,7 +25,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}})  # Enable CORS for all routes
 
 
 
-@app.route('/api/hello', methods=['POST', 'OPTIONS'])
+@app.route('/api/grc', methods=['POST', 'OPTIONS'])
 def hello():
     """Test endpoint to verify API is working."""
     if request.method == 'OPTIONS':
