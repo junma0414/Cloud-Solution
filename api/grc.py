@@ -135,6 +135,22 @@ def analyze_text():
 
 #the below is not necessary for serverless in 
 
+#asgi_app = WsgiToAsgi(app)  # Expose the ASGI handler
+
+# Vercel requires a function named 'handler'
+#handler = WsgiToAsgi(app)
+
+'''if __name__ == '__main__':
+    app.run(host='0.0.0.0',port=5000,debug=True)   #comment it for local test
+    #import uvicorn        # for local test
+    # for local test
+    #uvicorn.run("grc:handler", host="0.0.0.0", port=5000, reload=True)
+'''
+
+# for testing purpose
+#if __name__ == "__main__":
+#    app.run(debug=True, host="0.0.0.0", port=5000)
+
 
 
 '''if __name__ == '__main__':
@@ -160,7 +176,4 @@ def hello():
     return jsonify({"message": f"{text} API working!"})
 
 
-#asgi_app = WsgiToAsgi(app)  # Expose the ASGI handler
 
-# Vercel requires a function named 'handler'
-#handler = WsgiToAsgi(app)
