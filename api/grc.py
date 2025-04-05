@@ -70,6 +70,9 @@ def deepseek_score(text):
   if not DEEPSEEK_API_KEY:
         raise ValueError("API key is missing. Set DEEPSEEK_API_KEY in Vercel.")
 
+  os.environ.pop("HTTP_PROXY", None)
+  os.environ.pop("HTTPS_PROXY", None)
+  
   client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_API_URL)
 
   response = client.chat.completions.create(
