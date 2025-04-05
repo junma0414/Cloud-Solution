@@ -20,7 +20,7 @@ load_dotenv()  # Looks for .env in current directory
 
 app = Flask(__name__)
 #CORS(app, resources={r"/api/*": {"origins": "*"}})  # Enable CORS for all routes
-CORS(app) #simplified
+#CORS(app) #simplified
 
 
 
