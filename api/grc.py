@@ -65,12 +65,12 @@ def deepseek_score(text):
   **category**: score (reason) """
     
   DEEPSEEK_API_URL = "https://api.deepseek.com"
-  DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY") #"sk-0fc81d9a4757417db0d568c490e1202a"
+  DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY") #"sk-"
 
   if not DEEPSEEK_API_KEY:
         raise ValueError("API key is missing. Set DEEPSEEK_API_KEY in Vercel.")
 
-  client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url="https://api.deepseek.com")
+  client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEP_API_URL)
 
   response = client.chat.completions.create(
       model="deepseek-chat",messages=[
@@ -148,9 +148,10 @@ def analyze_text():
 '''
 
 # for testing purpose
-#if __name__ == "__main__":
-#    app.run(debug=True, host="0.0.0.0", port=5000)
-
+'''
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
+'''
 
 
 '''if __name__ == '__main__':
@@ -159,21 +160,6 @@ def analyze_text():
     # for local test
     #uvicorn.run("grc:handler", host="0.0.0.0", port=5000, reload=True)
 '''
-
-@app.route('/api/hello', methods=['POST', 'OPTIONS'])
-def hello():
-    """Test endpoint to verify API is working."""
-    if request.method == 'OPTIONS':
-        # Handle preflight requests
-        response = jsonify({"success": True})
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        response.headers.add("Access-Control-Allow-Headers", "*")
-        response.headers.add("Access-Control-Allow-Methods", "*")
-        return response
-
-    data = request.get_json()
-    text = data.get('text', '')
-    return jsonify({"message": f"{text} API working!"})
 
 
 
