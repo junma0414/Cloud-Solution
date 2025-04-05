@@ -163,4 +163,4 @@ def hello():
 #asgi_app = WsgiToAsgi(app)  # Expose the ASGI handler
 
 # Vercel requires a function named 'handler'
-handler = WsgiToAsgi(app)
+#handler = WsgiToAsgi(app)
