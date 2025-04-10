@@ -281,3 +281,31 @@
   height: 20px;
 }
 
+
+/* Add these to your existing styles */
+.dropdownItem {
+  padding: 8px 16px;
+  cursor: pointer;
+  color: #333;
+  text-decoration: none;
+  display: block;
+  transition: background-color 0.2s;
+}
+
+.dropdownItem:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdownItemDisabled {
+  padding: 8px 16px;
+  color: #999;
+  cursor: not-allowed;
+}
+
+
+.disabledItem {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  text-decoration: none;
+}

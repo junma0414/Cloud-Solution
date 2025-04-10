@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '../lib/supabase/client';
 import styles from './Navbar.module.css';
 import Image from 'next/image';
@@ -8,6 +8,7 @@ import logo from '../../public/main.png';
 import { useState, useEffect } from 'react';
 
 export default function Navbar() {
+  const router = useRouter();
   const pathname = usePathname();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -74,12 +75,36 @@ export default function Navbar() {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setShowProfileDropdown(false);
+   router.push('/'); 
   };
 
   const toggleProfileDropdown = () => {
     setShowProfileDropdown(!showProfileDropdown);
   };
 
+// Add this function to your Navbar component at 7/4/2025
+const handlePasswordReset = async () => {
+  if (!email) {
+    alert('Please enter your email address');
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password?type=recovery`
+    });
+    
+    if (error) throw error;
+    alert('Password reset link sent to your email!');
+    setShowAuthDialog(false);
+  } catch (error) {
+    alert(error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+// Add this button to your auth dialog (inside the dialogBox div) 4/7/2025
   return (
     <nav className={styles.navbar}>
       <div className={styles.container}>
@@ -144,20 +169,45 @@ export default function Navbar() {
 />
 
               </button>
-              
               {showProfileDropdown && (
-                <div className={styles.profileDropdown}>
-                  <div className={styles.dropdownItemDisabled}>Dashboard</div>
-                  <div className={styles.dropdownItemDisabled}>Usage</div>
-                  <div className={styles.dropdownItemDisabled}>API Keys</div>
-                  <div 
-                    className={styles.dropdownItem}
-                    onClick={handleLogout}
-                  >
-                    Log Out
-                  </div>
-                </div>
-              )}
+  <div 
+    className={styles.profileDropdown}
+    onClick={(e) => e.stopPropagation()} // Prevent immediate dropdown close
+  >
+    <Link 
+      href="/dashboard" 
+      className={styles.dropdownItem}
+      onClick={() => setShowProfileDropdown(false)}
+    >
+      Dashboard
+    </Link>
+    <Link 
+  href="/usage" 
+  className={`${styles.dropdownItem} ${styles.disabledItem}`}
+  onClick={(e) => {
+    e.preventDefault();
+    setShowProfileDropdown(false);
+  }}
+>
+  Usage
+</Link>
+
+    <Link 
+      href="/api-keys" 
+      className={styles.dropdownItem}
+      onClick={() => setShowProfileDropdown(false)}
+    >
+      API Keys
+    </Link>
+    <button 
+      className={styles.dropdownItem}
+      onClick={handleLogout}
+    >
+      Log Out
+    </button>
+  </div>
+)}
+
             </div>
           ) : (
             <button 
@@ -175,7 +225,11 @@ export default function Navbar() {
         <div className={styles.dialogOverlay}>
           <div className={styles.dialogBox}>
             <h3>{authMode === 'login' ? 'Log In' : 'Sign Up'}</h3>
-            
+
+
+
+
+      
             <form onSubmit={handleAuth}>
               <input
                 type="email"
@@ -201,7 +255,15 @@ export default function Navbar() {
                 {loading ? 'Processing...' : authMode === 'login' ? 'Log In' : 'Sign Up'}
               </button>
             </form>
-
+{authMode === 'login' && (
+  <button 
+    onClick={handlePasswordReset}
+    className={styles.forgotPasswordButton}
+    disabled={loading}
+  >
+    Forgot Password?
+  </button>
+)}
             <button 
               onClick={handleGoogleLogin}
               className={styles.googleButton}

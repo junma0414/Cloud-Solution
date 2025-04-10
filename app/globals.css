@@ -172,3 +172,39 @@ code {
   font-family: 'Courier New', monospace;
   color: #f8f8f2;
 }
+
+
+
+/* app/globals.css */
+.api-key-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.api-key-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.api-key-table th, .api-key-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+
+/* Make sure links fill their container */
+.dropdownItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Prevent dropdown from closing when clicking inside */
+.profileDropdown {
+  pointer-events: auto;
+}

@@ -9,6 +9,10 @@ numpy
 pandas
 requests
 httpx>=0.25.0 
+fastapi
+supabase
+uvicorn
+async_supabase
 
 
 
