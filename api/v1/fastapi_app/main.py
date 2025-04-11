@@ -50,4 +50,4 @@ logger.info(app.routes)
 async def root():
     return {"message": "Hello World！"}
 
-handler = Mangum(app)  # for Vercel to recognize
+#handler = Mangum(app)  # for Vercel to recognize
