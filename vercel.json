@@ -1,6 +1,6 @@
 {
   "rewrites": [
-    { "source": "/api/v1/(.*)", "destination": "/api/v1/main.py" }
+    { "source": "/api/v1/(.*)", "destination": "/api/v1/fastapi_app/main.py" }
   ],
   "headers": [
     {
