@@ -45,9 +45,18 @@ app.include_router(
 
 logger.info(app.routes)
 
-# ablution path: http://localhost:xxxx/api/python
-@app.get("/api/python")
+# absolute path: http://localhost:xxxx/api/python
+@app.get("/api/v1/python")
 async def root():
     return {"message": "Hello World！"}
+
+
+@app.middleware("http")
+async def debug_headers(request: Request, call_next):
+    print("Headers received:")
+    for k, v in request.headers.items():
+        print(f"{k}: {v}")
+    return await call_next(request)
+
 
 #handler = Mangum(app)  # for Vercel to recognize

@@ -9,6 +9,8 @@ import traceback
 logger = logging.getLogger(__name__)
 security = HTTPBearer()
 
+logger.info(f"Security Key is: {security}")
+
 async def verify_api_key(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Verify API key from Authorization header"""
     try:
