@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import logging
 import traceback
 
-from api.v1.fastapi_app.routers import core, grc 
+from api.v1.fastapi_app.routers import core, grc_api
 
 load_dotenv() #check .env in current local directory
 
@@ -35,9 +35,9 @@ app.include_router(
 )
 
 app.include_router(
-    grc.router,
+    grc_api.router,
     prefix="/api/v1",
-    tags=["GRC"]
+    tags=["GRC_api"]
 )
 
 
