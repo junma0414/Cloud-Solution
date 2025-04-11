@@ -189,6 +189,6 @@ async def analyze_text(
         "timestamp": datetime.now().isoformat()
         }
 
-        supabase.table("grc_service").update({"del_flag",1}).eq("id", request_id).execute()
+        supabase.table("grc_service").update({"del_flag":1}).eq("id", request_id).execute()
         logger.exception("Error during GRC processing")
         raise HTTPException(status_code=500, detail="Processing error")

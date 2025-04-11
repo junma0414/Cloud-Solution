@@ -1,0 +1,13 @@
+{
+  "rewrites": [
+    { "source": "/api/v1/(.*)", "destination": "/api/v1/main.py" }
+  ],
+  "headers": [
+    {
+      "source": "/api/v1/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    }
+  ]
+}
