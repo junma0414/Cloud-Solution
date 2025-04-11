@@ -11,14 +11,14 @@ security = HTTPBearer()
 
 logger.info(f"Security Key is: {security}")
 
-async def verify_api_key(credentials: HTTPAuthorizationCredentials = Depends(security)):
+async def verify_api_key(request: Request):
     """Verify API key from Authorization header"""
 
     logger.info("Executing verify_api_key dependency")
     
     logger.info(f"Authorization credentials received: {credentials}")
     try:
-        api_key = credentials.credentials
+        api_key = request.headers.get("x-api-key")
         logger.info(f"Attempting to verify API key: {api_key[:6]}...")
 
         logger.debug(f"Supabase URL: {os.getenv('SUPABASE_URL')}")
