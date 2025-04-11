@@ -7,6 +7,7 @@ import httpx
 
 router = APIRouter()
 
+'''
 @router.api_route("/validate-key", methods=["GET", "POST"])
 async def validate_key(request: Request):
     """Endpoint to validate API keys (your existing implementation)"""
@@ -53,3 +54,4 @@ async def direct_query(api_key: str):
 async def service_status():
     """Health check endpoint"""
     return {"status": "OK", "version": "1.0.0"}
+    '''

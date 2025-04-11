@@ -54,7 +54,7 @@ logger.info(app.routes)
 async def root():
     return {"message": "Hello World！"}
 
-
+'''
 @app.middleware("http")
 async def debug_headers(request: Request, call_next):
     print("Headers received:")
@@ -65,7 +65,7 @@ async def debug_headers(request: Request, call_next):
 @app.get("/test")
 async def test_route():
     return {"message": "Middleware test successful"}
-
+'''
 
 
 #handler = Mangum(app)  # for Vercel to recognize
