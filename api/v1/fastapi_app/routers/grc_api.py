@@ -103,6 +103,15 @@ async def deepseek_score(text: str) -> List[Dict]:
         logger.error(f"LLM processing failed: {str(e)}")
         raise HTTPException(status_code=502, detail="LLM service error")
 
+
+@router.post("/grc_api_placeholder")
+async def analyze_text(grc_request: GRCRequest, request: Request):
+    logger.info("analyze_text route invoked without authentication")
+    return {"message": "Route reached"}
+
+
+
+
 @router.post("/grc_api", response_model=GRCResponse)
 async def analyze_text(
     grc_request: GRCRequest,
@@ -112,6 +121,9 @@ async def analyze_text(
     request_id = str(uuid4())
     scores=[]
     start_time = datetime.now()
+
+    logger.info("analyze_text route invoked") 
+    logger.info(f"Request payload: {grc_request.text}")
     
     try:
         '''

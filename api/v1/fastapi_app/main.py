@@ -20,6 +20,10 @@ app = FastAPI()
 
 logger = logging.getLogger(__name__)
 
+#logger.info(f"Received payload: {request.json()}")
+
+
+
 
 # Configure CORS for your Next.js app
 app.add_middleware(
@@ -57,6 +61,11 @@ async def debug_headers(request: Request, call_next):
     for k, v in request.headers.items():
         print(f"{k}: {v}")
     return await call_next(request)
+
+@app.get("/test")
+async def test_route():
+    return {"message": "Middleware test successful"}
+
 
 
 #handler = Mangum(app)  # for Vercel to recognize
