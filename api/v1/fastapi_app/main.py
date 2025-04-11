@@ -9,6 +9,9 @@ from dotenv import load_dotenv
 import logging
 import traceback
 
+from mangum import Mangum  # converts ASGI to AWS Lambda (Vercel compatible)
+
+
 from api.v1.fastapi_app.routers import core, grc_api
 
 load_dotenv() #check .env in current local directory
@@ -21,7 +24,7 @@ logger = logging.getLogger(__name__)
 # Configure CORS for your Next.js app
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[os.getenv("FRONTEND_URL", "https://obserpedia.com")],
+    allow_origins=["*"], #[os.getenv("FRONTEND_URL", "https://obserpedia.com")],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -40,10 +43,11 @@ app.include_router(
     tags=["GRC_api"]
 )
 
-
+logger.info(app.routes)
 
 # ablution path: http://localhost:xxxx/api/python
 @app.get("/api/python")
 async def root():
     return {"message": "Hello World！"}
 
+handler = Mangum(app)  # for Vercel to recognize
