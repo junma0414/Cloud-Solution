@@ -51,6 +51,9 @@ API_URL = "https://api-inference.huggingface.co/models/unitary/toxic-bert"
 #@    results = model.predict(text)
 #   return results
 
+
+"""
+
 def evaluate_toxicity(text):
 
     payload={"inputs": text}
@@ -74,22 +77,23 @@ def count_syllables(word):
     if word.endswith("e"):
         syllable_count -= 1
     return syllable_count if syllable_count > 0 else 1
+"""
 
-def flesch_reading_ease(text):
-    sentences = re.split(r'[.!?]', text)
-    words = re.findall(r'\b\w+\b', text)
-    syllable_count = sum(count_syllables(word) for word in words)
+#def flesch_reading_ease(text):
+#    sentences = re.split(r'[.!?]', text)
+#    words = re.findall(r'\b\w+\b', text)
+#    syllable_count = sum(count_syllables(word) for word in words)
     
-    total_sentences = len(sentences)
-    total_words = len(words)
+#    total_sentences = len(sentences)
+ #   total_words = len(words)
     
-    if total_sentences == 0 or total_words == 0:
-        return 0
+  #  if total_sentences == 0 or total_words == 0:
+   #     return 0
     
-    return 206.835 - 1.015 * (total_words / total_sentences) - 84.6 * (syllable_count / total_words)
+   # return 206.835 - 1.015 * (total_words / total_sentences) - 84.6 * (syllable_count / total_words)
 
 # Example usage
-#text = """
+#text = 
 #The Flesch Reading Ease score is a widely used measure of readability. 
 #It calculates how easy a text is to read based on sentence length and word complexity. 
 #The higher the score, the easier the text is to understand.
@@ -124,7 +128,7 @@ nltk.data.path.append(os.path.join(base_path, '../../..', 'nltk_data_stopwords')
 
 
 
-
+"""
 def stop_word_ratio(text, language='english'):
     stop_words = set(stopwords.words(language))
     words = word_tokenize(text)
@@ -141,6 +145,64 @@ def stop_word_ratio(text, language='english'):
 # Example usage
 #text = "This is an egg and is a good egg"
 #ratio = stop_word_ratio(text)
+"""
+
+
+def get_metrics(text, language='english'):
+    # the logic to get 
+    payload={"inputs": text}
+    results = httpx.post(API_URL, headers=headers, json=payload)
+    toxicity= results.json()[0][0]['score']
+
+    # stopword ratio
+    stop_words = set(stopwords.words(language))
+    words = word_tokenize(text)
+    total_words = len(words)
+    print(total_words)
+    stop_word_count = sum(1 for word in words if word.lower() in stop_words)
+    print(stop_word_count)
+
+    if total_words == 0:
+        return 0.0
+
+    ratio=stop_word_count / total_words
+
+
+    #readbility score
+
+    sentences = re.split(r'[.!?]', text)
+    words = re.findall(r'\b\w+\b', text)
+
+
+    syllable_count_all=0
+    for word in words:
+        word = word.lower()
+        syllable_count = 0
+        vowels = "aeiouy"
+        if word[0] in vowels:
+            syllable_count += 1
+        for i in range(1, len(word)):
+            if word[i] in vowels and word[i - 1] not in vowels:
+                syllable_count += 1
+        if word.endswith("e"):
+            syllable_count -= 1
+        syllable_count_all+=(syllable_count if syllable_count > 0 else 1)
+
+
+    #syllable_count = sum(count_syllables(word) for word in words)
+    
+    total_sentences = len(sentences)
+    total_words = len(words)
+    
+    if total_sentences == 0 or total_words == 0:
+        return 0
+    
+    readability_score=206.835 - 1.015 * (total_words / total_sentences) - 84.6 * (syllable_count_all / total_words)
+
+
+    return toxicity, ratio, readability_score
+
+
 #-----------------------------------------------funciton for stop-word-ratio
 
 @router.post("/drift")
@@ -206,11 +268,12 @@ async def drift_metrics(
         
 
 
-        toxicity_score=evaluate_toxicity(text)
+        toxicity_score, stopwords_ratio, readability= get_metrics(text)
+        #=evaluate_toxicity(text)
 
-        readability = flesch_reading_ease(text)
+        #readability = flesch_reading_ease(text)
 
-        stopwords_ratio = stop_word_ratio(text)
+        #stopwords_ratio = stop_word_ratio(text)
 
 
 
