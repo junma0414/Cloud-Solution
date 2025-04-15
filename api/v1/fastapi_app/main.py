@@ -12,7 +12,7 @@ import traceback
 #from mangum import Mangum  # converts ASGI to AWS Lambda (Vercel compatible)
 
 
-from api.v1.fastapi_app.routers import core, grc_api,ner,drift
+from api.v1.fastapi_app.routers import  grc_api,ner,drift
 
 load_dotenv() #check .env in current local directory
 
