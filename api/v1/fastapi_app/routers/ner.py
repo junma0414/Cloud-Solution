@@ -36,7 +36,7 @@ class NERRequest(BaseModel):
     text: str
     topn: Optional[int] = 20
     project_name: Optional[str]='dummy_proj'
-    model_name: Optional[str]='dummy_model'
+    model_name_ner: Optional[str]='dummy_model'
 
 
 class NERResponse(BaseModel):
@@ -101,7 +101,7 @@ async def extract_entities(
         "api_key": user_context['api_key_id'],
         "endpoint": str(request.url),
         "project_name": ner_request.project_name,  # Default as per table schema
-        "model_name": ner_request.model_name,   # Default as per table schema
+        "model_name": ner_request.model_name_ner,   # Default as per table schema
         "headers": dict(request.headers),
         "request_body": full_body,
 
@@ -130,7 +130,7 @@ async def extract_entities(
 
         text = ner_request.text
         project_name=ner_request.project_name
-        model_name=ner_request.model_name
+        model_name=ner_request.model_name_ner
         topn=ner_request.topn
 
         if not text:
