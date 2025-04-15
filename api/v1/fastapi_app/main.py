@@ -35,12 +35,15 @@ app.add_middleware(
 
 
 # Include routers
+
+"""
 app.include_router(
     core.router,
     prefix="/api/v1",
     tags=["Core"]
 )
 
+"""
 app.include_router(
     grc_api.router,
     prefix="/api/v1",

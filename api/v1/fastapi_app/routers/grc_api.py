@@ -8,9 +8,27 @@ from typing import List, Dict
 from uuid import uuid4
 from datetime import datetime  # This imports the datetime class
 
-from ..schemas import GRCRequest, GRCResponse, GRCScore
+#from ..schemas import GRCRequest, GRCResponse, GRCScore
 from ..dependencies import verify_api_key, get_verified_user
 from ..database import supabase
+
+from pydantic import BaseModel
+from typing import List, Optional
+from datetime import datetime
+
+class GRCScore(BaseModel):
+    cat: str
+    score: float
+    reason: Optional[str] = None
+
+class GRCRequest(BaseModel):
+    text: str
+
+class GRCResponse(BaseModel):
+    success: bool
+    result: List[GRCScore]
+    error: Optional[str] = None
+    request_id: Optional[str] = None  # For tracking
 
 import logging
 logging.basicConfig(level=logging.DEBUG)  # Or DEBUG for more detail

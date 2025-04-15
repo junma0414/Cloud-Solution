@@ -11,15 +11,41 @@ import os
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
 from openai import OpenAI, AsyncOpenAI
-from typing import List, Dict
+from typing import List, Dict, Optional
 from uuid import uuid4
 from datetime import datetime  # This imports the datetime class
 
-from ..schemas import NERRequest, NERResponse, NERScore
+#from ..schemas import NERRequest, NERResponse, NERScore
 from ..dependencies import verify_api_key, get_verified_user
 from ..database import supabase
 
 from dotenv import load_dotenv
+
+
+from pydantic import BaseModel
+from datetime import datetime
+
+
+
+class NERScore(BaseModel):
+    entity_group:str
+    entity: str
+    count: float
+
+class NERRequest(BaseModel):
+    text: str
+    topn: Optional[int] = 20
+    project_name: Optional[str]='dummy_proj'
+    model_name: Optional[str]='dummy_model'
+
+
+class NERResponse(BaseModel):
+    success: bool
+    entity: List[NERScore]
+    entity_len: int
+    entity_count_total: int
+    error: Optional[str] = None
+    request_id: Optional[str] = None  # For tracking
 
 import logging
 logging.basicConfig(level=logging.DEBUG)  # Or DEBUG for more detail
