@@ -1,0 +1,9 @@
+*.pth filter=lfs diff=lfs merge=lfs -text
+*.bin filter=lfs diff=lfs merge=lfs -text
+model_cache/** filter=lfs diff=lfs merge=lfs -text
+*.safetensors filter=lfs diff=lfs merge=lfs -text
+model_cache/huggingface/models--dslim--bert-base-NER/snapshots/**/*.safetensors filter=lfs diff=lfs merge=lfs -text
+model_cache/detoxify/*.pth filter=lfs diff=lfs merge=lfs -text
+model_cache/**/*.pth filter=lfs diff=lfs merge=lfs -text
+model_cache/**/*.safetensors filter=lfs diff=lfs merge=lfs -text
+model_cache/huggingface/models--dslim--bert-base-NER/blobs/b04492186cfb45a64908487a17a9f8d6ddec3a403ef39db5bca688f0fa702a34 filter=lfs diff=lfs merge=lfs -text

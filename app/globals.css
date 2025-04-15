@@ -1,0 +1,210 @@
+@import 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css';
+
+
+@import "tailwindcss";
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+/* added on 3/21 for side bar */
+/* globals.css */
+
+/* globals.css */
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  scroll-margin-top: 80px; /* Adjust this value based on the height of your navbar */
+}
+
+/* Headings */
+h1 {
+    font-size: 28px;
+    color: #0070f3; /* Orange heading */
+}
+
+h2 {
+    font-size: 24px;
+    color: #0070f3; /* Blue heading */
+}
+
+h3 {
+    font-size: 20px;
+    color: #0070f3; /* Teal heading */
+}
+
+h4 {
+    font-size: 16 px;
+    color: #0070f3; /* Blue heading */
+}
+
+
+/* Paragraphs */
+p {
+    font-size: 16px;
+    color: #444; /* Slightly lighter text */
+    margin-bottom: 1rem;
+}
+
+/* Links */
+a {
+    color: #0070f3;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Markdown Content Styles */
+.markdown-body {
+    font-size: 16px;
+    color: #222;
+}
+
+.markdown-body h1 {
+    font-size: 26px;
+    color: #d32f2f; /* Red headings in markdown */
+}
+
+.markdown-body p {
+    font-size: 16px;
+    color: #333;
+}
+
+/* MathJax / KaTeX Math Formula Styling */
+.katex-display {
+    font-size: 20px !important;
+    color: brown !important;
+    text-align: center;
+    background: none !important;
+}
+
+/* Style for inline math equations */
+.katex {
+    font-size: 18px !important;
+    color: darkblue !important;
+    background: none !important;
+}
+
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+
+body {
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    color: #333; /* Dark gray text */
+    background-color: #f9f9f9; /* Light background */
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+
+
+/* styles/globals.css */
+.tableWrapper table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.tableWrapper th,
+.tableWrapper td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.tableWrapper th {
+  background-color: #f2f2f2;
+}
+
+.codeWrapper pre {
+  background: #2d2d2d;
+  padding: 1rem;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+
+pre {
+  background-color: #282c34; /* Dark background */
+  padding: 10px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 14px;
+}
+
+code {
+  color: #f8f8f2;
+  font-family: "Fira Code", monospace;
+}
+
+.codeWrapper code {
+  font-family: 'Courier New', monospace;
+  color: #f8f8f2;
+}
+
+
+
+/* app/globals.css */
+.api-key-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.api-key-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.api-key-table th, .api-key-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+
+/* Make sure links fill their container */
+.dropdownItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Prevent dropdown from closing when clicking inside */
+.profileDropdown {
+  pointer-events: auto;
+}

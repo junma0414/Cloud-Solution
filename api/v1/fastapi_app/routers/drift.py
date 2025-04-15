@@ -1,0 +1,234 @@
+
+#/api/v1/fastapi_app/routers/drift.py
+#from transformers import pipeline
+from collections import defaultdict
+
+import numpy as np
+
+import re
+import os
+import httpx
+from fastapi import APIRouter, Depends, HTTPException, Request
+#from openai import OpenAI, AsyncOpenAI
+from typing import List, Dict
+from uuid import uuid4
+from datetime import datetime  # This imports the datetime class
+
+#from ..schemas import NERRequest, NERResponse, NERScore
+from ..dependencies import verify_api_key, get_verified_user
+from ..database import supabase
+
+import logging
+logging.basicConfig(level=logging.DEBUG)  # Or DEBUG for more detail
+
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter()
+
+from detoxify import Detoxify
+
+
+os.environ["TORCH_HOME"] = "./model_cache/huggingface/detoxity"
+model = Detoxify("original")
+
+#----------------------------------------------------------funcitons for toxicity------------------------
+from detoxify import Detoxify
+
+def evaluate_toxicity(text):
+    results = model.predict(text)
+    return results
+
+#----------------------------------------------------------funcitons for toxicity------------------------
+
+
+#------------------------------------------------------------functions for reability-----------------------
+def count_syllables(word):
+    # Simple syllable counter (approximation)
+    word = word.lower()
+    syllable_count = 0
+    vowels = "aeiouy"
+    if word[0] in vowels:
+        syllable_count += 1
+    for i in range(1, len(word)):
+        if word[i] in vowels and word[i - 1] not in vowels:
+            syllable_count += 1
+    if word.endswith("e"):
+        syllable_count -= 1
+    return syllable_count if syllable_count > 0 else 1
+
+def flesch_reading_ease(text):
+    sentences = re.split(r'[.!?]', text)
+    words = re.findall(r'\b\w+\b', text)
+    syllable_count = sum(count_syllables(word) for word in words)
+    
+    total_sentences = len(sentences)
+    total_words = len(words)
+    
+    if total_sentences == 0 or total_words == 0:
+        return 0
+    
+    return 206.835 - 1.015 * (total_words / total_sentences) - 84.6 * (syllable_count / total_words)
+
+# Example usage
+#text = """
+#The Flesch Reading Ease score is a widely used measure of readability. 
+#It calculates how easy a text is to read based on sentence length and word complexity. 
+#The higher the score, the easier the text is to understand.
+#"""
+
+
+#print("Flesch Reading Ease Score:", score)
+
+#----------------------------------------------------function for readability---------------------------
+
+
+
+#---------------------------------------------------function for stop-word ratio-------------------------
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+
+# Download required resources (run once)
+#nltk.download('punkt',download_dir='./nltk_data_punkt')
+#nltk.download('punkt_tab',download_dir='./nltk_data_punkt_tab')
+#nltk.download('stopwords',download_dir='./nltk_data_stopwords')
+
+base_path = os.path.dirname(__file__)
+
+
+nltk.data.path.append(os.path.join(base_path, '../../..', 'nltk_data_punkt'))
+
+nltk.data.path.append(os.path.join(base_path, '../../..', 'nltk_data_punkt_tab'))
+
+nltk.data.path.append(os.path.join(base_path, '../../..', 'nltk_data_stopwords'))
+
+
+
+
+
+def stop_word_ratio(text, language='english'):
+    stop_words = set(stopwords.words(language))
+    words = word_tokenize(text)
+    total_words = len(words)
+    print(total_words)
+    stop_word_count = sum(1 for word in words if word.lower() in stop_words)
+    print(stop_word_count)
+
+    if total_words == 0:
+        return 0.0
+
+    return stop_word_count / total_words
+
+# Example usage
+#text = "This is an egg and is a good egg"
+#ratio = stop_word_ratio(text)
+#-----------------------------------------------funciton for stop-word-ratio
+
+@router.post("/drift")
+async def drift_metrics(
+  request:Request,
+  user_context: dict = Depends(get_verified_user)
+  ):
+    logger.info(f"request is {request}") 
+
+    request_id = str(uuid4())
+    scores=[]
+    start_time = datetime.now()
+
+    full_body = await request.json()
+
+    logger.info("entities_extract route invoked") 
+    logger.info(f"Request payload: {request.get("text")}")
+
+    text = full_body.get("text")
+    project_name=full_body.get("project_name","dummy_project")
+    model_name=full_body.get("model_name","dummy_model")
+
+    if not text:
+            return {"success": False, "error": "No text provided."}
+    
+    try:
+        # Log request
+        request_entry={
+        "id":request_id,
+        "user_id": user_context['user_id'],
+        "api_key": user_context['api_key_id'],
+        "endpoint": str(request.url),
+        "project_name": project_name,  # Default as per table schema
+        "model_name": model_name,   # Default as per table schema
+        "headers": dict(request.headers),
+        "request_body": full_body,
+
+        #{
+         #       "text": ner_request.text,
+          #      "project_name": ner_request.project_name,
+           #     "model_name": ner_request.modle_name,
+            #    "topN":ner_request.topn,
+                # Add other relevant request body fields if available
+            #},
+        "input_text": text,
+        "requested_at": start_time.isoformat(),
+        "response_status": 0,
+        "response_body":{},
+        "status": "processing"
+        }
+        
+        insert_response= supabase.table('grc_service').insert(request_entry).execute()
+
+        if insert_response.data:
+            inserted_record = insert_response.data[0]
+            record_id = inserted_record['id']
+            logger.info(f"Inserted record with ID: {record_id}")
+        else:
+            raise HTTPException(status_code=500, detail="Failed to log request")
+
+        
+
+        
+
+
+        toxicity_score=evaluate_toxicity(text)['toxicity']
+
+        readability = flesch_reading_ease(text)
+
+        stopwords_ratio = stop_word_ratio(text)
+
+
+
+        end_time = datetime.now()
+        processing_time_ms = int((end_time - start_time).total_seconds() * 1000)
+
+        response_data={
+            "success":True,
+            "readability":readability,
+            "toxicity":toxicity_score,
+            "stopwords_ratio":stopwords_ratio,
+            "request_id":request_id
+        }
+
+        # Update with response data
+        update_response=supabase.table('grc_service').update({
+            "response_status": 200,
+            "response_body": response_data,
+            "processing_time_ms": processing_time_ms,
+            "responded_at": datetime.now().isoformat(),
+            "status": "completed"
+        }).eq('id', request_id).eq("del_flag",0).execute()
+
+        return response_data
+
+    except Exception as e:
+        response_data = {
+        "request_id": request_id,
+        "user_id": user_context['user_id'],
+        "success": False,
+        "result": {},
+        "timestamp": datetime.now().isoformat()
+        }
+
+        supabase.table("grc_service").update({"del_flag":1}).eq("id", request_id).execute()
+        logger.error(f"Drift failed: {e}")
+        return {"success": False, "error": str(e)}
+
+

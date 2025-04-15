@@ -1,0 +1,106 @@
+/* Main container */
+.main {
+  padding-top: 80px;
+  padding-bottom: 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.title {
+  display: none; /* Completely hides the title */
+}
+/* Grid layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Ensures responsiveness */
+  gap: 20px; /* Adds spacing between cards */
+  justify-content: center;
+}
+
+/* Article card container */
+.card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 350px; /* Set max width to prevent too-wide images */
+  height: auto;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+/* Image container */
+.imageContainer {
+  width: 100%;
+  height: 200px; /* Set fixed height */
+  overflow: hidden;
+}
+
+.articleImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensures images scale properly */
+}
+
+/* Adjust title font size */
+/* Article title styling */
+.articleTitle {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+ color: #fff;
+  flex-grow: 1; /* Allows title to take available space */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align:left;
+  
+}
+
+/* Article date styling */
+.articleDate {
+  font-size: 0.8rem;
+  color: #999;
+  flex-shrink: 0; /* Prevents date from shrinking */
+  margin-left: auto; /* Pushes date to the right */
+  white-space: nowrap;
+}
+
+/* Ensure the card content is properly styled */
+.cardContent {
+  padding: 5px; /* Reduce padding for a more compact look */
+  min-height: 50px; /* Adjust height if needed */
+}
+/* Title section */
+.cardContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2563eb;
+  padding: 5px;
+  min-height: 60px; /* Ensure uniform height */
+  text-align: center;
+}
+
+/* Container for title and date */
+.titleDateContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline; /* Aligns text on the same baseline */
+  width: 100%;
+  gap: 1rem; /* Space between title and date */
+}
+
+/* Fix float issues */
+.article-card::after {
+  content: "";
+  display: block;
+  clear: both;
+}

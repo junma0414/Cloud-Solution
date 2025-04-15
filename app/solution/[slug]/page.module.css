@@ -1,0 +1,22 @@
+/* Solution Detail Image */
+.solution-detail-image-container {
+  position: relative;
+  aspect-ratio: 5/3; /* Adjust ratio as needed */
+  width: 50%;
+  margin-bottom: 1rem;
+}
+
+/* Solution Card Images */
+.solution-card-image-container {
+  position: relative;
+  aspect-ratio: 1/1; /* Square ratio for cards */
+  width: 100%;
+}
+
+/* Image fill styles */
+.solution-image {
+  object-fit: cover; /* Crop to fill container */
+  object-position: left;
+  width: 100%;
+  height: 100%;
+}

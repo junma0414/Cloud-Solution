@@ -1,0 +1,41 @@
+/* components/Sidebar.module.css */
+
+.sidebar {
+  width: 250px;
+  height: 100%;
+  position: fixed;
+ font-size:12px;
+  left: 0;
+  top: 70;
+  background-color: #f4f4f4;
+  padding: 0 px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  overflow-y: hidden;
+ padding-right: 50px;
+}
+
+/* app/article/[slug]/page.module.css */
+.sidebar ul {
+  list-style-type: none; /* Remove bullet points */
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar li {
+  margin-bottom: 10px; /* Add spacing between list items */
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: #2563eb; /* Link color */
+  font-size: 14px; /* Font size for links */
+}
+
+.sidebar a:hover {
+  text-decoration: underline; /* Add underline on hover */
+}
+
+.sidebar ul ul {
+  padding-left: 20px; /* Indent nested headings */
+}
+

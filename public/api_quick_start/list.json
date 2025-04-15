@@ -1,0 +1,22 @@
+[
+  {
+    "name": "api_quick_start_drift.md",
+    "displayName": "Drift Scoring extraction API",
+    "description": "Score toxicity, readability and stop-words ratio from input text"
+  },
+  {
+    "name": "api_quick_start_ner.md",
+    "displayName": "NER extraction API",
+    "description": "Name Entity Recognization from text"
+  },
+  {
+    "name": "api_quick_start.md",
+    "displayName": "Text Risk Scoring API",
+    "description": "Check how much the text contains the toxicity and non-regalutary information"
+  },
+  {
+    "name": "api_quick_start_1.md",
+    "displayName": "Model Explanability Analysis API",
+    "description": "Explain how the inputs contribute the outcome"
+  }
+]
