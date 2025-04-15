@@ -1,7 +1,10 @@
-from transformers import pipeline
+#from transformers import pipeline
 from collections import defaultdict
 
 import numpy as np
+
+
+import requests as nrequests
 
 import re
 import os
@@ -16,6 +19,8 @@ from ..schemas import NERRequest, NERResponse, NERScore
 from ..dependencies import verify_api_key, get_verified_user
 from ..database import supabase
 
+from dotenv import load_dotenv
+
 import logging
 logging.basicConfig(level=logging.DEBUG)  # Or DEBUG for more detail
 
@@ -24,12 +29,27 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+load_dotenv()
+
 #run once and copy from .cache/xxxx to path 
 
-model_path = os.getenv("NER_MODEL_PATH", "./model_cache/huggingface/models--dslim--bert-base-NER/snapshots/d1a3e8f13f8c3566299d95fcfc9a8d2382a9affc")
+#model_path = os.getenv("NER_MODEL_PATH", "./model_cache/huggingface/models--dslim--bert-base-NER/snapshots/d1a3e8f13f8c3566299d95fcfc9a8d2382a9affc")
 #model_path = "./model_cache/huggingface/models--dslim--bert-base-NER/snapshots/d1a3e8f13f8c3566299d95fcfc9a8d2382a9affc"
-ner_pipeline = pipeline("ner", model=model_path, aggregation_strategy="simple")
+#ner_pipeline = pipeline("ner", model=model_path, aggregation_strategy="simple")
 #ner_pipeline = pipeline("ner", model="dslim/bert-base-NER", aggregation_strategy="simple")
+
+HF_TOKEN = os.getenv("HF_TOKEN")  # store your Hugging Face token in env
+headers = {
+    "Authorization": f"Bearer {HF_TOKEN}"
+}
+
+API_URL = "https://api-inference.huggingface.co/models/dslim/bert-base-NER"
+
+def run_ner(text: str):
+    payload = {"inputs": text}
+    response = nrequests.post(API_URL, headers=headers, json=payload)
+    response.raise_for_status()
+    return response.json()
 
 @router.post("/ner")
 async def extract_entities(
@@ -92,9 +112,9 @@ async def extract_entities(
 
         logger.info("Running NER on submitted text.")
 
-        entities = ner_pipeline(text)
+        entities=run_ner(text)
 
-        entity_dict: Dict[str, str, int] = defaultdict(int)
+        entity_dict= defaultdict(int)
         for e in entities:
             key=(e["word"],e['entity_group'])
             entity_dict[key] += 1

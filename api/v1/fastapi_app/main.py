@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 import logging
 import traceback
 
-from mangum import Mangum  # converts ASGI to AWS Lambda (Vercel compatible)
+#from mangum import Mangum  # converts ASGI to AWS Lambda (Vercel compatible)
 
 
 from api.v1.fastapi_app.routers import core, grc_api,ner,drift

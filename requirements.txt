@@ -1,5 +1,4 @@
 werkzeug>=3.0.1
-openai>=1.0.0
 flask==2.2.5
 flask-cors==3.0.10
 asgiref==3.7.2
@@ -14,9 +13,7 @@ uvicorn==0.29.0
 pydantic==2.6.4
 mangum==0.17.0
 supabase==1.2.0  # Supabase Python client (official)
-detoxify==0.5.2
-transformers==4.39.3
-torch==2.2.2
+
 
 
 

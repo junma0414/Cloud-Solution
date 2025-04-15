@@ -14,6 +14,8 @@ from typing import List, Dict
 from uuid import uuid4
 from datetime import datetime  # This imports the datetime class
 
+from dotenv import load_dotenv
+
 #from ..schemas import NERRequest, NERResponse, NERScore
 from ..dependencies import verify_api_key, get_verified_user
 from ..database import supabase
@@ -26,18 +28,34 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-from detoxify import Detoxify
+#from detoxify import Detoxify
+
+load_dotenv()
 
 
-os.environ["TORCH_HOME"] = "./model_cache/huggingface/detoxity"
-model = Detoxify("original")
+HF_TOKEN = os.getenv("HF_TOKEN")  # store your Hugging Face token in env
+headers = {
+    "Authorization": f"Bearer {HF_TOKEN}"
+}
+
+API_URL = "https://api-inference.huggingface.co/models/unitary/toxic-bert"
+
+
+#os.environ["TORCH_HOME"] = "./model_cache/huggingface/detoxity"
+#model = Detoxify("original")
 
 #----------------------------------------------------------funcitons for toxicity------------------------
-from detoxify import Detoxify
+#from detoxify import Detoxify
+
+#def evaluate_toxicity(text):
+#@    results = model.predict(text)
+#   return results
 
 def evaluate_toxicity(text):
-    results = model.predict(text)
-    return results
+
+    payload={"inputs": text}
+    results = httpx.post(API_URL, headers=headers, json=payload)
+    return results.json()[0][0]['score']
 
 #----------------------------------------------------------funcitons for toxicity------------------------
 
@@ -188,7 +206,7 @@ async def drift_metrics(
         
 
 
-        toxicity_score=evaluate_toxicity(text)['toxicity']
+        toxicity_score=evaluate_toxicity(text)
 
         readability = flesch_reading_ease(text)
 
