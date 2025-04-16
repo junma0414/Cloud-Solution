@@ -116,6 +116,7 @@ from nltk.tokenize import word_tokenize
 #nltk.download('punkt_tab',download_dir='./nltk_data_punkt_tab')
 #nltk.download('stopwords',download_dir='./nltk_data_stopwords')
 
+"""
 base_path = os.path.dirname(__file__)
 
 
@@ -124,7 +125,25 @@ nltk.data.path.append(os.path.join(base_path, '../../..', 'nltk_data_punkt'))
 nltk.data.path.append(os.path.join(base_path, '../../..', 'nltk_data_punkt_tab'))
 
 nltk.data.path.append(os.path.join(base_path, '../../..', 'nltk_data_stopwords'))
+"""
 
+from pathlib import Path
+
+# 1. Get the project root directory (where your nltk_data_* folders live)
+project_root = Path(__file__).parent.parent.parent.absolute()  # Adjust based on your structure
+
+# 2. Define your NLTK directories 
+nltk_dirs = [
+    project_root / 'nltk_data_stopwords',
+    project_root / 'nltk_data_punkt',
+    project_root / 'nltk_data_punkt_tab'
+]
+
+# 3. Add to NLTK path (only if directory exists)
+for dir_path in nltk_dirs:
+    if dir_path.exists():
+        nltk.data.path.append(str(dir_path))
+        logger.info(f"Added NLTK path: {dir_path}") 
 
 
 
