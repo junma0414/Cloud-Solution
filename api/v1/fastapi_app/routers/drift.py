@@ -112,7 +112,8 @@ async def deepseek_toxicty(text: str) -> List[Dict]:
             raise HTTPException(status_code=502, detail="No valid response from LLM")
 
         return parse_evaluation(response.choices[0].message.content)
-
+    except Exception as e:
+        logger.error(f"Connection error: {str(e)}")
 
 
 #os.environ["TORCH_HOME"] = "./model_cache/huggingface/detoxity"
@@ -279,6 +280,8 @@ def get_metrics(text, language='english'):
         severe_toxic=score_dict.get(labels[5])
         #toxicity = response.json()[0][0]['score'] 
     except Exception as e:
+        logger.error(f"HuggingFace failed and try the alternative") 
+
         try:
             toxcity_response=deepseek_toxicty(text)
             score_dict = {item['label']: item['score'] for item in result}
