@@ -181,11 +181,18 @@ def stop_word_ratio(text, language='english'):
 """
 
 
+
 def get_metrics(text, language='english'):
     # the logic to get 
     payload={"inputs": text}
-    results = httpx.post(API_URL, headers=headers, json=payload)
-    toxicity= results.json()[0][0]['score']
+    try:
+        results = httpx.post(API_URL, headers=headers, json=payload)
+        response.raise_for_status() # Raise an exception for HTTP errors 
+        toxicity = response.json()[0][0]['score'] 
+    except Exception as e:
+        logger.error(f"Error in for toxicity call: {e}") 
+        raise HTTPException(status_code=500, detail="Failed to evaluate toxicity")
+
 
     # stopword ratio
     stop_words = set(stopwords.words(language))
@@ -252,12 +259,14 @@ async def drift_metrics(
     full_body = await request.json()
 
     logger.info("entities_extract route invoked") 
-    logger.info(f"Request payload: {request.get("text")}")
 
     text = full_body.get("text")
     project_name=full_body.get("project_name","dummy_project")
     model_name=full_body.get("model_name","dummy_model")
 
+    logger.info(f"Request payload: {text}")
+
+    
     if not text:
             return {"success": False, "error": "No text provided."}
     
