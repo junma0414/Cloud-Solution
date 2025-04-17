@@ -9,7 +9,7 @@ import re
 import os
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
-#from openai import OpenAI, AsyncOpenAI
+from openai import OpenAI, AsyncOpenAI
 from typing import List, Dict
 from uuid import uuid4
 from datetime import datetime  # This imports the datetime class
@@ -39,6 +39,80 @@ headers = {
 }
 
 API_URL = "https://api-inference.huggingface.co/models/unitary/toxic-bert"
+
+#----------------------------------------------back up for toxict
+
+def reg_parse(line: str) -> tuple:
+    pattern = r'\*\*(.+?)\*\*\s*:\s*(\d+(?:\.\d+)?)\s*\((.*?)\)'
+    match = re.search(pattern, line)
+    if match:
+        category = match.group(1)
+        score = match.group(2)
+        context = match.group(3)
+        return category, score, context
+    return None, None, None
+
+def parse_evaluation(text: str) -> List[Dict]:
+    eval_result = []
+    for line in text.split("\n"):
+        if ":" in line:
+            key, value, reason = reg_parse(line)
+            if key is not None:
+                eval_result.append({
+                    "label": key.strip().lower(), 
+                    "score": float(value.strip()),
+                    "reason": reason
+                })
+    return eval_result
+
+async def deepseek_toxicty(text: str) -> List[Dict]:
+    """Get risk scores from DeepSeek API with robust error handling"""
+    DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+    if not DEEPSEEK_API_KEY:
+        logger.error("DEEPSEEK_API_KEY environment variable not set")
+        raise ValueError("LLM service configuration error")
+
+    message = f"""Given the input text below:
+        text: {text}
+
+    Please evaluate the scores(0-1) for these toxicity categories:
+
+    - toxic
+    - obscene
+    - threat
+    - insult    
+    - identity_hate
+    - severe_toxic
+
+    Format: **Category**: score (reason)"""
+
+    try:
+        # Initialize async client
+        client = AsyncOpenAI(
+            api_key=DEEPSEEK_API_KEY,
+            base_url="https://api.deepseek.com",
+            timeout=30.0,
+            http_client=httpx.AsyncClient()  # Explicit HTTP client, to address implicit proxy error
+
+        )
+
+        # Make API call with timeout
+        response = await client.chat.completions.create(
+            model="deepseek-chat",
+            messages=[
+                {"role": "system", "content": "You are a text toxicity assessment expert"},
+                {"role": "user", "content": message},
+            ],
+            temperature=0,
+            max_tokens=500
+        )
+
+        if not response.choices:
+            logger.error("Empty response from DeepSeek API")
+            raise HTTPException(status_code=502, detail="No valid response from LLM")
+
+        return parse_evaluation(response.choices[0].message.content)
+
 
 
 #os.environ["TORCH_HOME"] = "./model_cache/huggingface/detoxity"
@@ -185,13 +259,40 @@ def stop_word_ratio(text, language='english'):
 def get_metrics(text, language='english'):
     # the logic to get 
     payload={"inputs": text}
+    
+    labels=['toxic','obscene','threat','insult','identity_hate','severe_toxic']
+
     try:
-        results = httpx.post(API_URL, headers=headers, json=payload)
+        response = httpx.post(API_URL, headers=headers, json=payload)
         response.raise_for_status() # Raise an exception for HTTP errors 
-        toxicity = response.json()[0][0]['score'] 
+
+        result=response.json()[0]
+
+
+        score_dict = {item['label']: item['score'] for item in result}
+
+        toxic=score_dict.get(labels[0])
+        obscene=score_dict.get(labels[1])
+        threat=score_dict.get(labels[2])
+        insult=score_dict.get(labels[3])
+        identity_hate=score_dict.get(labels[4])
+        severe_toxic=score_dict.get(labels[5])
+        #toxicity = response.json()[0][0]['score'] 
     except Exception as e:
-        logger.error(f"Error in for toxicity call: {e}") 
-        raise HTTPException(status_code=500, detail="Failed to evaluate toxicity")
+        try:
+            toxcity_response=deepseek_toxicty(text)
+            score_dict = {item['label']: item['score'] for item in result}
+
+            toxic=score_dict.get(labels[0])
+            obscene=score_dict.get(labels[1])
+            threat=score_dict.get(labels[2])
+            insult=score_dict.get(labels[3])
+            identity_hate=score_dict.get(labels[4])
+            severe_toxic=score_dict.get(labels[5])
+
+        except Exception as e:
+            logger.error(f"Error in for toxicity call: {e}") 
+            raise HTTPException(status_code=500, detail="Failed to evaluate toxicity")
 
 
     # stopword ratio
@@ -240,7 +341,7 @@ def get_metrics(text, language='english'):
     readability_score=206.835 - 1.015 * (total_words / total_sentences) - 84.6 * (syllable_count_all / total_words)
 
 
-    return toxicity, ratio, readability_score
+    return toxic,obscene,threat,insult,identity_hate,severe_toxic,ratio,  readability_score
 
 
 #-----------------------------------------------funciton for stop-word-ratio
@@ -310,7 +411,7 @@ async def drift_metrics(
         
 
 
-        toxicity_score, stopwords_ratio, readability= get_metrics(text)
+        toxicity_score,  obscene,threat, insult, identity_hate, severe_toxic, stopwords_ratio, readability= get_metrics(text)
         #=evaluate_toxicity(text)
 
         #readability = flesch_reading_ease(text)
@@ -326,7 +427,12 @@ async def drift_metrics(
             "success":True,
             "readability":readability,
             "toxicity":toxicity_score,
-            "stopwords_ratio":stopwords_ratio,
+            "stopwords_ratio":stopwords_ratio, 
+            "obscene":obscene,
+            "threat":threat,
+            "insult":insult,
+            "identity_hate":identity_hate,
+            "severe_toxic":severe_toxic,
             "request_id":request_id
         }
 
@@ -350,7 +456,7 @@ async def drift_metrics(
         "timestamp": datetime.now().isoformat()
         }
 
-        supabase.table("grc_service").update({"del_flag":1}).eq("id", request_id).execute()
+        #supabase.table("grc_service").update({"del_flag":1}).eq("id", request_id).execute()
         logger.error(f"Drift failed: {e}")
         return {"success": False, "error": str(e)}
 
