@@ -186,29 +186,15 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
-# Download required resources (run once)
-#nltk.download('punkt',download_dir='./nltk_data_punkt')
-#nltk.download('punkt_tab',download_dir='./nltk_data_punkt_tab')
-#nltk.download('stopwords',download_dir='./nltk_data_stopwords')
-
-"""
-base_path = os.path.dirname(__file__)
-
-
-nltk.data.path.append(os.path.join(base_path, '../../..', 'nltk_data_punkt'))
-
-nltk.data.path.append(os.path.join(base_path, '../../..', 'nltk_data_punkt_tab'))
-
-nltk.data.path.append(os.path.join(base_path, '../../..', 'nltk_data_stopwords'))
-"""
-
-
 # 1. Get the project root directory (where your nltk_data_* folders live)
 #project_root = Path(__file__).parent.parent.parent.absolute()  # Adjust based on your structure
 
 #project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-project_root = os.path.abspath(os.path.join(os.getcwd(), '..', '..', '..'))
+#project_root = os.path.abspath(os.path.join(os.getcwd(), '..', '..', '..'))
+
+project_root = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(project_root, '../../../'))
 
 
 
@@ -233,7 +219,6 @@ for dir_path in nltk_dirs:
     if os.path.exists(dir_path):
         nltk.data.path.append(dir_path)
         logger.info(f"Added NLTK path: {dir_path}")
-
 
 
 """
@@ -283,7 +268,7 @@ def get_metrics(text, language='english'):
         logger.error(f"HuggingFace failed and try the alternative") 
 
         try:
-            toxcity_response=deepseek_toxicty(text)
+            result=deepseek_toxicty(text)
             score_dict = {item['label']: item['score'] for item in result}
 
             toxic=score_dict.get(labels[0])
