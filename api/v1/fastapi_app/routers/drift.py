@@ -131,9 +131,16 @@ nltk.data.path.append(os.path.join(base_path, '../../..', 'nltk_data_stopwords')
 # 1. Get the project root directory (where your nltk_data_* folders live)
 #project_root = Path(__file__).parent.parent.parent.absolute()  # Adjust based on your structure
 
-project_root = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..')
-)
+#project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+
+project_root = os.path.abspath(os.path.join(os.getcwd(), '..', '..', '..'))
+
+
+
+logger.info(f"Vercel working directory: {os.getcwd()}")
+logger.info(f"__file__ location: {__file__}")
+logger.info(f"Resolved project_root: {project_root}")
+
 
 # 2. Define your NLTK directories 
 nltk_dirs = [
@@ -141,8 +148,13 @@ nltk_dirs = [
     os.path.join(project_root, 'nltk_data_punkt'),
     os.path.join(project_root, 'nltk_data_punkt_tab')
 ]
+
+
+
+
 # 3. Add to NLTK path (only if directory exists)
 for dir_path in nltk_dirs:
+    logger.info(f"Checking NLTK path: {dir_path} — Exists? {os.path.exists(dir_path)}")
     if os.path.exists(dir_path):
         nltk.data.path.append(dir_path)
         logger.info(f"Added NLTK path: {dir_path}")
