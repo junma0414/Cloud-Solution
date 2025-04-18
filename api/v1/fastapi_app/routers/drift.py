@@ -75,7 +75,7 @@ async def deepseek_toxicty(text: str) -> List[Dict]:
     message = f"""Given the input text below:
         text: {text}
 
-    Please evaluate the scores(0-1) for these toxicity categories:
+    Please evaluate the scores(0-1 and leave five digits) for these toxicity categories:
 
     - toxic
     - obscene
@@ -242,44 +242,28 @@ def stop_word_ratio(text, language='english'):
 
 
 
-def get_metrics(text, language='english'):
+async def get_metrics(text, language='english'):
     # the logic to get 
     payload={"inputs": text}
     
     labels=['toxic','obscene','threat','insult','identity_hate','severe_toxic']
 
     try:
-        response = httpx.post(API_URL, headers=headers, json=payload)
-        response.raise_for_status() # Raise an exception for HTTP errors 
-
-        result=response.json()[0]
-
-
-        score_dict = {item['label']: item['score'] for item in result}
-
-        toxic=score_dict.get(labels[0])
-        obscene=score_dict.get(labels[1])
-        threat=score_dict.get(labels[2])
-        insult=score_dict.get(labels[3])
-        identity_hate=score_dict.get(labels[4])
-        severe_toxic=score_dict.get(labels[5])
-        #toxicity = response.json()[0][0]['score'] 
-    except Exception as e:
-        logger.error(f"HuggingFace failed and try the alternative") 
-
-        try:
-            result=deepseek_toxicty(text)
+        # Try HuggingFace first
+        payload = {"inputs": text}
+        async with httpx.AsyncClient() as client:
+            response = await client.post(API_URL, headers=headers, json=payload)
+            response.raise_for_status()
+            result = response.json()[0]
             score_dict = {item['label']: item['score'] for item in result}
-
-            toxic=score_dict.get(labels[0])
-            obscene=score_dict.get(labels[1])
-            threat=score_dict.get(labels[2])
-            insult=score_dict.get(labels[3])
-            identity_hate=score_dict.get(labels[4])
-            severe_toxic=score_dict.get(labels[5])
-
-        except Exception as e:
-            logger.error(f"Error in for toxicity call: {e}") 
+    except Exception as hf_error:
+        logger.error(f"Try Alternative call")
+        try:
+            # Fall back to DeepSeek
+            result = await deepseek_toxicty(text)
+            score_dict = {item['label']: item['score'] for item in result}
+        except Exception as ds_error:
+            logger.error(f"Alternative also failed")
             raise HTTPException(status_code=500, detail="Failed to evaluate toxicity")
 
 
@@ -329,7 +313,17 @@ def get_metrics(text, language='english'):
     readability_score=206.835 - 1.015 * (total_words / total_sentences) - 84.6 * (syllable_count_all / total_words)
 
 
-    return toxic,obscene,threat,insult,identity_hate,severe_toxic,ratio,  readability_score
+    return (
+        score_dict.get('toxic', 0.000),
+        score_dict.get('obscene', 0.000),
+        score_dict.get('threat', 0.000),
+        score_dict.get('insult', 0.000),
+        score_dict.get('identity_hate', 0.000),
+        score_dict.get('severe_toxic', 0.000),
+        ratio,
+        readability_score
+    )
+    #return toxic,obscene,threat,insult,identity_hate,severe_toxic,ratio,  readability_score
 
 
 #-----------------------------------------------funciton for stop-word-ratio
@@ -397,9 +391,10 @@ async def drift_metrics(
         
 
         
+        metrics = await get_metrics(text)  # Must await here too
+        (toxicity_score, obscene, threat, insult, identity_hate, severe_toxic, stopwords_ratio, readability) = metrics
 
-
-        toxicity_score,  obscene,threat, insult, identity_hate, severe_toxic, stopwords_ratio, readability= get_metrics(text)
+        #toxicity_score,  obscene,threat, insult, identity_hate, severe_toxic, stopwords_ratio, readability= get_metrics(text)
         #=evaluate_toxicity(text)
 
         #readability = flesch_reading_ease(text)
