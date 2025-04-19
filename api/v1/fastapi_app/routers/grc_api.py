@@ -135,9 +135,8 @@ async def deepseek_score(text: str) -> List[Dict]:
 
 
 
-@router.post("/grc_api", response_model=GRCResponse)
+@router.post("/grc_api")
 async def analyze_text(
-    grc_request: GRCRequest,
     request:Request,
     user_context: dict = Depends(get_verified_user)
 ):
@@ -146,7 +145,6 @@ async def analyze_text(
     start_time = datetime.now()
 
     logger.info("analyze_text route invoked") 
-    logger.info(f"Request payload: {grc_request.text}")
     
     try:
         '''
@@ -170,8 +168,13 @@ async def analyze_text(
         # Log request
 
         full_body = await request.json()
-        project_name=request.get("project_name","dummy_proj")
-        model_name=request.get("model_name","dummy_model")
+        text = full_body.get("text")
+
+        if not text:
+            return {"success": False, "error": "No text provided."}
+
+        project_name=full_body.get("project_name","dummy_proj")
+        model_name=full_body.get("model_name","dummy_model")
 
 
         request_entry={
@@ -182,11 +185,8 @@ async def analyze_text(
         "project_name": project_name,  # Default as per table schema
         "model_name": model_name,   # Default as per table schema
         "headers": dict(request.headers),
-        "request_body": {
-                "text": grc_request.text,
-                # Add other relevant request body fields if available
-            },
-        "input_text": grc_request.text,
+        "request_body": full_body,
+        "input_text": text,
         "requested_at": start_time.isoformat(),
         "response_status": 0,
         "response_body":{},
@@ -203,7 +203,7 @@ async def analyze_text(
             raise HTTPException(status_code=500, detail="Failed to log request")
 
         # Process request
-        scores = await deepseek_score(grc_request.text)
+        scores = await deepseek_score(text)
         
         response_data = { "success": True, "result": scores, "timestamp": datetime.now().isoformat(), "request_id":request_id}
 
@@ -216,8 +216,9 @@ async def analyze_text(
             "response_body": response_data,
             "processing_time_ms": processing_time_ms,
             "responded_at": datetime.now().isoformat(),
-            "status": "completed"
-        }).eq('id', request_id).eq("del_flag",0).execute()
+            "status": "completed",
+            "del_flag": 0
+        }).eq('id', request_id).eq("del_flag",1).execute()
 
         return response_data
         

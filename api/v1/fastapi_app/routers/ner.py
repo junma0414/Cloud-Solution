@@ -15,7 +15,6 @@ from typing import List, Dict, Optional
 from uuid import uuid4
 from datetime import datetime  # This imports the datetime class
 
-#from ..schemas import NERRequest, NERResponse, NERScore
 from ..dependencies import verify_api_key, get_verified_user
 from ..database import supabase
 
@@ -27,25 +26,7 @@ from datetime import datetime
 
 
 
-class NERScore(BaseModel):
-    entity_group:str
-    entity: str
-    count: float
 
-class NERRequest(BaseModel):
-    text: str
-    topn: Optional[int] = 20
-    project_name: Optional[str]='dummy_proj'
-    model_name_ner: Optional[str]='dummy_model'
-
-
-class NERResponse(BaseModel):
-    success: bool
-    entity: List[NERScore]
-    entity_len: int
-    entity_count_total: int
-    error: Optional[str] = None
-    request_id: Optional[str] = None  # For tracking
 
 import logging
 logging.basicConfig(level=logging.DEBUG)  # Or DEBUG for more detail
@@ -79,19 +60,25 @@ def run_ner(text: str):
 
 @router.post("/ner")
 async def extract_entities(
-  ner_request: NERRequest,
   request:Request,
   user_context: dict = Depends(get_verified_user)
   ):
 
     request_id = str(uuid4())
+
     scores=[]
     start_time = datetime.now()
 
     full_body = await request.json()
 
+    text=full_body.get('text')
+
     logger.info("entities_extract route invoked") 
-    logger.info(f"Request payload: {ner_request.text}")
+    logger.info(f"Request payload: {text}")
+
+    project_name=full_body.get("project_name","dummy_project")
+    model_name=full_body.get("model_name","dummy_model")
+
     
     try:
         # Log request
@@ -100,8 +87,8 @@ async def extract_entities(
         "user_id": user_context['user_id'],
         "api_key": user_context['api_key_id'],
         "endpoint": str(request.url),
-        "project_name": ner_request.project_name,  # Default as per table schema
-        "model_name": ner_request.model_name_ner,   # Default as per table schema
+        "project_name": project_name,  # Default as per table schema
+        "model_name": model_name,   # Default as per table schema
         "headers": dict(request.headers),
         "request_body": full_body,
 
@@ -112,7 +99,7 @@ async def extract_entities(
             #    "topN":ner_request.topn,
                 # Add other relevant request body fields if available
             #},
-        "input_text": ner_request.text,
+        "input_text": text,
         "requested_at": start_time.isoformat(),
         "response_status": 0,
         "response_body":{},
@@ -128,10 +115,7 @@ async def extract_entities(
         else:
             raise HTTPException(status_code=500, detail="Failed to log request")
 
-        text = ner_request.text
-        project_name=ner_request.project_name
-        model_name=ner_request.model_name_ner
-        topn=ner_request.topn
+
 
         if not text:
             return {"success": False, "error": "No text provided."}
@@ -146,20 +130,24 @@ async def extract_entities(
             entity_dict[key] += 1
 
         entity_len=len(entity_dict)
-        entity_count_all=np.sum(list(entity_dict.values()))
+        entity_count_all=int(np.sum(list(entity_dict.values())))
 
 
         logger.info(f"len of entities is {entity_len}，total counts of entity is {entity_count_all}")
 
+        topn_request=full_body.get("topn")
+       
+        if not topn_request:
+            topn=entity_len
 
+        if topn_request == '0':  #return all
+            topn=entity_len
 
-        if  topn == 0:  #return all
-          topn=entity_len
 
 
         topn_entities = sorted(entity_dict.items(), key=lambda item: item[1], reverse=True)[0:topn]
 
-        ner_scores = [NERScore(entity_group=group, entity=word, count=v) for (word,group), v in topn_entities]
+        ner_scores = [{"word":word, "count":int(v), "entity_group":group} for (word,group), v in topn_entities]
 
         logger.info(f"ner_scores: {ner_scores}")
 
@@ -168,22 +156,23 @@ async def extract_entities(
         end_time = datetime.now()
         processing_time_ms = int((end_time - start_time).total_seconds() * 1000)
 
-        response_data:NERResponse=NERResponse(
-            success=True,
-            entity=ner_scores,
-            entity_len=entity_len,
-            entity_count_total=entity_count_all,
-            request_id=request_id
-        )
+        response_data={
+            "success":True,
+            "entity":ner_scores,
+            "entity_len":entity_len,
+            "entity_count_total":entity_count_all,
+            "request_id":request_id
+        }
 
         # Update with response data
         update_response=supabase.table('grc_service').update({
             "response_status": 200,
-            "response_body": response_data.dict(),
+            "response_body": response_data,
             "processing_time_ms": processing_time_ms,
             "responded_at": datetime.now().isoformat(),
-            "status": "completed"
-        }).eq('id', request_id).eq("del_flag",0).execute()
+            "status": "completed",
+            "del_flag":0
+        }).eq('id', request_id).execute()
 
         """
         success: bool
@@ -204,7 +193,7 @@ async def extract_entities(
         "timestamp": datetime.now().isoformat()
         }
 
-        supabase.table("grc_service").update({"del_flag":1}).eq("id", request_id).execute()
+        #supabase.table("grc_service").update({"del_flag":1}).eq("id", request_id).execute()
         logger.error(f"NER extraction failed: {e}")
         return {"success": False, "error": str(e)}
 

@@ -16,7 +16,6 @@ from datetime import datetime  # This imports the datetime class
 
 from dotenv import load_dotenv
 
-#from ..schemas import NERRequest, NERResponse, NERScore
 from ..dependencies import verify_api_key, get_verified_user
 from ..database import supabase
 
@@ -425,8 +424,9 @@ async def drift_metrics(
             "response_body": response_data,
             "processing_time_ms": processing_time_ms,
             "responded_at": datetime.now().isoformat(),
-            "status": "completed"
-        }).eq('id', request_id).eq("del_flag",0).execute()
+            "status": "completed",
+            "del_flag":0
+        }).eq('id', request_id).eq("del_flag",1).execute()
 
         return response_data
 
