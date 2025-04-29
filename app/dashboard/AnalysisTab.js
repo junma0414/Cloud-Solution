@@ -287,7 +287,8 @@ function AnalysisTab() {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+        "X-Internal-Token": process.env.NEXT_PUBLIC_INTERNAL_TOKEN
         },
         body: JSON.stringify({ prompt, response })
       });

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { supabase } from '../lib/supabase/client';
 import styles from './Flow.module.css';
 import { useRouter, useSearchParams } from 'next/navigation';

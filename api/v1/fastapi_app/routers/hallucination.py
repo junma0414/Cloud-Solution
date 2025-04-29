@@ -7,6 +7,12 @@ from openai import AsyncOpenAI, APITimeoutError
 import httpx
 import os
 from typing import Optional
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+INTERNAL_TOKEN= os.getenv("HF_TOKEN") 
 #from ..dependencies import verify_api_key, get_verified_user
 
 
@@ -60,6 +66,7 @@ async def deepseek_hallucination_score(text: str, response: str) -> str:
             )
         )
 
+        step=0
         while True:
             api_response = await client.chat.completions.create(
                 model="deepseek-chat",
@@ -68,12 +75,18 @@ async def deepseek_hallucination_score(text: str, response: str) -> str:
                 max_tokens=500
             )
 
+
+
             if not api_response.choices:
                 raise HTTPException(status_code=502, detail="No valid response")
 
             reply = api_response.choices[0].message.content
             full_reply += reply
             finish_reason = api_response.choices[0].finish_reason
+
+            step+=1
+
+
 
             if finish_reason == "stop":
                 break
@@ -82,6 +95,9 @@ async def deepseek_hallucination_score(text: str, response: str) -> str:
                 conversation.append({"role": "assistant", "content": reply})
                 # Prompt LLM to continue
                 conversation.append({"role": "user", "content": "Continue."})
+
+            if step==3:
+                return full_reply+'...[truncated]'
 
         return full_reply
 
@@ -94,7 +110,9 @@ async def deepseek_hallucination_score(text: str, response: str) -> str:
 async def check_hallucination(request: Request):
     
     client_ip = request.client.host
-    if not is_internal_request(client_ip):
+    internal_token = request.headers.get("X-Internal-Token")
+
+    if not (is_internal_request(client_ip) or internal_token == INTERNAL_SECRET):
         raise HTTPException(
             status_code=403,
             detail="External access not permitted"

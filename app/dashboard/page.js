@@ -1,29 +1,33 @@
 'use client';
-
 import { useState, useEffect, Suspense } from 'react';
 import { supabase } from '../lib/supabase/client';
 import styles from './Dashboard.module.css';
-import { HiHome, HiTrendingUp, HiExclamationCircle, HiChat } from 'react-icons/hi';
+import { HiHome, HiTrendingUp, HiExclamationCircle,HiChat } from 'react-icons/hi';
 import AnalysisTab from './AnalysisTab';
-import FlowTab from './FlowTab';
+//import FlowTab from './FlowTab';
+
+import FlowTabWithSuspense  from './FlowTab';
 import DonutChart from './widgets/DonutChart';
 import LineChart from './widgets/LineChart';
 
-// HomeTab component remains unchanged
+import { useSearchParams } from 'next/navigation';
+
+
+// Move HomeTab component definition to the top level
 function HomeTab({ homeData, loading }) {
   return (
     <div className={styles.tabContent}>
       <div className={styles.statsRow}>
         <div className={styles.chartContainer}>
           <h4 className={styles.chartTitle}>Total API Calls by Projects</h4>
-          <DonutChart 
-            data={(homeData.projectStats || []).map(p => ({
-              name: p.project_name,
-              value: p.total_calls
-            }))}
-            width={300}
-            height={300}
-          />
+         <DonutChart 
+  data={(homeData.projectStats || []).map(p => ({
+    name: p.project_name,
+    value: p.total_calls
+  }))}
+  width={300}
+  height={300}
+/>
         </div>
         
         <div className={styles.chartContainer}>
@@ -54,31 +58,39 @@ function HomeTab({ homeData, loading }) {
       <div className={styles.statsRow}>
         <div className={styles.fullWidthChart}>
           <h4>Daily API Calls (Last 30 Days)</h4>
-          <LineChart
-            data={(homeData.dailyCalls || []).map(d => ({
-              date: d.date,
-              value: d.value,
-              text_type: d.text_type
-            }))}
-            height={280}
-          />
+         <LineChart
+  data={(homeData.dailyCalls || []).map(d => ({
+    date: d.date,  // fixed, use d.date not d.day
+    value: d.value,
+    text_type: d.text_type  // keep text_type!
+  }))}
+  height={280}
+/>
         </div>
       </div>
     </div>
   );
 }
 
-// Create a Suspense wrapper for FlowTab
-function FlowTabWrapper() {
-  return (
-    <Suspense fallback={<div className={styles.loading}>Loading chat interface...</div>}>
-      <FlowTab />
-    </Suspense>
-  );
-}
-
 export default function Dashboard() {
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('home');
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam) {
+      setActiveTab(tabParam.toLowerCase());
+    }
+  }, [searchParams]);
+
+// Persist tab changes
+useEffect(() => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('activeTab', activeTab);
+  }
+}, [activeTab]);
+
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [homeData, setHomeData] = useState({
@@ -87,73 +99,6 @@ export default function Dashboard() {
     completionStats: { completed: 0, nonCompleted: 0 },
     dailyCalls: []
   });
-
-  // Initialize tab from localStorage
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedTab = localStorage.getItem('activeTab');
-      if (savedTab) setActiveTab(savedTab);
-    }
-  }, []);
-
-  // Persist tab changes
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('activeTab', activeTab);
-    }
-  }, [activeTab]);
-
-  const fetchHomeData = async () => {
-    try {
-      const [
-        { data: projectStats = [] },
-        { data: modelStats = [] },
-        { data: dailyCalls = [] }
-      ] = await Promise.all([
-        supabase.from('v_project_stats').select('*'),
-        supabase.from('v_model_stats').select('*'),
-        supabase.from('v_daily_calls').select('*')
-      ]);
-
-      const dayTotals = {};
-      dailyCalls.forEach(d => {
-        if (!dayTotals[d.day]) {
-          dayTotals[d.day] = { completed: 0, nonCompleted: 0 };
-        }
-        dayTotals[d.day].completed += d.completed_calls || 0;
-        dayTotals[d.day].nonCompleted += d.non_completed_calls || 0;
-      });
-
-      const totalCompleted = Object.values(dayTotals).reduce((sum, day) => sum + day.completed, 0);
-      const totalNonCompleted = Object.values(dayTotals).reduce((sum, day) => sum + day.nonCompleted, 0);
-
-      const transformedDailyCalls = dailyCalls.map(d => ({
-        date: d.day,
-        value: d.total_calls,
-        completed: d.completed_calls,
-        nonCompleted: d.non_completed_calls,
-        text_type: d.text_type || 'default'
-      }));
-
-      setHomeData({
-        projectStats,
-        modelStats,
-        completionStats: {
-          completed: totalCompleted,
-          nonCompleted: totalNonCompleted
-        },
-        dailyCalls: transformedDailyCalls
-      });
-    } catch (err) {
-      console.error('Home data error:', err);
-      setHomeData({
-        projectStats: [],
-        modelStats: [],
-        completionStats: { completed: 0, nonCompleted: 0 },
-        dailyCalls: []
-      });
-    }
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -175,6 +120,67 @@ export default function Dashboard() {
 
     fetchData();
   }, [activeTab]);
+
+ // In your fetchHomeData function:
+const fetchHomeData = async () => {
+  try {
+    const [
+      { data: projectStats = [] },
+      { data: modelStats = [] },
+      { data: dailyCalls = [] }
+    ] = await Promise.all([
+      supabase.from('v_project_stats').select('*'),
+      supabase.from('v_model_stats').select('*'),
+      supabase.from('v_daily_calls').select('*')
+    ]);
+
+// First: group by 'day'
+const dayTotals = {};
+
+dailyCalls.forEach(d => {
+  if (!dayTotals[d.day]) {
+    dayTotals[d.day] = { completed: 0, nonCompleted: 0 };
+  }
+  dayTotals[d.day].completed += d.completed_calls || 0;
+  dayTotals[d.day].nonCompleted += d.non_completed_calls || 0;
+});
+
+// Now sum the day's totals
+const totalCompleted = Object.values(dayTotals).reduce((sum, day) => sum + day.completed, 0);
+const totalNonCompleted = Object.values(dayTotals).reduce((sum, day) => sum + day.nonCompleted, 0);
+
+
+    // Transform dailyCalls to match the expected format
+    const transformedDailyCalls = dailyCalls.map(d => ({
+      date: d.day,
+      value: d.total_calls,
+      completed: d.completed_calls,
+      nonCompleted: d.non_completed_calls,
+      text_type: d.text_type || 'default' // Ensure text_type has a value
+    }));
+
+   // const totalCompleted = dailyCalls.reduce((sum, day) => sum + (day.completed_calls || 0), 0);
+    //const totalNonCompleted = dailyCalls.reduce((sum, day) => sum + (day.non_completed_calls || 0), 0);
+
+    setHomeData({
+      projectStats,
+      modelStats,
+      completionStats: {
+        completed: totalCompleted,
+        nonCompleted: totalNonCompleted
+      },
+      dailyCalls: transformedDailyCalls
+    });
+  } catch (err) {
+    console.error('Home data error:', err);
+    setHomeData({
+      projectStats: [],
+      modelStats: [],
+      completionStats: { completed: 0, nonCompleted: 0 },
+      dailyCalls: []
+    });
+  }
+};
 
   return (
     <div className={styles.dashboard}>
@@ -201,21 +207,24 @@ export default function Dashboard() {
             <span>Analysis</span>
           </button>
           
-          <button
-            className={`${styles.sidebarItem} ${activeTab === 'flow' ? styles.active : ''}`}
-            onClick={() => setActiveTab('flow')}
-          >
-            <HiChat className={styles.sidebarIcon} />
-            <span>Flow</span>
-          </button>
+       
 
-          <button
+         <button
+  className={`${styles.sidebarItem} ${activeTab === 'flow' ? styles.active : ''}`}
+  onClick={() => setActiveTab('flow')}
+>
+  <HiChat className={styles.sidebarIcon} /> {/* New icon */}
+  <span>Flow</span>
+</button>
+
+   <button
             className={`${styles.sidebarItem} ${activeTab === 'risk' ? styles.active : ''}`}
             onClick={() => setActiveTab('risk')}
           >
             <HiExclamationCircle className={styles.sidebarIcon} />
             <span>Risk Monitoring</span>
           </button>
+
         </nav>
       </div>
 
@@ -223,14 +232,15 @@ export default function Dashboard() {
       <div className={styles.mainContent}>
         {loading ? (
           <div className={styles.loading}>Loading...</div>
-        ) : error ? (
-          <div className={styles.error}>{error}</div>
         ) : (
           <>
             {activeTab === 'home' && <HomeTab homeData={homeData} loading={loading} />}
             {activeTab === 'analysis' && <AnalysisTab />}
-            {activeTab === 'flow' && <FlowTabWrapper />}
-            {activeTab === 'risk' && <div className={styles.tabContent}>Risk Monitoring (Coming Soon)</div>}
+           
+            {activeTab === 'flow' && (
+          <FlowTabWithSuspense /> // Now properly using the Suspense-wrapped component
+        )}
+ {activeTab === 'risk' && <div className={styles.tabContent}>Risk Monitoring (Coming Soon)</div>}
           </>
         )}
       </div>
