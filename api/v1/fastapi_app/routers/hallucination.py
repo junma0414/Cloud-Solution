@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-INTERNAL_TOKEN= os.getenv("HF_TOKEN") 
+INTERNAL_TOKEN= os.getenv("INTERNAL_TOKEN") 
 #from ..dependencies import verify_api_key, get_verified_user
 
 
