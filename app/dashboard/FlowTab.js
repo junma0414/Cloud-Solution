@@ -5,14 +5,7 @@ import { supabase } from '../lib/supabase/client';
 import styles from './Flow.module.css';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-// Create a wrapper component that handles the suspense boundary
-const FlowTabWithSuspense = () => {
-  return (
-    <Suspense fallback={<div className={styles.loading}>Loading filters...</div>}>
-      <FlowTab />
-    </Suspense>
-  );
-};
+
 
 const FlowTab = () => {
   const [projects, setProjects] = useState([]);
@@ -385,4 +378,4 @@ const FlowTab = () => {
   );
 };
 
-export default FlowTabWithSuspense;
+export default FlowTab;

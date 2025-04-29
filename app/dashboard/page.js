@@ -6,11 +6,19 @@ import { HiHome, HiTrendingUp, HiExclamationCircle,HiChat } from 'react-icons/hi
 import AnalysisTab from './AnalysisTab';
 //import FlowTab from './FlowTab';
 
-import FlowTabWithSuspense  from './FlowTab';
+//import FlowTabWithSuspense  from './FlowTab';
 import DonutChart from './widgets/DonutChart';
 import LineChart from './widgets/LineChart';
 
 import { useSearchParams } from 'next/navigation';
+
+import dynamic from 'next/dynamic';
+
+const FlowTab = dynamic(() => import('./FlowTab'), {
+  ssr: false,
+  loading: () => <div className={styles.loading}>Loading Flow...</div>
+});
+
 
 
 // Move HomeTab component definition to the top level
@@ -73,15 +81,16 @@ function HomeTab({ homeData, loading }) {
 }
 
 export default function Dashboard() {
-  const searchParams = useSearchParams();
+ // const searchParams = useSearchParams();
+ // const [activeTab, setActiveTab] = useState('home');
   const [activeTab, setActiveTab] = useState('home');
 
-  useEffect(() => {
+{/*  useEffect(() => {
     const tabParam = searchParams.get('tab');
     if (tabParam) {
       setActiveTab(tabParam.toLowerCase());
     }
-  }, [searchParams]);
+  }, [searchParams]); */}
 
 // Persist tab changes
 useEffect(() => {
@@ -237,9 +246,11 @@ const totalNonCompleted = Object.values(dayTotals).reduce((sum, day) => sum + da
             {activeTab === 'home' && <HomeTab homeData={homeData} loading={loading} />}
             {activeTab === 'analysis' && <AnalysisTab />}
            
-            {activeTab === 'flow' && (
-          <FlowTabWithSuspense /> // Now properly using the Suspense-wrapped component
-        )}
+           {activeTab === 'flow' && (
+              <Suspense fallback={<div className={styles.loading}>Loading Flow...</div>}>
+                <FlowTab />
+              </Suspense>
+            )}
  {activeTab === 'risk' && <div className={styles.tabContent}>Risk Monitoring (Coming Soon)</div>}
           </>
         )}
