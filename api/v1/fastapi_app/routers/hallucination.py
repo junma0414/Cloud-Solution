@@ -112,7 +112,7 @@ async def check_hallucination(request: Request):
     client_ip = request.client.host
     internal_token = request.headers.get("X-Internal-Token")
 
-    if not (is_internal_request(client_ip) or internal_token == INTERNAL_SECRET):
+    if not (is_internal_request(client_ip) or internal_token == INTERNAL_TOKEN):
         raise HTTPException(
             status_code=403,
             detail="External access not permitted"
