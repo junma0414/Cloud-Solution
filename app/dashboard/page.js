@@ -92,6 +92,41 @@ export default function Dashboard() {
     }
   }, [searchParams]); */}
 
+//parse url
+ useEffect(() => {
+    // Client-side URL parsing
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab') || 'home';
+      setActiveTab(tab);
+      
+      // Clean up URL
+      if (params.has('_rsc') || params.has('ts')) {
+        params.delete('_rsc');
+        params.delete('ts');
+        window.history.replaceState({}, '', `?${params.toString()}`);
+      }
+    }
+  }, []);
+
+ // Handle tab changes
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    const newParams = new URLSearchParams();
+    newParams.set('tab', tab);
+    
+    // Preserve existing params (like project/session for flow tab)
+    Object.entries(urlParams).forEach(([key, value]) => {
+      if (key !== 'tab' && key !== '_rsc' && key !== 'ts') {
+        newParams.set(key, value);
+      }
+    });
+
+    window.history.pushState({}, '', `?${newParams.toString()}`);
+  };
+
+
+
 // Persist tab changes
 useEffect(() => {
   if (typeof window !== 'undefined') {

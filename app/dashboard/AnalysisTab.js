@@ -281,7 +281,8 @@ function AnalysisTab() {
 
       const API_URL = process.env.NODE_ENV === 'development' 
         ? 'http://localhost:8000/api/v1/hallucination' 
-        : '/api/v1/hallucination';
+:`${window.location.origin}/api/v1/hallucination`   ;   
+// : '/api/v1/hallucination';
 
       const res = await fetch(API_URL, {
         method: 'POST',
@@ -319,9 +320,9 @@ const handleViewFlow = () => {
     setError('Please select a row to view its flow');
     return;
   }
-  
-  const timestamp = Date.now();
-  router.push(`/dashboard?tab=flow&project=${encodeURIComponent(selectedRow.project_name)}&session=${encodeURIComponent(selectedRow.session_id)}&ts=${timestamp}`);
+
+  // Force full page navigation with all parameters
+  window.location.href = `/dashboard?tab=flow&project=${encodeURIComponent(selectedRow.project_name)}&session=${encodeURIComponent(selectedRow.session_id)}`;
 };
 
 

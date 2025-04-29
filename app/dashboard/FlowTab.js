@@ -8,57 +8,136 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 
 const FlowTab = () => {
+  // State initialization
   const [projects, setProjects] = useState([]);
   const [sessionIds, setSessionIds] = useState([]);
   const [chatHistory, setChatHistory] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const searchParams = useSearchParams();
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [messageDetails, setMessageDetails] = useState(null);
   const [stats, setStats] = useState(null);
-  const router = useRouter();
+  const [selectedProject, setSelectedProject] = useState('');
+  const [selectedSessionId, setSelectedSessionId] = useState('');
+
   const chatContainerRef = useRef(null);
   const scrollPositionRef = useRef(0);
 
-  const [selectedProject, setSelectedProject] = useState(
-    searchParams.get('project') || ''
-  );
-  const [selectedSessionId, setSelectedSessionId] = useState(
-    searchParams.get('session') || ''
-  );
+  // Get URL parameters safely
+  const getUrlParams = () => {
+    if (typeof window === 'undefined') return {};
+    const params = new URLSearchParams(window.location.search);
+    return {
+      project: params.get('project') || '',
+      session: params.get('session') || '',
+      tab: params.get('tab') || 'flow'
+    };
+  };
 
-  // Save scroll position to ref
-  const saveScrollPosition = useCallback(() => {
+  // Scroll position management
+  const saveScrollPosition = () => {
     if (chatContainerRef.current) {
       scrollPositionRef.current = chatContainerRef.current.scrollTop;
     }
-  }, []);
+  };
 
-  // Restore scroll position from ref
-  const restoreScrollPosition = useCallback(() => {
+  const restoreScrollPosition = () => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = scrollPositionRef.current;
     }
+  };
+
+  // Initialize from URL parameters
+  useEffect(() => {
+    const { project, session } = getUrlParams();
+    setSelectedProject(project);
+    setSelectedSessionId(session);
+    setLoading(false);
   }, []);
 
+  // Load projects list
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('grc_service')
+          .select('project_name');
+        
+        if (error) throw error;
+        
+        const uniqueProjects = [...new Set(data.map(item => item.project_name))];
+        setProjects(uniqueProjects);
+      } catch (err) {
+        setError('Error fetching projects');
+      }
+    };
+    
+    fetchProjects();
+  }, []);
+
+  // Load sessions when project changes
+  useEffect(() => {
+    if (!selectedProject) return;
+
+    const fetchSessions = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('grc_service')
+          .select('session_id')
+          .eq('project_name', selectedProject);
+        
+        if (error) throw error;
+        
+        const uniqueSessions = [...new Set(data.map(item => item.session_id))];
+        setSessionIds(uniqueSessions);
+      } catch (err) {
+        setError('Error fetching sessions');
+      }
+    };
+    
+    fetchSessions();
+  }, [selectedProject]);
+
+  // Load chat history when both project and session are selected
+  useEffect(() => {
+    if (!selectedProject || !selectedSessionId) return;
+
+    const fetchChatHistory = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('grc_service')
+          .select('*')
+          .eq('project_name', selectedProject)
+          .eq('session_id', selectedSessionId)
+          .order('session_dialog_dt', { ascending: true });
+        
+        if (error) throw error;
+        setChatHistory(data);
+      } catch (err) {
+        setError('Failed to load chat history');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChatHistory();
+  }, [selectedProject, selectedSessionId]);
+
   const handleProjectChange = (project) => {
-    saveScrollPosition();
-    router.push(`/dashboard?tab=flow&project=${encodeURIComponent(project)}`);
+    const params = new URLSearchParams();
+    params.set('project', project);
+    window.history.pushState({}, '', `?${params.toString()}`);
     setSelectedProject(project);
     setSelectedSessionId('');
-    setSelectedMessage(null);
-    setMessageDetails(null);
-    setStats(null);
   };
 
   const handleSessionChange = (session) => {
-    saveScrollPosition();
-    router.push(`/dashboard?tab=flow&project=${encodeURIComponent(selectedProject)}&session=${encodeURIComponent(session)}`);
+    const params = new URLSearchParams();
+    params.set('project', selectedProject);
+    params.set('session', session);
+    window.history.pushState({}, '', `?${params.toString()}`);
     setSelectedSessionId(session);
-    setSelectedMessage(null);
-    setMessageDetails(null);
-    setStats(null);
   };
 
   const handleViewClick = async () => {
@@ -79,10 +158,6 @@ const FlowTab = () => {
       setError('Failed to load chat history');
     } finally {
       setLoading(false);
-      // Use requestAnimationFrame for better timing
-      requestAnimationFrame(() => {
-        restoreScrollPosition();
-      });
     }
   };
 
@@ -122,7 +197,7 @@ const FlowTab = () => {
       });
       setSelectedMessage(message);
       
-      // Restore after state updates
+      // Restore scroll position after state updates
       requestAnimationFrame(() => {
         restoreScrollPosition();
       });
@@ -148,109 +223,42 @@ const FlowTab = () => {
     }
   }, [chatHistory]);
 
-  useEffect(() => {
-    const project = searchParams.get('project');
-    const session = searchParams.get('session');
-    
-    if (project !== selectedProject || session !== selectedSessionId) {
-      saveScrollPosition();
-      setSelectedProject(project || '');
-      setSelectedSessionId(session || '');
-    }
-  }, [searchParams, selectedProject, selectedSessionId, saveScrollPosition]);
-
-  useEffect(() => {
-    if (selectedProject && selectedSessionId) {
-      handleViewClick();
-    }
-  }, [selectedProject, selectedSessionId]);
-
-  useEffect(() => {
-    const fetchFilters = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const { data: projectData, error: projectError } = await supabase
-          .from('grc_service')
-          .select('project_name');
-
-        if (projectError) throw projectError;
-
-        if (projectData) {
-          const uniqueProjects = [...new Set(projectData.map(item => item.project_name))];
-          setProjects(uniqueProjects);
-        }
-      } catch (err) {
-        setError('Error fetching project data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFilters();
-  }, []);
-
-  useEffect(() => {
-    const fetchSessionIds = async () => {
-      if (!selectedProject) return;
-
-      setLoading(true);
-      setError(null);
-      try {
-        const { data: sessionData, error: sessionError } = await supabase
-          .from('grc_service')
-          .select('session_id')
-          .eq('project_name', selectedProject);
-
-        if (sessionError) throw sessionError;
-
-        if (sessionData) {
-          const uniqueSessionIds = [...new Set(sessionData.map(item => item.session_id))];
-          setSessionIds(uniqueSessionIds);
-        }
-      } catch (err) {
-        setError('Error fetching session data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSessionIds();
-  }, [selectedProject]);
-
   if (loading) return <div className={styles.loading}>Loading...</div>;
   if (error) return <div className={styles.error}>{error}</div>;
+
+
+
 
   return (
     <div className={styles.flowTabContainer}>
       <div className={styles.filterSection}>
-        <select
-          value={selectedProject}
-          onChange={(e) => handleProjectChange(e.target.value)}
-          className={styles.filterDropdown}
-        >
-          <option value="">Select Project</option>
-          {projects.map((project, index) => (
-            <option key={index} value={project}>
-              {project}
-            </option>
-          ))}
-        </select>
+       <select
+  value={selectedProject}
+  onChange={(e) => handleProjectChange(e.target.value)}
+  className={styles.filterDropdown}
+>
+  <option value="">Select Project</option>
+  {projects.map((project, index) => (
+    <option key={index} value={project}>
+      {project}
+    </option>
+  ))}
+</select>
 
-        {selectedProject && (
-          <select
-            value={selectedSessionId}
-            onChange={(e) => handleSessionChange(e.target.value)}
-            className={styles.filterDropdown}
-          >
-            <option value="">Select Session ID</option>
-            {sessionIds.map((session, index) => (
-              <option key={index} value={session}>
-                {session}
-              </option>
-            ))}
-          </select>
-        )}
+{selectedProject && (
+  <select
+    value={selectedSessionId}
+    onChange={(e) => handleSessionChange(e.target.value)}
+    className={styles.filterDropdown}
+  >
+    <option value="">Select Session ID</option>
+    {sessionIds.map((session, index) => (
+      <option key={index} value={session}>
+        {session}
+      </option>
+    ))}
+  </select>
+)}
 
         <button
           onClick={handleViewClick}
