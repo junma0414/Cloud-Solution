@@ -1,0 +1,199 @@
+.selectedRow,
+.selectedRow td,
+.selectedRow:hover,
+.selectedRow:hover td {
+  background-color: rgb(224, 231, 255) !important;
+}
+
+.selectedRow:hover {
+  background-color: #e0e7ff !important;
+}
+
+.dataTable tr:not(.selectedRow):hover {
+  background-color: #f3f4f6;
+  cursor: pointer;
+}
+
+
+.outerContainer {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.tableContainer {
+ width: 900px;
+ max-width: 100%;
+  background-color: #fff;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+
+.dataTable {
+  width: 350%;
+/* max-width: 1024px; */
+ min-width:100% ;
+  border-collapse: collapse;
+  background-color: #fff;
+  margin-bottom: 0;
+  overflow-x: visible;
+
+}
+
+
+
+
+.tableContainer::-webkit-scrollbar-track {
+  margin-bottom: 20px; /* Space below scrollbar */
+}
+
+/* Optional: Style scrollbar for better UX */
+.tableContainer::-webkit-scrollbar {
+  height: 8px;
+}
+.tableContainer::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.dataTable th,
+.dataTable td {
+  border: 1px solid #ccc;
+  white-space:nowrap;
+  padding: 2px;
+  text-align: left;
+  background-color: #fff;
+  font-size: 12px;
+  color: black;
+  vertical-align: top;
+}
+
+
+
+/* Cell that shows partial content */
+.truncateCell {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: ellipsis;
+  position: relative;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+/* Always show part of text */
+.truncatedText {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden; /*hidden;*/
+position: relative;  
+text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+
+
+/* Tooltip for full content */
+.tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #ccc;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+ width:350;
+  max-width: 350px; /* Ensures it doesn't grow beyond this */
+  max-height: 150px;
+  overflow-y: auto; /* Only vertical scrolling */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  white-space: normal; /* Changed from pre-wrap */
+  word-break: break-word;
+  word-wrap: break-word; /* Additional breaking for long words */
+  z-index: 1002;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  transition: opacity 0.2s ease;
+
+   contain: layout; 
+
+}
+
+.tooltip pre {
+  background-color: #fff;
+  color: #333;
+  margin: 0;
+  padding: 8px;
+  white-space: pre-wrap;
+  max-height: none; /* Slightly less than parent to account for padding */
+  overflow-y: auto; /* Scroll if needed */
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  border-radius: 4px;
+  width: 100%; /* Take full width of tooltip */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+/* Copy button styling */
+.copyButton {
+  margin-top: 10px;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  color: #333;
+}
+
+.copyButton:hover {
+  background-color: #e0e0e0;
+}
+
+
+
+
+
+/* Hover trigger for tooltip */
+.truncateCell:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+
+
+/* Ensure table header stays visible during scroll */
+.dataTable thead {
+  top: 0;
+  background-color: white;
+  z-index: 10;
+}
+
+
+
+.normalCell {
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background-color: #000;
+}
+
+
+
+.filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filterInput {
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 0.85rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}

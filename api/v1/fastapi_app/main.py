@@ -12,7 +12,7 @@ import traceback
 #from mangum import Mangum  # converts ASGI to AWS Lambda (Vercel compatible)
 
 
-from api.v1.fastapi_app.routers import  grc_api,ner,drift
+from api.v1.fastapi_app.routers import  grc_api,ner,drift,hallucination
 
 load_dotenv() #check .env in current local directory
 
@@ -20,15 +20,16 @@ app = FastAPI()
 
 logger = logging.getLogger(__name__)
 
-#logger.info(f"Received payload: {request.json()}")
-
 
 
 
 # Configure CORS for your Next.js app
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], #[os.getenv("FRONTEND_URL", "https://obserpedia.com")],
+    allow_origins=["http://localhost:3000","htp://127.0.0.1:3000"],  # Your frontend 
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -62,6 +63,13 @@ app.include_router(
     drift.router,
     prefix="/api/v1",
     tags=["drift"]
+
+)
+
+app.include_router(
+    hallucination.router,
+    prefix="/api/v1",
+    tags=["hallucination"]
 
 )
 

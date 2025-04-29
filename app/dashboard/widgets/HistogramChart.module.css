@@ -1,0 +1,36 @@
+.chartContainer {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.bar {
+  transition: opacity 0.2s;
+}
+
+.axis text {
+  font-size: 12px;
+  fill: #666;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #ddd;
+  shape-rendering: crispEdges;
+}
+
+.axisLabel {
+  font-size: 13px;
+  fill: #666;
+}
+
+.tooltip {
+  position: absolute;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border-radius: 4px;
+  font-size: 14px;
+  pointer-events: none;
+  z-index: 1000;
+}

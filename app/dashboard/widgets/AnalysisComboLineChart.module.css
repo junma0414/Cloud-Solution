@@ -1,0 +1,21 @@
+/* AnalysisComboLineChart.module.css */
+
+
+.axisLabel {
+  font-size: 13px;  /* Slightly larger */
+  fill: #333;       /* Darker color */
+  text-anchor: middle;
+  font-weight: 500; /* Medium weight */
+}
+
+.axis text {
+  font-size: 11px;  /* Smaller axis tick labels */
+  fill: #666;
+}
+
+.chartContainer {
+  width: 100%;
+  height: 100%;
+  padding: 10px;    /* Add some padding around */
+}
+

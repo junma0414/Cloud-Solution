@@ -92,7 +92,13 @@ async def deepseek_score(text: str) -> List[Dict]:
             api_key=DEEPSEEK_API_KEY,
             base_url="https://api.deepseek.com",
             timeout=30.0,
-            http_client=httpx.AsyncClient()  # Explicit HTTP client, to address implicit proxy error
+             http_client=httpx.AsyncClient(
+                timeout=30,
+                limits=httpx.Limits(
+                    max_connections=100,
+                    max_keepalive_connections=20
+                )
+            )
 
         )
 
@@ -129,8 +135,26 @@ async def deepseek_score(text: str) -> List[Dict]:
             except Exception as e:
                 logger.warning(f"Error closing client: {e}")
 
-
-
+from datetime import datetime, timezone
+from dateutil.parser import parse
+def parse_timestamp(timestamp_str: str):
+    try:
+        # Handle None/empty
+        if not timestamp_str:
+            return None
+            
+        # Parse with dateutil (more flexible)
+        dt = parse(timestamp_str)
+        
+        # Convert to UTC if timezone-aware
+        if dt.tzinfo is not None:
+            return dt.astimezone(timezone.utc)
+        return dt.replace(tzinfo=timezone.utc)
+    except (ValueError, TypeError) as e:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid timestamp format: {str(e)}"
+        )
 
 
 
@@ -176,6 +200,27 @@ async def analyze_text(
         project_name=full_body.get("project_name","dummy_proj")
         model_name=full_body.get("model_name","dummy_model")
 
+         #add session_id, session_chat_id, session_chat_ts, text_type(prompt/response)
+        session_id=full_body.get("session_id", "dummy_sess_id")
+        session_dialog_id=full_body.get("session_dialog_id", "dummy_sess_dialog_id")
+
+        timestamp_str = full_body.get('session_dialog_dt')
+        
+        # Parse the timestamp
+        dt_parsed = parse_timestamp(timestamp_str) if timestamp_str else None
+        
+        # Prepare for database
+        session_dialog_dt = dt_parsed.isoformat() if dt_parsed else None
+
+        
+        #if 'session_dialog_dt' in full_body:
+        #    try:
+       # session_dialog_dt = datetime.fromisoformat(full_body.get('session_dialog_dt')).isoformat()
+        #    except (ValueError, TypeError):
+        #        pass
+        # session_dialog_dt=full_body.get("session_dialog_dt")
+        text_type=full_body.get("text_type", "dummy_type")
+
 
         request_entry={
         "id":request_id,
@@ -186,6 +231,11 @@ async def analyze_text(
         "model_name": model_name,   # Default as per table schema
         "headers": dict(request.headers),
         "request_body": full_body,
+        "text_type":text_type,
+        "session_id":session_id,
+        "session_dialog_id":session_dialog_id,
+        "session_dialog_dt":session_dialog_dt,
+
         "input_text": text,
         "requested_at": start_time.isoformat(),
         "response_status": 0,

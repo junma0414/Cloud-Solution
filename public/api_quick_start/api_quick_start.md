@@ -27,6 +27,10 @@ http://obserpedia.com/
 |text |String |Yes |the text for the risk analysis | |
 |project_name |String |No |you can define in the post body or eliminate it. |"dummy project" | 
 |model_name |String |No |you can define in the post body or eliminate it. |"dummy model" | 
+|session_id |String |No |it is to specify the session between assistant and clients | |
+|session_dialog_id |String |No |it is to specify a particular dialog(text) duing the session | |
+|session_dialog_dt |timestamp(with timezone) |Yes |the time when the session_dialog happen |2025-01-08 23:51:24.328243+08:00 or in simple form 2025-01-08 23:51:24+08. If no timezone specified, system will treat it as UTC time(+00) |
+|text_type |String |Yes |the text from the dialog is prompt, response or others |prompt |
 
 
 ### Post examples
@@ -36,10 +40,7 @@ http://obserpedia.com/
 
 Note:You will need add or remove backward slash in accordance with OS where your console is running
 ```
-curl -L -X POST "http://localhost:8000/api/v1/grc_api" \
--H "x-api-key: <your_api_key>" \
--H "Content-Type: application/json" \
--d "{\"text\":\"This is my last warning\", \"project_name\":\"my demo project\", \"model name\":\"my demo model\"}"
+curl -X POST https://obserpedia.com/api/v1/grc_api -H "x-api-key: <your_api_key>" -H "Content-Type: application/json" -d "{\"text\":\"This is my last warning and the bad fortune will come to you when the countdown starts\", \"project_name\":\"ner project1\",\"model_name\":\"ner model1\",\"session_id\":\"12345\", \"session_dialog_id\":\"12345-5\", \"session_dialog_dt\": \"2025-01-08 23:51:29+07\", \"text_type\":\"response\"}"
 
 
 ```
@@ -56,9 +57,13 @@ headers = {
     "Content-Type": "application/json"
 }
 data = {
-    "text": "This is my last warning",
+    "text": "This is my last warning and the bad fortune will come to you when the countdown starts",
     "project_name": "My Project",
-    "model_name":"My Model"
+    "model_name":"My Model",
+    "session_id":"12345",
+    "session_dialog_id":"12345-1",
+    "session_dialog_dt":"2025-01-08 23:51:29+07",
+    "text_type":"response"
 }
 
 try:
@@ -84,7 +89,11 @@ const headers = {
 const data = {
     text: 'This is my last warning',
     project_name: 'My Project',
-    model_name:'My Model'
+    model_name:'My Model',
+    session_id:'12345',
+    session_dialog_id:'12345-1',
+    session_dialog_dt:'2025-01-08 23:51:29+07',
+    text_type:'response'
 };
 
 axios.post(url, data, { headers })

@@ -1,3 +1,113 @@
+
+.tabContent {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 150px); /* Adjust based on your header height */
+  padding: 0;
+}
+
+/* Donut charts row */
+.statsRow {
+  display: flex;
+  gap: 4px; /* Reduced gap */
+  margin: 0;
+  padding: 0;
+  height: auto; /* Fixed height for donut row */
+}
+
+/* Chart containers */
+.chartContainer {
+  flex: 1 1 300px;
+  min-width: 240px;
+  max-width: 100%;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* ✅ center inner donut/legend wrapper */
+}
+
+
+
+.chartAndLegend {
+  display: flex;
+  align-items: center;
+}
+
+
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.legendColor {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.legendLabel {
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  margin: 5px;
+}
+
+.legendColor {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.legendLabel {
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  margin: 2px 0;
+}
+
+.legendColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  margin-right: 6px;
+}
+
+
+/* Line chart container */
+.fullWidthChart {
+  flex: 1;
+  min-height: 200px;
+  max-height: calc(100% - 180px); /* Remaining space after donuts */
+  padding: 0;
+  margin: 0;
+}
+
+/* Line chart itself */
+.lineChart {
+  width: 100%;
+  height: 80%;
+  margin: 0;
+  padding: 0;
+}
+
+
+
+
+
+
 .dashboard {
   display: flex;
   min-height: 100vh;
@@ -11,7 +121,7 @@
 }
 
 .sidebar {
-  width: 160px;
+  width: 150px;
   background-color: #2c3e50;
   color: white;
   padding: 20px 0;
@@ -84,12 +194,7 @@
   color: #7f8c8d;
 }
 
-.tabContent {
-  background-color: white;
-  border-radius: 8px;
-  padding: 25px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
+
 
 .statsGrid {
   display: grid;
@@ -199,18 +304,6 @@ min-height:500px;
 /* DataTab Styles */
 
 
-/* DataTab container - critical update */
-.dataTab {
-  padding: 10px;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 100%;
-  overflow: visible; /* Changed from hidden */
-  display: flex;
-  flex-direction: column;
-}
 
 
 
