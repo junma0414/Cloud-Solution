@@ -228,32 +228,33 @@ function AnalysisTab() {
     }
   }, [activeFilter, selectedNERWord]);
 
-  const handleRowSelect = (row) => {
-
-     if (!row) {
+const handleRowSelect = (row) => {
+  // Clear everything if no row or same row is clicked
+  if (!row || (selectedRow && selectedRow.id === row.id)) {
     setSelectedRow(null);
     setPromptText('');
     return;
   }
 
+  // Set the new selected row
+  setSelectedRow(row);
+  
+  // Clear previous text
+  setPromptText('');
 
-    if (selectedRow?.id === row?.id) {
-      setSelectedRow(null);
-      setPromptText('');
-    } else {
-      setSelectedRow(row);
-      
-      if (row.text_type === 'response') {
-        const matchingPrompt = filteredTableData.find(
-          item => item.session_id === row.session_id && 
-                  item.text_type === 'prompt'
-        );
-        setPromptText(matchingPrompt?.input_text || '');
-      } else {
-        setPromptText('');
-      }
+  // If the selected row is a response, try to find its matching prompt
+  if (row.text_type === 'response') {
+    const matchingPrompt = filteredTableData.find(
+      item => item.session_id === row.session_id && 
+              item.session_dialog_id === row.session_dialog_id && 
+              item.text_type === 'prompt' &&
+              new Date(item.requested_at) < new Date(row.requested_at)
+    );
+    if (matchingPrompt) {
+      setPromptText(matchingPrompt.input_text);
     }
-  };
+  }
+};
 
   const handleHallucinationCheck = async () => {
     if (!selectedRow) {
@@ -510,7 +511,7 @@ const handleViewFlow = () => {
         <div className={styles.fullWidthChart}>
           <h4>Hallucination Check</h4>
           
-     <div className={styles.promptResponseContainer}>
+  <div className={styles.promptResponseContainer}>
   <div className={styles.promptResponseItem}>
     <h5>Prompt</h5>
     {selectedRow?.text_type === 'prompt' ? (
@@ -522,14 +523,14 @@ const handleViewFlow = () => {
         className={styles.hallucinationTextArea}
         value={promptText}
         onChange={(e) => setPromptText(e.target.value)}
-        placeholder="Enter or find matching prompt"
+        placeholder={selectedRow?.text_type === 'response' ? "Enter the model's paring prompt" : "Select a prompt"}
         rows={5}
       />
     )}
   </div>
 
   <div className={styles.promptResponseArrow}>
-  <FiChevronRight  size={48} color="#4CAF50" />
+    <FiChevronRight size={48} color="#4CAF50" />
   </div>
 
   <div className={styles.promptResponseItem}>
@@ -541,9 +542,9 @@ const handleViewFlow = () => {
     ) : (
       <textarea
         className={styles.hallucinationTextArea}
-        value={promptText}
+        value={selectedRow?.text_type === 'prompt' ? promptText : ''}
         onChange={(e) => setPromptText(e.target.value)}
-        placeholder="Enter the model's response"
+        placeholder={selectedRow?.text_type === 'prompt' ? "Enter the model's paring response" : "Select a response"}
         rows={5}
       />
     )}

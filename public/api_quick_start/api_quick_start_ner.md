@@ -42,7 +42,7 @@ http://obserpedia.com/
 
 Note:You will need add or remove backward slash in accordance with OS where your console is running and use '^' as line break on windows
 ```
-curl -X POST http://obserpedia.com/api/v1/ner ^
+curl -X POST http://www.obserpedia.com/api/v1/ner ^
   -H "x-api-key: <your_api_key>" ^
   -H "Content-Type: application/json" ^
   -d "{\"text\":\"Various industries and applications use NER in different ways. Each use case simplifies searching for and extracting important information from large data volumes so people can spend time on more valuable tasks. Examples include the following:\n\nChatbots. OpenAI's generative AI, ChatGPT, Google's Bard and other chatbots use NER models to identify relevant entities mentioned in user queries and conversations. This helps them understand the context of a user's question and improves chatbot responses.\nCustomer support. NERs organize customer feedback and complaints by product name and identify common or trending complaints about specific products or branch locations. This helps customer support teams prepare for incoming queries, respond faster and establish automated systems that route customers to relevant support desks and sections of FAQ pages.\nFinance. NER extracts figures from private markets, loans and earnings reports, increasing the speed and accuracy of analyzing profitability and credit risk. NER also extracts names and companies mentioned in social media and other online posts, helping financial institutions monitor trends and developments that could affect stock prices.\nHealthcare. NER tools extract critical information from lab reports and patients' electronic health records, helping healthcare providers reduce workloads, analyze data faster and more accurately, and improve care.\nHigher education. NER lets students, researchers and professors quickly summarize volumes of papers and archival material, as well as find relevant subjects, topics and themes.\nHR. These systems streamline recruitment and hiring by summarizing applicants' resumes and extracting information, such as qualifications, education and references. NER also filters employee complaints and queries to the relevant departments, helping organize internal workflows.\nMedia. News providers use NER to analyze the many articles and social media posts they need to read and to categorize the content into important information and trends. This helps them quickly understand and report on news and current events.\nRecommendation engines. Many companies use NER to improve the relevancy of their recommendation engines. For instance, companies like Netflix use NER to analyze users' searches and viewing histories to provide personalized recommendations.\nSearch engines. NER helps search engines identify and categorize subjects mentioned on the web and in searches. This lets search platforms understand the relevancy of subjects to a user's search and provide users with accurate results.\nSentiment analysis. NER is a key component of sentiment analysis. It extracts product names, brands and other information mentioned in customer reviews, social media posts and other unstructured text. The sentiment analysis tool then analyzes the information to determine the author's feelings about a product, company or other subject. \nNER is also used to analyze employee sentiment in survey responses and complaints.\",\"project_name\":\"ner demo\",\"model_name\":\"ner demo model\",\"topn\":0,\"session_id\":\"12345\", \"session_dialog_id\":\"12345-5\", \"session_dialog_dt\": \"2025-01-08 23:51:29+07\", \"text_type\":\"response\"}"
@@ -56,7 +56,7 @@ curl -X POST http://obserpedia.com/api/v1/ner ^
 import requests
 import json
 
-url = "http://obserpedia.com/api/v1/ner"
+url = "http://www.obserpedia.com/api/v1/ner"
 headers = {
     "x-api-key": "<your_api_key>",
     "Content-Type": "application/json"
@@ -98,7 +98,7 @@ except requests.exceptions.RequestException as e:
 ```
 const axios = require('axios');
 
-const url = 'http://obserpedia.com/api/v1/ner';
+const url = 'http://www.obserpedia.com/api/v1/ner';
 
 const headers = {
   'x-api-key': '<your_api_key>',

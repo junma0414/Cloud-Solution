@@ -54,7 +54,7 @@ http://obserpedia.com/
 
 Note:You will need add or remove backward slash in accordance with OS where your console is running
 ```
-curl -X POST https://obserpedia.com/api/v1/drift -H "x-api-key: <your_api_key>" -H "Content-Type: application/json" -d "{\"text\":\"This is my last warning and the bad fortune will come to you when the countdown starts\", \"project_name\":\"ner project1\",\"model_name\":\"ner model1\",\"session_id\":\"12345\", \"session_dialog_id\":\"12345-5\", \"session_dialog_dt\": \"2025-01-08 23:51:29+07\", \"text_type\":\"response\"}"
+curl -X POST "https://www.obserpedia.com/api/v1/drift" -H "x-api-key: <your_api_key>" -H "Content-Type: application/json" -d "{\"text\":\"This is my last warning and the bad fortune will come to you when the countdown starts\", \"project_name\":\"ner project1\",\"model_name\":\"ner model1\",\"session_id\":\"12345\", \"session_dialog_id\":\"12345-5\", \"session_dialog_dt\": \"2025-01-08 23:51:29+07\", \"text_type\":\"response\"}"
 
 ```
 </br>
@@ -64,7 +64,7 @@ curl -X POST https://obserpedia.com/api/v1/drift -H "x-api-key: <your_api_key>" 
 import requests
 import json
 
-url = "https://obserpedia.com/api/v1/drift"
+url = "https://www.obserpedia.com/api/v1/drift"
 headers = {
     "x-api-key": "<your_api_key>",
     "Content-Type": "application/json"
@@ -94,7 +94,7 @@ except requests.exceptions.RequestException as e:
 ```
 const axios = require('axios');
 
-const url = 'https://obserpedia.com/api/v1/drift';
+const url = 'https://www.obserpedia.com/api/v1/drift';
 const headers = {
     'x-api-key': '<your_api_key>',
     'Content-Type': 'application/json'
