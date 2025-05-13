@@ -3,7 +3,10 @@ import { useState, useEffect, Suspense } from 'react';
 import { supabase } from '../lib/supabase/client';
 import styles from './Dashboard.module.css';
 import { HiHome, HiTrendingUp, HiExclamationCircle,HiChat } from 'react-icons/hi';
+import { HiCog, HiDatabase, HiLightningBolt, HiSquare } from 'react-icons/hi';
+
 import AnalysisTab from './AnalysisTab';
+import OperationsTab from './OperationsTab';
 //import FlowTab from './FlowTab';
 
 //import FlowTabWithSuspense  from './FlowTab';
@@ -269,6 +272,15 @@ const totalNonCompleted = Object.values(dayTotals).reduce((sum, day) => sum + da
             <span>Risk Monitoring</span>
           </button>
 
+
+<button
+  className={`${styles.sidebarItem} ${activeTab === 'operations' ? styles.active : ''}`}
+  onClick={() => setActiveTab('operations')}
+>
+  <HiCog className={styles.sidebarIcon} />
+  <span>Operations</span>
+</button>
+
         </nav>
       </div>
 
@@ -287,6 +299,7 @@ const totalNonCompleted = Object.values(dayTotals).reduce((sum, day) => sum + da
               </Suspense>
             )}
  {activeTab === 'risk' && <div className={styles.tabContent}>Risk Monitoring (Coming Soon)</div>}
+{activeTab === 'operations' && <OperationsTab />}
           </>
         )}
       </div>

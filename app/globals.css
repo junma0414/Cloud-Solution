@@ -163,6 +163,14 @@ pre {
   font-size: 14px;
 }
 
+pre {
+  background-color: white; /* Dark background */
+  padding: 10px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-size: 14px;
+}
+
 code {
   color: #f8f8f2;
   font-family: "Fira Code", monospace;

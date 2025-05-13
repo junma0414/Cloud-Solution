@@ -91,14 +91,14 @@ export default function AnalysisNERBarChart({
       .style("font-size", "12px")
       .style("font-weight", "bold")
       .text("Entity Count");
-
+{/*
     svg.append("text")
       .attr("x", innerWidth / 2)
       .attr("y", innerHeight + margin.bottom - 15)
       .style("text-anchor", "middle")
       .style("font-size", "12px")
       .style("font-weight", "bold")
-      .text("Entity Word");
+      .text("Entity Word");   */}
 
   }, [data, height, onBarClick, selectedWord, margin]); // Add selectedWord to dependencies
 

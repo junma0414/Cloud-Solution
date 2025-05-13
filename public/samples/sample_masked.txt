@@ -1,0 +1,4 @@
+id	input_texts
+1	the capital of France is [MASK]
+2	the goad of basketball is [MASK]
+3	When you visit New sealand, the scene there always make you [MASK]

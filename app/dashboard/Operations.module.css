@@ -1,0 +1,2293 @@
+/* Operations Tab Styles */
+.operationsContainer {
+  padding: 20px;
+}
+
+.subTabs {
+  display: flex;
+  border-bottom: 1px solid #eaeaea;
+  margin-bottom: 20px;
+}
+
+.subTab {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #666;
+   font-style: bold;
+  border-bottom: 2px solid transparent;
+}
+
+.subTab:hover {
+  color: #333;
+}
+
+.subTab.active {
+  color: #0070f3;
+  border-bottom-color: #0070f3;
+}
+
+.subTabIcon {
+  margin-right: 8px;
+}
+
+.subTabContent {
+  padding: 20px 0;
+}
+
+.upload-section, .manual-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.model-list, .source-list, .job-history {
+  margin-top: 30px;
+}
+
+.inference-controls > div {
+  margin-bottom: 15px;
+}
+
+.inference-controls label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.inference-controls select, 
+.inference-controls textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.inference-controls textarea {
+  min-height: 100px;
+}
+
+/* Good - class-based selectors */
+.jobTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.jobTable th, 
+.jobTable td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.jobTable th {
+  background-color: #f5f5f5;
+}
+
+/* File Upload Styles */
+.fileInput {
+  display: none;
+}
+
+.fileInputLabel {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 14px;
+}
+
+.fileInputLabel:hover {
+  background: #e0e0e0;
+}
+
+.fileInfo {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.uploadButton {
+  background-color: #808080; /* Grey color */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px; /* Slightly rounded corners */
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.uploadButton:hover {
+  background-color: #6e6e6e; /* Slightly darker grey on hover */
+}
+
+.uploadButton:disabled {
+  background-color: #cccccc; /* Lighter grey when disabled */
+  cursor: not-allowed;
+}
+
+/* Remove any existing circular styles */
+.uploadButton:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.progressFill {
+  height: 100%;
+  background: white;
+  transition: width 0.3s;
+}
+
+/* Status Messages */
+.successMessage {
+  margin-top: 10px;
+  color: #28a745;
+  font-size: 14px;
+}
+
+.errorMessage {
+  margin-top: 10px;
+  color: #dc3545;
+  font-size: 14px;
+}
+
+/* Model Table Improvements */
+.modelTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.modelTable th {
+  background-color: #f8f9fa;
+  padding: 2 px;
+  font-size: 12px;
+  text-align: left;
+  font-weight: 500;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.modelTable td {
+  padding: 2px;
+font-size: 10px;
+  border-bottom: 1px solid #dee2e6;
+  color: #495057;
+}
+
+.modelTable tr:hover td {
+  background-color: #f8f9fa;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.uploadSpinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 8px;
+}
+
+
+.errorMessage p {
+  margin: 0.5rem 0;
+}
+
+.retryButton {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+.deleteButton {
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.deleteButton:hover {
+  background-color: #cc0000;
+}
+
+.deleteButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.retryButton:hover {
+  background-color: #45a049;
+}
+
+.fileInput {
+  display: none;
+}
+
+.fileInputLabel {
+  background: #4c8ef7;
+  color: white;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.uploadButton {
+  margin-left: 12px;
+  padding: 6px 16px;
+  border-radius: 6px;
+  background: #38a169;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.retryButton {
+  background: #ed8936;
+  padding: 6px 12px;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  margin-top: 8px;
+}
+
+.progressBar {
+  width: 100%;
+  background: #e2e8f0;
+  border-radius: 4px;
+  height: 8px;
+  margin-top: 4px;
+}
+
+.progressFill {
+  height: 8px;
+  background: #3182ce;
+  border-radius: 4px;
+  transition: width 0.2s ease;
+}
+
+.successMessage {
+  color: #38a169;
+  margin-top: 10px;
+}
+
+.errorMessage {
+  color: #e53e3e;
+  margin-top: 10px;
+}
+
+.statusBadge {
+  background: #e2e8f0;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+
+.deleteButton {
+  background: #e53e3e;
+  color: white;
+  border: none;
+ font-size: 1em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.deletingOverlay {
+  position: relative;
+}
+
+.deletingOverlay::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.deletingMessage {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.tableContainer {
+  position: relative;
+  min-height: 100px;
+}
+
+
+
+.fileInputLabel.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.uploadButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+
+
+.uploadButton {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.progressFill {
+  height: 100%;
+  background: #4CAF50;
+  transition: width 0.3s ease;
+}
+
+/* Add a spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.uploadButton[disabled]::after {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Data Source Styles */
+.dataPreview {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  max-height: 150px;
+  overflow: auto;
+}
+
+.dataPreview pre {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Inference Controls */
+.paramHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.testButton {
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  background: #e0e0e0;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.paramsTextarea {
+  font-family: monospace;
+  width: 100%;
+}
+
+.paramExamples {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 5px;
+}
+
+.runControls {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 8px;
+}
+
+/* Job History */
+.paramsCell pre {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 0.8rem;
+  max-height: 100px;
+  overflow: auto;
+}
+
+.viewButton {
+  padding: 2px 8px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.statusBadge {
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+}
+
+.statusBadge.completed {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.statusBadge.failed {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.statusBadge.pending {
+  background: #fff8e1;
+  color: #f57f17;
+}
+
+/* Data Sources Tab Styles */
+.dataTab {
+  padding: 20px;
+}
+
+.uploadSection, .manualSection {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.manualTextarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+  min-height: 100px;
+  font-family: monospace;
+}
+
+.sourceList {
+  margin-top: 20px;
+}
+
+.dataTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dataTable th, .dataTable td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.dataTable th {
+  background-color: #f2f2f2;
+}
+
+.fileInfo {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fileInfo span {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dataContainer {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.uploadPanel {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  background: #f9f9f9;
+}
+
+.configPanel {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  background: #f9f9f9;
+}
+
+.uploadHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.settingsButton {
+  background: none;
+  border: none;
+  color: #666;
+  font-style:bold;
+  cursor: pointer;
+}
+
+.inputTypeTabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.typeTab {
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.typeTab.active {
+  border-bottom: 2px solid #4CAF50;
+  font-weight: bold;
+}
+
+.dropzone {
+  border: 2px dashed #ccc;
+  border-radius: 5px;
+  padding: 30px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.dropzoneLabel {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.fileTypes {
+  color: #666;
+  font-size: 0.9em;
+  margin: 10px 0;
+}
+
+.uploadTip {
+  color: #666;
+  font-size: 0.8em;
+  font-style: italic;
+}
+
+.uploadActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.inputGroup {
+  margin-bottom: 20px;
+}
+
+.inputGroup label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.nameInput, .descTextarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.metadataPreview {
+  background: #f0f0f0;
+  padding: 10px;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.dataContainer {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.uploadPanel {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  background: #f9f9f9;
+}
+
+.configPanel {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  background: #f9f9f9;
+}
+
+.inputTypeTabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.typeTab {
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.typeTab.active {
+  border-bottom: 2px solid #4CAF50;
+  font-weight: bold;
+}
+
+.dropzone {
+  border: 2px dashed #ccc;
+  border-radius: 5px;
+  padding: 30px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.fileInput {
+  display: none;
+}
+
+.dropzoneLabel {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.fileTypes {
+  color: #666;
+  font-size: 0.9em;
+  margin: 10px 0;
+}
+
+.uploadActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.inputGroup {
+  margin-bottom: 20px;
+}
+
+.inputGroup label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.nameInput, .descTextarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.metadataPreview {
+  background: #f0f0f0;
+  padding: 10px;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.sourceList {
+  margin-top: 30px;
+}
+
+/* Add to Operations.module.css */
+.dropzone {
+  border: 2px dashed #ccc;
+  border-radius: 5px;
+  padding: 30px;
+  text-align: center;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dropzone.dragOver {
+  border-color: #4CAF50;
+  background-color: #f0fff0;
+}
+
+.dropzoneContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.uploadIcon {
+  font-size: 2rem;
+  color: #666;
+}
+
+.dropzoneLabel {
+  font-weight: bold;
+  margin: 0;
+}
+
+.fileTypes {
+  color: #666;
+  font-size: 0.9em;
+  margin: 0;
+}
+
+.selectedFile {
+  margin-top: 10px;
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.fileInput {
+  display: none;
+}
+
+
+
+
+/* Upload Button (Default State) */
+.dsuploadButton {
+  background-color: #4CAF50; /* Green when active */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+/* Hover State */
+.dsuploadButton:hover:not(:disabled) {
+  background-color: #45a049; /* Darker green */
+}
+
+/* Disabled State (Greyed Out) */
+.dsuploadButton:disabled {
+  background-color: #cccccc; /* Grey */
+  color: #666666;
+  cursor: not-allowed;
+}
+
+/* Remove any existing circular styles */
+.dsuploadButton:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+
+/* Upload Button */
+.dsuploadButton {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.dsuploadButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Action Buttons */
+.cancelButton {
+  background: none;
+  border: 1px solid #ccc;
+  color: #666;
+  margin-left: 8px;
+}
+
+.doneButton {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  margin-left: 8px;
+}
+
+.failedButton {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  margin-left: 8px;
+}
+
+/* Add to Operations.module.css */
+.uploadStatusSuccess {
+  color: #28a745; /* Green color for success */
+  font-weight: 500;
+  margin-left: 10px;
+}
+
+.uploadStatusError {
+  color: #dc3545; /* Red color for error */
+  font-weight: 500;
+  margin-left: 10px;
+  font-style: italic;
+}
+
+.uploadActions {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+/* Add to Operations.module.css */
+.deleteSuccessMessage {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+.deleteErrorMessage {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+
+/* Add to Operations.module.css */
+.statusMessage {
+  padding: 12px;
+  margin: 16px 0;
+  border-radius: 4px;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.statusMessage.success {
+  background-color: #e6ffed;
+  color: #1a7f37;
+  border: 1px solid #2ea043;
+}
+
+.statusMessage.error {
+  background-color: #ffebe9;
+  color: #cf222e;
+  border: 1px solid #ff7b72;
+}
+
+.statusMessage.deleting {
+  background-color: #e7f5ff;
+  color: #0a69da;
+  border: 1px solid #4dabf7;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* Search styles */
+.searchContainer {
+  position: relative;
+  margin-left: auto;
+}
+
+.searchInput {
+  padding: 8px 32px 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 250px;
+}
+
+.searchIcon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.6;
+}
+
+/* Batch actions */
+.batchActions {
+  margin-top: 16px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.batchDeleteButton {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.batchDeleteButton:hover {
+  background-color: #c82333;
+}
+
+/* Checkbox styles */
+.checkboxInput[type="checkbox"] {  /* Add your className */
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+
+.checkboxLabel {
+  display: inline-flex;
+  align-items: top; /* vertically center text with checkbox */
+  gap: 16px; /* space between checkbox and label text (adjust as needed) */
+  cursor: pointer;
+}
+
+
+/* Header section */
+.listHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.headerControls {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+/* Search box */
+.searchContainer {
+  position: relative;
+  min-width: 200px;
+}
+
+.searchInput {
+  padding: 0.4rem 0.8rem;
+  padding-left: 1.8rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  height: 32px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 0.9rem;
+}
+
+/* Delete button */
+.batchDeleteButton {
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  height: 32px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.batchDeleteButton:hover {
+  background-color: #cc0000;
+}
+
+.listHeader {
+  margin-bottom: 16px;
+}
+
+.controlsRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.searchWrapper {
+  position: relative;
+  flex-grow: 1;
+  max-width: 400px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 12px 8px 32px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+}
+
+.deleteSelectedBtn {
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .controlsRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .searchWrapper {
+    max-width: 100%;
+  }
+}
+
+/* Checkbox container */
+.checkboxContainer {
+ display: row;
+  align-items: center;
+  gap: 10px; /* Space between checkbox and label */
+  cursor: pointer;
+  user-select: none;
+  padding: 6px 0; /* Vertical padding for better click area */
+}
+
+/* Custom checkbox */
+.checkboxInput {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #6366f1;
+  border-radius: 4px;
+  margin: 0; /* Remove default margins */
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.checkboxInput:checked {
+  background-color: #6366f1;
+  border-color: #6366f1;
+}
+
+.checkboxInput:checked::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background: white;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+/* Checkbox label */
+.checkboxLabel {
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.5; /* Better vertical alignment */
+  margin: 0; /* Remove default margins */
+  padding: 0; /* Remove default padding */
+}
+
+
+/* Checkbox row container */
+.checkboxRow {
+  display: flex;
+  align-items: center; /* Vertical alignment */
+  gap: 10px; /* Space between checkbox and label */
+  margin: 8px 0; /* Vertical spacing */
+}
+
+/* Custom checkbox */
+.checkboxInput {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #6366f1;
+  border-radius: 4px;
+  margin: 0;
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.checkboxInput:checked {
+  background-color: #6366f1;
+  border-color: #6366f1;
+}
+
+.checkboxInput:checked::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background: white;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+
+/* Checkbox label */
+.checkboxLabel {
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+  cursor: pointer;
+  user-select: none;
+align-items:center;
+}
+
+/* Hover effects */
+.checkboxRow:hover .checkboxInput {
+  border-color: #4f46e5;
+}
+
+.checkboxRow:hover .checkboxLabel {
+  color: #1f2937;
+}
+
+/* Add to your Operations.module.css */
+
+/* Viewer Modal */
+.viewerModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.viewerContent {
+  background: white;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 900px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.viewerHeader {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.viewerBody {
+  padding: 15px;
+  overflow: auto;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+}
+
+.dataPreviewTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dataPreviewTable td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.textPreview {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-color:whitte;
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.viewButton, .inferenceButton {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.viewButton {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.viewButton:hover {
+  background: #c8e6c9; /* Optional: Add hover effect */
+}
+
+.inferenceButton {
+  cursor: pointer; /* This makes it show the hand icon */
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: none;
+}
+
+.inferenceButton:hover {
+  background: #c8e6c9; /* Optional: Add hover effect */
+}
+/* Inference Workflow */
+.inferenceWorkflow {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.workflowStep {
+  background: #f5f5f5;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.stepHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.stepNumber {
+  background: #1976d2;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.paramGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.paramGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.paramGroup label {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.toggleAdvanced {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #1976d2;
+  cursor: pointer;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+}
+
+.loadingSpinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+/* Viewer Modal - Minimal Style */
+.viewerModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.viewerContent {
+  background: white;
+  border-radius: 4px;
+  width: 80%;
+  max-width: 800px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.viewerHeader {
+  padding: 12px 16px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #333;
+}
+
+.viewerBody {
+  padding: 0;
+  overflow: auto;
+}
+
+.simpleTextPreview {
+  margin: 0;
+  padding: 16px;
+  color: black;
+  background: white;
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+}
+/* Keep all other existing styles */
+
+/* Inference Tab Styles */
+.inferenceTab {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.inferenceControls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.controlGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.selectInput {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.paramsTextarea {
+  font-family: monospace;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+  min-height: 150px;
+}
+
+.runButton {
+  grid-column: span 2;
+  padding: 12px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.runButton:hover {
+  background: #45a049;
+}
+
+.runButton:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.resultsSection {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.resultsPreview {
+  background: #f5f5f5;
+  padding: 15px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.jobHistory {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.jobTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.jobTable th, .jobTable td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.jobTable th {
+  background-color: #f2f2f2;
+}
+
+.statusBadge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.errorBanner {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border-left: 4px solid #c62828;
+}
+
+/* Add to your existing .statusBadge styles */
+.error {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.pending {
+  background: #fff8e1;
+  color: #f57f17;
+}
+
+
+/* new model update */
+/* Model Upload Form */
+.uploadForm {
+  margin-top: 10px;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.formGroup {
+  margin-bottom: 15px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.nameInput,
+.selectInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.selectInput {
+  background-color: white;
+}
+
+.uploadActions {
+  margin-top: 20px;
+}
+
+/* Status badges */
+.statusBadge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  display: inline-block;
+}
+
+.statusBadge.uploaded {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.statusBadge.deployed {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.statusBadge.error {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.fileInputContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fileNameDisplay {
+  margin-left: 10px;
+  font-size: 1rem;
+  color: green;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.singleErrorMessage {
+  color: #ff4444;
+  margin-left: 15px;
+  font-size: 0.9rem;
+  max-width: 250px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Add to your Operations.module.css */
+.folderInfo {
+  margin-top: 5px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.filePreview {
+  margin-top: 2px;
+  font-size: 12 px;
+  color: #555;
+}
+
+.filePreview div {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.disabledButton {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #ccc;
+}
+
+.disabledButton:hover {
+  background-color: #ccc;
+}
+
+
+
+
+/* Inference Tab Styles */
+.inferenceTab {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.errorBanner {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 10px 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.inferenceControls {
+  background: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.controlRow {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.controlGroup {
+  flex: 1;
+}
+
+.selectInput {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.endpointInfo {
+  margin-top: 5px;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.endpointInfo a {
+  color: #1976d2;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.inputPreview {
+  margin-bottom: 20px;
+}
+
+.previewContent {
+  background: white;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 4px;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.paramsSection {
+  margin-bottom: 20px;
+}
+
+.paramControls {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.paramGroup {
+  flex: 1;
+  min-width: 200px;
+}
+
+.paramInput {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.paramSlider {
+  margin-top: 5px;
+}
+
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.currentJob {
+  background: #e8f5e9;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.jobSummary {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.resultActions {
+  display: flex;
+  gap: 10px;
+}
+
+.jobHistory {
+  margin-top: 20px;
+}
+
+.jobTableContainer {
+  overflow-x: auto;
+}
+
+.jobTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.jobTable th, .jobTable td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.jobTable th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+}
+
+.endpointCell {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: 500;
+}
+
+.statusBadge.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.statusBadge.error {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.statusBadge.pending {
+  background-color: #fff8e1;
+  color: #f57f17;
+}
+
+.jobActions {
+  display: flex;
+  gap: 5px;
+}
+
+.viewButton, .downloadButton {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+.viewButton {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.downloadButton {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.resultsModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: white;
+  width: 80%;
+  max-width: 900px;
+  max-height: 80vh;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  padding: 15px 20px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: #666;
+}
+
+.modalBody {
+  padding: 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.resultSection {
+  margin-bottom: 20px;
+}
+
+.resultSection h4 {
+  margin-bottom: 10px;
+}
+
+.inputText, .outputText {
+  background: #f5f5f5;
+  padding: 15px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+}
+
+.modalFooter {
+  padding: 15px 20px;
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Inference Tab Styles */
+.inferenceTab {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section {
+  margin-bottom: 20px;
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.paramRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.paramRow label {
+  width: 100px;
+  font-weight: 500;
+}
+
+.paramInput {
+  width: 80px;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.previewBox {
+  background: white;
+  border: 1px solid #ddd;
+  padding: 12px;
+  border-radius: 4px;
+  min-height: 60px;
+}
+
+.selectInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+
+
+.disabledParam {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.disabledLabel {
+  color: #999;
+}
+
+.paramHint {
+  font-size: 0.8em;
+  color: #999;
+  margin-left: 5px;
+}
+
+.inputList {
+  max-height: 150px;
+  overflow-y: auto;
+background: white;
+}
+
+.inputItem, .outputItem {
+  padding: 5px;
+  margin: 3px 0;
+  background: #f5f5f5;
+  border-radius: 3px;
+}
+
+.moreItems {
+  font-style: italic;
+  color: #666;
+}
+
+.outputList {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Add to your styles */
+.paramGroup {
+  margin-bottom: 1rem;
+}
+
+.paramHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.3rem;
+}
+
+.paramDescription {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+
+.paramImplication {
+  font-size: 0.75rem;
+  color: #888;
+  font-style: italic;
+}
+
+.paramGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.disabledParam {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.disabledLabel {
+  color: #999;
+}
+
+.paramHint {
+  font-size: 0.75rem;
+  color: #999;
+  margin-left: 8px;
+}
+
+/* Add to your CSS */
+.resultSection{
+  background-color: white;
+  color: black;
+  padding: 12px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  font-family: monospace;
+  white-space: pre-wrap;
+}
+
+.twoColumnLayout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.leftColumn, .rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.runButtonContainer {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+/* Update your existing styles to match */
+.section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Keep your existing paramGrid, paramGroup, etc. styles */
+
+.jsonBlock {
+  background: white;
+  color: black;
+  font-family: monospace;
+  white-space: pre-wrap;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #eee;
+  margin: 4px 0;
+}
+
+.jsonLine {
+  line-height: 1.4;
+}
+
+/* Container styles */
+.itemList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.itemContainer {
+  padding: 8px;
+  background: #f8f8f8;
+  border-radius: 4px;
+}
+
+/* Text block styles */
+.textBlock {
+  white-space: pre-wrap;
+  padding: 8px;
+  background: white;
+  color: black;
+  border-radius: 4px;
+}
+
+.textLine {
+  margin: 4px 0;
+  line-height: 1.5;
+}
+
+/* JSON block styles */
+.jsonBlock {
+  background: white;
+  color: black;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+}
+
+.jsonLine {
+  display: flex;
+  margin: 4px 0;
+  line-height: 1.5;
+}
+
+.jsonKey {
+  font-weight: bold;
+  margin-right: 8px;
+  color: #d32f2f; /* Red color for keys */
+}
+
+.jsonValue {
+  flex: 1;
+  white-space: pre-wrap;
+}
+
+/* Sample file download buttons */
+.sampleButtons {
+  margin: 10px 0;
+  font-size: 0.9rem;
+}
+
+.sampleButtons p {
+  margin-bottom: 5px;
+  color: #666;
+}
+
+.sampleButtonGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.sampleButton {
+  padding: 5px 10px;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+
+.sampleButton:hover {
+  background: #e0e0e0;
+}
+
+
