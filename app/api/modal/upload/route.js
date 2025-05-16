@@ -1,272 +1,282 @@
-// app/api/modal/upload/route.js
 import { NextResponse } from 'next/server';
-import { tmpdir } from 'os';
-import {dirname, join } from 'path';
 
-import {
-  access, mkdir, writeFile, readdir, readFile, appendFile, unlink, rm, stat
-} from 'fs/promises';
-import { exec } from 'child_process';
-import { promisify } from 'util';
+const USER_NAME = 'junma0614';
 
-const execAsync = promisify(exec);
-const MAX_FILE_SIZE = 100 * 1024 * 1024 * 1024; // 100GB
-const ALLOWED_EXTENSIONS = ['.tar.gz', '.gz', '.tar', '.bin', '.pt', '.safetensors', '.txt','.json','.model','.pth'];
-const VOLUME_NAME = 'llm-models';
-const USER_NAME='junma0614';
-const MODAL_APP_ENTRY = 'modal_app.py'; // customize if needed
-const MODAL_DEPLOY_NAME = 'my-model-service'; // customize if needed
-
-function cleanOutput(buffer) {
-  return buffer.toString('utf8').replace(/[^\x00-\x7F]/g, '');
-}
-
-async function runModalCommand(command) {
-  const env = {
-    ...process.env,
-    PYTHONIOENCODING: 'utf-8',
-    LANG: 'en_US.UTF-8',
-    LC_ALL: 'en_US.UTF-8',
-  };
-
-  const { stdout, stderr } = await execAsync(`modal ${command}`, {
-    env,
-    encoding: 'buffer',
-    timeout: 300000 // 5 minutes
-  });
-
-  if (stderr?.length) console.error('Modal stderr:', cleanOutput(stderr));
-  return cleanOutput(stdout);
-}
-
-
-async function checkFolderExists(volumeName, folderName) {
-  try {
-    const output = await runModalCommand(`volume ls ${volumeName} --json`);
-    const items = JSON.parse(output);
-  
-   
-    console.log("checking folder:", folderName);
-    console.log("checking items:", items);
- //console.log("checking items files:", items[0].Filename);
-
-if (!items || items.length === 0) {
-      return false;
-    }
-       
- 
-    return items.some(file => {
-      const fileName = file?.Filename || file?.name || '';
-      const normalizedFileName = fileName.replace(/\/$/, '');
-      const normalizedFolderName = folderName.replace(/\/$/, '');
-      console.log("normalizedfilename: ", normalizedFileName);
-      return normalizedFileName === normalizedFolderName;
-    });
-  } catch (err) {
-    console.error('Folder check failed:', err);
-    return false;
-  }
-}
-
-
+const githubToken = process.env.GH_TOKEN;
+const repo = "junma0414/modalApp"; //process.env.GITHUB_REPO; // e.g., "junma0614/modal-deploy-service"
+const branch = process.env.GITHUB_BRANCH || 'main';
+const workflowFile = process.env.GITHUB_WORKFLOW_FILE || 'deploy.yml';
 
 export async function POST(req) {
-  const authHeader = req.headers.get('authorization');
-  const token = authHeader?.split(' ')[1];
-  if (token !== process.env.NEXT_PUBLIC_MODAL_KEY) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-  }
+  const contentType = req.headers.get('content-type');
+  const MODAL_API_URL = process.env.MODAL_API_URL;
+  const MODAL_API_KEY = process.env.MODAL_API_KEY;
 
-  const contentType = req.headers.get('content-type') || '';
-
-  if (contentType.includes('application/json')) {
-    const body = await req.json();
- console.log("pass body: ", body);
-    return handleJsonUploadActions(body);
-  }
-
- if (contentType.includes('multipart/form-data')) {
-  const formData = await req.formData();
- // if (formData.has('files[]')) {
- if (formData.has('files')) {
-    return handleFolderUpload(formData);
-  }
-  return handleMultipartUpload(formData);
-}
-
-  return NextResponse.json({ error: 'Unsupported content type' }, { status: 415 });
-}
-
-async function handleFolderUpload(formData) {
-  const files = formData.getAll('files');
-  const folderName = formData.get('folderName');
-  const uploadId = formData.get('uploadId');
-  const tempDir = join(tmpdir(), 'modal-uploads', uploadId);
-
-  try {
-    await mkdir(tempDir, { recursive: true });
-
-    // Process each file
-    for (const file of files) {
-      // Get the stored relative path from FormData
-      const relativePath = file.name;
-     const absolutePath = join(tempDir, relativePath);
-
-      
-      // Ensure parent directories exist (using imported dirname)
-      await mkdir(dirname(absolutePath), { recursive: true });
-
-console.log('Processing file:', {
-  originalName: file.name,
-  relativePath: relativePath,
-  absolutePath: absolutePath,
-  parentDir: dirname(absolutePath)
-});
-      
-      // Write file
-      const buffer = Buffer.from(await file.arrayBuffer());
-      await writeFile(absolutePath, buffer);
-    }
-
-    // Upload to Modal volume
-    const folderPath = join(tempDir, folderName);
-   console.log("folder path is: ", folderPath);
-    const uploadCmd = `volume put ${VOLUME_NAME} ${folderPath}`;
-    console.log('Executing:', uploadCmd);
-    await runModalCommand(uploadCmd);
-
-    // Cleanup
-    await rm(tempDir, { recursive: true });
-
-    return NextResponse.json({
-      success: true,
-      volumePath: `modal://${VOLUME_NAME}/${folderName}`
-    });
-
-  } catch (error) {
-    console.error('Upload failed:', error);
-    await rm(tempDir, { recursive: true }).catch(() => {});
-    return NextResponse.json(
-      { error: `Upload failed: ${error.message}` },
-      { status: 500 }
-    );
-  }
-}
-
-async function handleJsonUploadActions(body) {
-  const { action, fileName, uploadId, checkType } = body;
- 
-
-
-   console.log("filename:", fileName)
-
- if (action === 'complete_folder') {
+  // Handle FormData (file uploads)
+  if (contentType && contentType.includes('multipart/form-data')) {
     try {
-      // Verify the folder exists in temp storage
-      const tempDir = join(tmpdir(), 'modal-uploads', uploadId);
-      const folderPath = join(tempDir, folderName);
+      const formData = await req.formData();
+      const action = formData.get('action');
+
+
       
-      const exists = await access(folderPath).then(() => true).catch(() => false);
-      if (!exists) throw new Error('Folder not found in temporary storage');
+      // Handle file chunk upload
+      if (action === 'upload_chunk') {
+        const file = formData.get('file');
+        const session_id = formData.get('session_id');
+        const chunk_index = formData.get('chunk_index');
+        const relativePath = formData.get('relativePath');
+      const original_filename=formData.get('original_filename');
 
-      // Upload to Modal volume
-      await runModalCommand(`volume put ${VOLUME_NAME} ${folderPath}`);
+console.log("formData received :", formData);
 
-      // Cleanup
-      await rm(tempDir, { recursive: true });
 
-      return NextResponse.json({
-        success: true,
-        volumePath: `modal://${VOLUME_NAME}/${folderName}`
+        // Validate required fields
+        if (!file || !session_id || !chunk_index) {
+          return NextResponse.json({
+            success: false,
+            error: "Missing required fields (file, session_id, chunk_index)"
+          }, { status: 400 });
+        }
+
+        // Create new FormData with proper field names
+        const modalFormData = new FormData();
+        modalFormData.append('file', file, relativePath || file.name);
+        modalFormData.append('session_id', session_id);
+        modalFormData.append('chunk_index', chunk_index.toString());
+modalFormData.append('relative_path', relativePath || file.name);
+modalFormData.append('original_filename', original_filename)
+
+
+console.log("formData sending to modal :", modalFormData);
+        
+       try {
+          const response = await fetch(`${MODAL_API_URL}/api/upload/chunk`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${MODAL_API_KEY}`
+            },
+            body: modalFormData
+          }); 
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Upload failed (${response.status}): ${errorText}`);
+          }
+
+          const responseData = await response.json();
+          return NextResponse.json({ 
+            ...responseData, 
+            success: true 
+          });
+        } catch (error) {
+          console.error('Chunk upload error:', error);
+          return NextResponse.json({ 
+            success: false,
+            error: error.message 
+          }, { status: 500 });
+        }
+      }
+    } catch (error) {
+      console.error('File upload error:', error);
+      return NextResponse.json({ 
+        success: false,
+        error: error.message 
+      }, { status: 500 });
+    }
+  }
+
+  // Handle JSON requests
+  try {
+    const body = await req.json();
+    const { action } = body;
+    
+    console.log("Action:", action);
+    
+    let response;
+    let responseData;
+    
+    // Check directory existence
+    if (action === 'checkdir') {
+      response = await fetch(`${MODAL_API_URL}/api/checkdir?path=${encodeURIComponent(body.path)}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${MODAL_API_KEY}`,
+         'Content-Type': 'application/json',
+        }
       });
 
-    } catch (error) {
-      await rm(join(tmpdir(), 'modal-uploads', uploadId), { recursive: true }).catch(() => {});
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      responseData = await response.json();
+      return NextResponse.json({ 
+        ...responseData, 
+        success: true 
+      });
+    } 
+    // Start upload session
+    else if (action === 'start_upload') {
+
+    //  console.log("starting upload with target path: ", target_path);
+      response = await fetch(`${MODAL_API_URL}/api/upload/start`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${MODAL_API_KEY}`
+        },
+        body: JSON.stringify({
+          target_path: body.target_path
+        })
+      });
+      responseData = await response.json();
+      return NextResponse.json({ 
+        ...responseData, 
+        success: true 
+      });
     }
-  }
+    // Complete upload session
+    else if (action === 'complete_upload') {
+     
+  console.log("completing upload with original filename: ", body.original_filename);
+      
+      response = await fetch(`${MODAL_API_URL}/api/upload/complete?session_id=${body.session_id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${MODAL_API_KEY}`
+        }
+      });
 
-if (action === 'deploy') {
-  const {modelName, modelClass, tokenizerClass, taskType, folderName}=body;
+      responseData = await response.json();
+      return NextResponse.json({ 
+        ...responseData, 
+        success: true 
+      });
+    }
+    // Delete directory
+    else if (action === 'deletedir') {
+      response = await fetch(`${MODAL_API_URL}/api/deletedir?path=${encodeURIComponent(body.path)}&modelName=${encodeURIComponent(body.modelName)}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${MODAL_API_KEY}`
+        }
+      });
 
- console.log("deploy body is: ", body);
 
-const scriptPath = join(tmpdir(), `${modelName}_deploy.py`);
+  const triggerRes=await fetch(`https://api.github.com/repos/${repo}/actions/workflows/stop-app.yml/dispatches`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${githubToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      ref: branch,
+      inputs: {
+        app_name: body.modelName
+      }
+    })
+  });
+
+  responseData = await response.json();
+      return NextResponse.json({ 
+        ...responseData, 
+        success: true 
+      });
 
   
+    }
+    // Deploy model
+    else if (action === 'deploy') {
+      const { modelName, modelClass, tokenizerClass, taskType, folderName } = body;
+
+      const scriptContent = generateDeploymentScript(modelName, modelClass, tokenizerClass, taskType, folderName);
+      const scriptPath = `scripts/${modelName}.py`;
+
+      
+       let sha = null;
   try {
-    // 1. Generate and write deployment script
-    const scriptContent = generateDeploymentScript(
-      modelName, 
-      modelClass, 
-      tokenizerClass, 
-      taskType, 
-      folderName
-    );
-
-    console.log("the script for deployment is:", scriptContent);
-    await writeFile(scriptPath, scriptContent);
-
-
-try {
-  const stats = await stat(scriptPath);
-  console.log(`File exists, size: ${stats.size} bytes`);
-} catch (e) {
-  console.error('File verification failed:', e);
-  throw new Error('Failed to verify script file creation');
-}
-
-
-     
-    
-    // Run deployment
-   console.log('Deploying with modal using script at:', scriptPath);
-const output = await runModalCommand(`deploy ${scriptPath}`);
-   // const output = await runModalCommand(`deploy ${scriptPath} --name ${modelName}-inference`);
-
-console.log('Modal CLI Output:', output);
-
-if (!/App deployed.*!/.test(output)) {
-  throw new Error('Deployment may have failed: ' + output);
-}
-   const modelNameStandardized = modelName.replace(/_/g, "-"); 
-//https://junma0614--predict-inference-fastapi-app.modal.run/inference
-    return NextResponse.json({ 
-      success: true, 
-      endpoint: `https://${USER_NAME}--${modelNameStandardized}-fastapi-app.modal.run/inference`,
-      message: output
+    const res = await fetch(`https://api.github.com/repos/${repo}/contents/${scriptPath}?ref=${branch}`, {
+      headers: { Authorization: `Bearer ${githubToken}` }
     });
+    if (res.ok) {
+      const data = await res.json();
+      sha = data.sha;
+    }
   } catch (err) {
+    console.log('Script does not exist yet (no SHA needed)');
+  }
+
+  // Step 2: Push file to GitHub
+  const uploadRes = await fetch(`https://api.github.com/repos/${repo}/contents/${scriptPath}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${githubToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      message: `Auto-deploy ${modelName}`,
+      content: Buffer.from(scriptContent).toString('base64'),
+      branch,
+      ...(sha ? { sha } : {})
+    })
+  });
+
+  if (!uploadRes.ok) {
+    const err = await uploadRes.json();
+    throw new Error(`GitHub upload failed: ${JSON.stringify(err)}`);
+  }
+
+  console.log(`✅ Script pushed to GitHub at ${scriptPath}`);
+
+  // Step 3: Trigger workflow
+  const dispatchRes = await fetch(`https://api.github.com/repos/${repo}/actions/workflows/${workflowFile}/dispatches`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${githubToken}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      ref: branch,
+      inputs: {
+        script_name: scriptPath,
+        app_name: modelName
+      }
+    })
+  });
+
+  if (!dispatchRes.ok) {
+    const err = await dispatchRes.json();
+    throw new Error(`deployment Workflow trigger failed: ${JSON.stringify(err)}`);
+  }
+  
+
+  console.log(`🚀 GitHub Action triggered to stop & deploy app: ${modelName}`);
+
+  const modelNameStandardized = modelName.replace(/_/g, "-");
+
+  return NextResponse.json({ 
+        success: true,
+        endpoint: `https://${USER_NAME}--${modelNameStandardized}-fastapi-app.modal.run/inference`,
+        message: "Deployment Done"
+      });
+
+    }
+    // Unsupported action
+    else {
+      return NextResponse.json(
+        { 
+          success: false,
+          error: `Unsupported action: ${action}` 
+        },
+        { status: 400 }
+      );
+    }
+  } catch (error) {
+    console.error('Proxy error:', error);
     return NextResponse.json({ 
-      error: 'Deployment failed', 
-      detail: err.message 
+      success: false,
+      error: error.message 
     }, { status: 500 });
   }
-}
-
-
-  if (!action) {
-    return NextResponse.json({ error: 'Missing action' }, { status: 400 });
-  }
-
-if (action === 'check_exists' && checkType === 'volume') {
-  const exists = await checkFolderExists(VOLUME_NAME, fileName);
-  return NextResponse.json({exists});
-}
-
-  if (action === 'complete') {
-    return handleCompleteUpload(uploadId, fileName);
-  }
-
-  if (action === 'cleanup') {
-    return handleCleanup(uploadId);
-  }
-
-  if (action === 'deploy') {
-    return handleDeploy();
-  }
-
-  return NextResponse.json({ error: `Unknown action "${action}"` }, { status: 400 });
 }
 
 function generateDeploymentScript(modelName, modelClass, tokenizerClass, TaskType, folderName) {
@@ -466,12 +476,8 @@ question_answering: `
 
   const script = `
 import modal
-from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import Union, List, Optional
-import torch
-from transformers import ${tokenizerClass}, ${modelClass}
 
+    
 app = modal.App("${modelName}")
 
 volume = modal.Volume.from_name("llm-models")
@@ -487,6 +493,11 @@ image = modal.Image.debian_slim().pip_install(
 @app.function(image=image, volumes={"/model": volume}, gpu="A10G", timeout=600)
 @modal.asgi_app()
 def fastapi_app():
+    from fastapi import FastAPI
+    from pydantic import BaseModel
+    from typing import Union, List, Optional
+    import torch
+    from transformers import ${tokenizerClass}, ${modelClass}
     model_path = "/model/${folderName}"
     tokenizer = ${tokenizerClass}.from_pretrained(model_path)
     model = ${modelClass}.from_pretrained(model_path).to("cuda")
@@ -512,134 +523,4 @@ def fastapi_app():
 
   console.log("Generated script:\n", script);
   return script;
-}
-
-
-
-
-async function handleMultipartUpload(formData) {
-
- const file = formData.get('file'); // Changed from 'chunk' to 'file'
-  
-  if (!file || typeof file.arrayBuffer !== 'function') {
-    return NextResponse.json(
-      { error: 'Invalid file upload' },
-      { status: 400 }
-    );
-  }
-
-
-  let tempDir = null;
-  let filePath = null;
-
-  try {
-    
-    const fileName = formData.get('fileName');
-    const uploadId = formData.get('uploadId');
-    const isSingleChunk = formData.get('isSingleChunk') === 'true';
-    const chunkIndex = formData.get('chunkIndex');
-    const totalChunks = formData.get('totalChunks');
-
-    if (!fileName || !uploadId) {
-      return NextResponse.json({ error: 'Missing fileName or uploadId' }, { status: 400 });
-    }
-
-    const ext = fileName.slice(fileName.lastIndexOf('.')).toLowerCase();
-    if (!ALLOWED_EXTENSIONS.includes(ext)) {
-      return NextResponse.json({
-        error: `Unsupported file extension. Allowed: ${ALLOWED_EXTENSIONS.join(', ')}`,
-        invalidExtension: true
-      }, { status: 415 });
-    }
-
-    tempDir = join(tmpdir(), 'modal-uploads', uploadId);
-    await mkdir(tempDir, { recursive: true });
-
-    if (isSingleChunk) {
-      filePath = join(tempDir, fileName);
-      await writeFile(filePath, Buffer.from(await file.arrayBuffer()));
-    } else {
-      if (!chunkIndex || !totalChunks) {
-        return NextResponse.json({ error: 'Missing chunk metadata' }, { status: 400 });
-      }
-
-      const chunkPath = join(tempDir, `${chunkIndex}.part`);
-      await writeFile(chunkPath, Buffer.from(await file.arrayBuffer()));
-
-      const chunkFiles = (await readdir(tempDir)).filter(f => f.endsWith('.part'));
-      if (chunkFiles.length < parseInt(totalChunks)) {
-        return NextResponse.json({ success: true, received: chunkFiles.length });
-      }
-
-      // Merge chunks
-      filePath = join(tempDir, fileName);
-      for (const part of chunkFiles.sort((a, b) => parseInt(a) - parseInt(b))) {
-        const data = await readFile(join(tempDir, part));
-        await appendFile(filePath, data);
-        await unlink(join(tempDir, part));
-      }
-    }
-
-    // Final file checks
-    const stats = await stat(filePath);
-    if (stats.size > MAX_FILE_SIZE) {
-      await rm(tempDir, { recursive: true });
-      return NextResponse.json({ error: 'File exceeds maximum size' }, { status: 413 });
-    }
-
-    if (await checkFileExists(fileName)) {
-      await rm(tempDir, { recursive: true });
-      return NextResponse.json({ error: 'File already exists', fileExists: true }, { status: 409 });
-    }
-
-    await runModalCommand(`volume put ${VOLUME_NAME} ${filePath} ${fileName}`);
-
-    await rm(tempDir, { recursive: true });
-
-    return NextResponse.json({
-      success: true,
-      volumePath: `modal://${VOLUME_NAME}/${fileName}`,
-      fileSize: stats.size
-    });
-
-  } catch (error) {
-    console.error('Upload failed:', error);
-    if (filePath) await unlink(filePath).catch(() => {});
-    if (tempDir) await rm(tempDir, { recursive: true }).catch(() => {});
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
-
-async function handleCompleteUpload(uploadId, fileName) {
-  const dir = join(tmpdir(), 'modal-uploads', uploadId);
-  const filePath = join(dir, fileName);
-  try {
-    const stats = await stat(filePath);
-    await runModalCommand(`volume put ${VOLUME_NAME} ${filePath} ${fileName}`);
-    await rm(dir, { recursive: true });
-    return NextResponse.json({
-      success: true,
-      volumePath: `modal://${VOLUME_NAME}/${fileName}`,
-      fileSize: stats.size
-    });
-  } catch (err) {
-    await rm(dir, { recursive: true }).catch(() => {});
-    return NextResponse.json({ error: err.message }, { status: 500 });
-  }
-}
-
-async function handleCleanup(uploadId) {
-  const dir = join(tmpdir(), 'modal-uploads', uploadId);
-  await rm(dir, { recursive: true }).catch(() => {});
-  return NextResponse.json({ success: true });
-}
-
-async function handleDeploy() {
-  try {
-    const output = await runModalCommand(`deploy ${MODAL_APP_ENTRY} --name ${MODAL_DEPLOY_NAME}`);
-    return NextResponse.json({ success: true, message: output });
-  } catch (err) {
-    console.error('Deployment error:', err);
-    return NextResponse.json({ error: 'Deployment failed', detail: err.message }, { status: 500 });
-  }
 }

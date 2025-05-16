@@ -92,6 +92,406 @@ useEffect(() => {
     fetchData('data');
   }, []);
 
+//////////////////////////////////////////////////////////////Model related//////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const uploadDirectoryToModal = async (files, apiKey, folderName) => {
+  const uploadId = `upload-${Date.now()}`;
+  
+  try {
+    // 1. Check if directory exists
+
+   console.log("checking folder existence......")
+    const checkResponse = await fetch('/api/modal/upload', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'checkdir',
+        path: folderName
+      })
+    });
+  
+  if (!checkResponse.ok) {
+  throw new Error(`Check failed: ${checkResponse.status}`);
+}
+   
+    const checkData = await checkResponse.json();
+  console.log("response is: ", checkData);
+    if (!checkData.success) {
+  throw new Error(checkData.error || "Directory check failed");
+}
+
+if (checkData.exists) {
+  throw new Error(`Directory "${folderName}" already exists`);
+}
+
+    // 2. Start upload session
+
+   console.log("starting upload session ...");
+    const sessionResponse = await fetch('/api/modal/upload', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'start_upload',
+        target_path: folderName
+      })
+    });
+
+    const { session_id } = await sessionResponse.json();
+
+     console.log("finishing upload session  with session_id: ", session_id);
+
+    // 3. Upload files in chunks
+    const CHUNK_SIZE = 50 * 1024 * 1024; // 50MB chunks
+    for (const file of files) {
+      const fileSize = file.size;
+      const totalChunks = Math.ceil(fileSize / CHUNK_SIZE);
+      const relativePath = file.webkitRelativePath || `${folderName}/${file.name}`;
+
+      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+
+  console.log("loading file: ", file, " at chunk: ", chunkIndex);
+        const start = chunkIndex * CHUNK_SIZE;
+        const end = Math.min(start + CHUNK_SIZE, fileSize);
+        const chunk = file.slice(start, end);
+
+        const formData = new FormData();
+        formData.append('file', chunk, relativePath);
+        formData.append('session_id', session_id);
+        formData.append('chunk_index', chunkIndex);
+        formData.append('action', 'upload_chunk');
+formData.append('original_filename', file.name);
+formData.append('relativePath', relativePath);
+
+        const uploadResponse = await fetch('/api/modal/upload', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`
+          },
+          body: formData
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error(`Failed to upload chunk ${chunkIndex + 1}/${totalChunks} of ${file.name}`);
+        }
+
+        // Update progress
+        const progress = ((chunkIndex + 1) / totalChunks) * 100;
+        setUploadProgress(Math.round(progress));
+      }
+    }
+       
+    // 4. Complete upload
+
+      console.log("completing uploading");
+    const completeResponse = await fetch('/api/modal/upload', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'complete_upload',
+        session_id,
+        total_chunks: 0, // Not used in your backend but required by API
+        original_filename: folderName
+      })
+    });
+
+    const completeData = await completeResponse.json();
+    if (!completeData.status === 'complete') {
+      throw new Error('Failed to complete upload');
+    }
+
+    return { 
+      success: true, 
+      directoryPath: `modal://llm-models/${folderName}`,
+      extractedFiles: completeData.extracted_files
+    };
+  } catch (error) {
+    console.error('Directory upload failed:', error);
+    
+    // Cleanup on failure
+{/*
+    await fetch('/api/modal/upload', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'cleanup',
+        session_id: uploadId,
+        path: folderName
+      })
+    }).catch(console.error);  */}
+
+    throw error;
+  }
+};
+
+const deleteModel = async (id, modalPath) => {
+  if (!confirm('Are you sure you want to delete this model folder? This action cannot be undone.')) return;
+  
+  setIsDeleting(true);
+  try {
+    // 1. Get the model record
+    const { data: model, error: fetchError } = await supabase
+      .from('models')
+      .select('id, name, modal_path, display_name')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) throw fetchError;
+    if (!model) throw new Error('Model not found');
+
+    // Extract folder name from modal_path (format: modal://llm-models/folderName)
+    const folderName = model.modal_path.split('/').pop();
+
+    // 2. Delete from Modal storage
+    const deleteResponse = await fetch('/api/modal/upload', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_MODAL_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+        action: 'deletedir',
+        path: folderName,
+        modelName: model.display_name
+      })
+    });
+
+   console.log("deletion response: ", deleteResponse);
+
+    if (!deleteResponse.ok) {
+      const errorData = await deleteResponse.json();
+      throw new Error(errorData.error || 'Failed to delete directory');
+    }
+
+    // 3. Delete from Supabase
+    const { error: deleteError } = await supabase
+      .from('models')
+      .delete()
+      .eq('id', id);
+
+    if (deleteError) throw deleteError;
+
+    // 4. Refresh the model list
+    await fetchData('model');
+    return true;
+  } catch (error) {
+    console.error('Delete failed:', error);
+    alert(`Delete failed: ${error.message}`);
+    return false;
+  } finally {
+    setIsDeleting(false);
+  }
+};
+
+const checkModelExists = async (folderName) => {
+  try {
+    const response = await fetch('/api/modal/upload', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_MODAL_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'checkdir',
+        path: folderName
+      })
+    });
+
+    const data = await response.json();
+    return data.exists || false;
+  } catch (error) {
+    console.error('Check failed:', error);
+    return false;
+  }
+}; 
+
+const handleModelUpload = async ({ folder, metadata = {} }) => {
+  // Get folder name from the first file's path or generate a unique one
+  const folderName = folder[0]?.webkitRelativePath?.split('/')[0] || `model-${Date.now()}`;
+  
+  if (!folder || folder.length === 0) {
+    setUploadError('No files found in the selected folder');
+    return;
+  }
+
+  setUploadedFileName(folderName);
+  setUploadStatus('checking');
+  setUploadError(null);
+
+  // Validate file types
+  const validExtensions = ['.tar.gz', '.gz', '.tar', '.bin', '.pt', '.safetensors', '.json', '.txt','.pth','.model'];
+  const invalidFiles = folder.filter(file => {
+    if (!file || !file.name) return true;
+    const fileName = file.name.toLowerCase();
+    return !validExtensions.some(ext => fileName.endsWith(ext));
+  });
+
+  if (invalidFiles.length > 0) {
+    const invalidNames = invalidFiles.map(f => f?.name || 'unnamed file').join(', ');
+    setUploadError(`Invalid file types found: ${invalidNames}. Allowed extensions: ${validExtensions.join(', ')}`);
+    return;
+  }
+
+  // Check total size (100GB max)
+  const MAX_SIZE = 100 * 1024 * 1024 * 1024;
+  const totalSize = folder.reduce((sum, file) => sum + file.size, 0);
+  if (totalSize > MAX_SIZE) {
+    setUploadError(`Total size too large. Max size is ${MAX_SIZE / 1024 / 1024 / 1024} GB`);
+    return;
+  }
+
+  // Check for duplicate model name in database
+  if (metadata.name) {
+    const { data: existingModels, error } = await supabase
+      .from('models')
+      .select('display_name')
+      .eq('display_name', metadata.name)
+      .limit(1);
+    
+    if (error) throw error;
+    if (existingModels?.length > 0) {
+      setUploadStatus('error');
+      setUploadError(`Model name "${metadata.name}" is already in use. Please choose a different name.`);
+      return;
+    }
+  }
+
+  // Check for duplicate folder name in storage
+  const apiKey = process.env.NEXT_PUBLIC_MODAL_KEY;
+  const exists = await checkModelExists(folderName);
+  if (exists) {
+    setUploadStatus('error');
+    setUploadError(`Folder "${folderName}" exists in system. Please rename your folder before uploading.`);
+    return;
+  }
+
+  try {
+    setIsLoading(true);
+    setUploadProgress(0);
+    setUploadStatus('uploading');
+
+    // 1. Upload directory to Modal storage
+    const uploadResult = await uploadDirectoryToModal(folder, apiKey, folderName);
+    
+    if (!uploadResult.success) {
+      throw new Error('Failed to upload model files');
+    }
+
+    // 2. Create database record
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data: insertedModel, error: insertError } = await supabase
+      .from('models')
+      .insert({
+        name: folderName,
+        type: 'llm',
+        display_name: metadata.name,
+        size: totalSize,
+        modal_path: uploadResult.directoryPath,
+        model_class: metadata.model_class,
+        tokenizer_class: metadata.tokenizer_class,
+        task_type: metadata.task_type,
+        format: 'folder',
+        created_by: user.id,
+        created_user: user.email,
+        uploaded_at: new Date().toISOString(),
+        status: 'Uploaded'
+      })
+      .select()
+      .single();
+
+    if (insertError) throw insertError;
+
+    // 3. Deploy model endpoint
+    setUploadStatus('deploying');
+    const deployResponse = await fetch('/api/modal/upload', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'deploy',
+        modelName: metadata.name,
+        modelClass: metadata.model_class,
+        tokenizerClass: metadata.tokenizer_class,
+        taskType: metadata.task_type,
+        folderName: folderName,
+        modelId: insertedModel.id
+      })
+    });
+
+    if (!deployResponse.ok) {
+      throw new Error('Deployment request failed');
+    }
+
+    const deploymentResult = await deployResponse.json();
+    
+    // 4. Update model with endpoint info
+    const { error: updateError } = await supabase
+      .from('models')
+      .update({
+        status: 'Deployed',
+        endpoint: deploymentResult.endpoint,
+        model_type: metadata.type,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', insertedModel.id);
+
+    if (updateError) throw updateError;
+
+    setUploadStatus('complete');
+    await fetchData('model');
+
+  } catch (error) {
+    console.error('Upload failed:', error);
+    setUploadStatus('error');
+    setUploadError(error.message);
+    
+    // Cleanup on failure
+{/*
+    try {
+      await fetch('/api/modal/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          action: 'cleanup',
+          folderName: folderName
+        })
+      });
+    } catch (cleanupError) {
+      console.error('Cleanup failed:', cleanupError);
+    }*/}
+    
+    await fetchData('model');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
+
+////////////////////////////////////////////////////////The end of Modal related part/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 const uploadFileToModal = async (file, apiKey, uploadId, CHUNK_SIZE, onProgress) => {
   if (!file) {
     throw new Error('No file provided for upload');
@@ -135,6 +535,8 @@ const uploadFileToModal = async (file, apiKey, uploadId, CHUNK_SIZE, onProgress)
     throw error;
   }
 };
+
+{/*
 const handleModelUpload = async ({ folder, metadata = {}, ...props }) => {
   // Get folderName either from props or extract from files
   const folderName = props.folderName || 
@@ -278,11 +680,13 @@ created_by: user.id,
       })
     });
 
+   
     if (!deployResponse.ok) {
       throw new Error('Deployment request failed');
     }
 
     const deploymentResult = await deployResponse.json();
+ console.log("response for deployment is:" deploymentResult);
     
     // Update model with endpoint info
     const { error: updateError } = await supabase
@@ -314,12 +718,13 @@ await fetchData('model');
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({ action: 'cleanup', uploadId })
-    }).catch(console.error);
+    }).catch(console.error);  
   } finally {
     setIsLoading(false);
   }
 };
 
+*/}
 const uploadFolderToModal = async (files, apiKey, folderName) => {
   const uploadId = `folder-upload-${Date.now()}`;
   const formData = new FormData();
@@ -391,8 +796,7 @@ formData.append('folderName', folderName);
       }
     }
   };
-
-  const deleteModel = async (id, modalPath) => {
+{/* const deleteModel = async (id, modalPath) => {
   if (!confirm('Are you sure you want to delete this model folder? This action cannot be undone.')) return;
   
   setIsDeleting(true);
@@ -445,6 +849,8 @@ formData.append('folderName', folderName);
     setIsDeleting(false);
   }
 };
+
+*/}
 
  ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
