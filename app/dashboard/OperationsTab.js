@@ -149,7 +149,8 @@ if (checkData.exists) {
      console.log("finishing upload session  with session_id: ", session_id);
 
     // 3. Upload files in chunks
-    const CHUNK_SIZE = 50 * 1024 * 1024; // 50MB chunks
+   // const CHUNK_SIZE = 50 * 1024 * 1024; // 50MB chunks
+   const CHUNK_SIZE = 4 * 1024 * 1024; //4MB to meet the free plan of vercel 
     for (const file of files) {
       const fileSize = file.size;
       const totalChunks = Math.ceil(fileSize / CHUNK_SIZE);
