@@ -3,19 +3,22 @@
   background: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: fixed;
-  height: 50px;
+  /* height: 50px; */
   width:100%;
   top: 0;
   z-index: 1000;
+   padding: 0.5rem 0; /* Added vertical padding */
+
 }
 
 .container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1200px;
+
   margin: 0 auto;
-  padding: 0.2 rem;
+ width:100%;
+  padding: 0.1 rem;
 }
 
 .logo {
@@ -25,9 +28,32 @@
   text-decoration: none;
 }
 
+.logoContainer {
+  flex-shrink: 0;
+  height: auto;
+  display: flex;
+  align-items: center;
+ margin-right:auto;
+}
+
+.navLinks {
+  display: flex;
+  gap: 1.5rem;
+  margin-left: auto; /* Ensures links stay right-aligned */
+}
+
+
+.logoImage {
+  width: 150px;
+  height: auto;
+  object-fit: contain;
+}
+
+
 .links {
   display: flex;
   gap: 1.5rem;
+  align-items: center; /*newly added */
 }
 
 .link {

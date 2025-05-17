@@ -4,28 +4,28 @@ import Image from 'next/image';
 import Layout from '../components/Layout';
 
 import { 
-  Gauge,         // Explanability icon
+  Gauge,         // NER icon
   Scale,         // Bias & Fairness icon
   BrainCircuit,  // Hallucination icon
   TrendingUp,    // Driftness icon
-  Layers,        // Distillation icon
-  GanttChart,    // Monitoring icon
-  Shield,        // Security icon
+  Layers,        // Model icon
+  FileText,    // data input icon <FileText />
+  ServerCog,        // inference  icon
   Puzzle         // Integration icon
 } from 'lucide-react';
 
 const solutions = [
   {
     id: 'ai-gcr',
-    title: "AI Governance, Compliance & Risk (GCR)",
-    description: "Comprehensive framework for responsible AI deployment",
+    title: "AI-LLM continuity, responsibility and risk-detection",  
+    description: "A delegant framework to understand your communications with your clients, in order to keep business continutity, reduce model risk and behave responsibly",
     image: "/images/solution-ai-gcr.jpg",
-    cta: "/solution/ai-gcr",
+    cta: "/solution/llmtrack",
     topics: [
       {
-        name: "Explanability",
+        name: "Entity Recognization",
         icon: <Gauge className="w-6 h-6 text-blue-600" />,
-        description: "Transparent AI decisions"
+        description: "Investigate the key terms"
       },
       {
         name: "Bias & Fairness",
@@ -47,25 +47,25 @@ const solutions = [
      {
     id: 'llmop',
     title: "LLM Operations (LLMOp)",
-    description: "Optimize large language model performance, reduce costs, and streamline deployment",
+    description: "A integrated simulation platform to share artifects among team by streamlining deployment of Language Model, lightweighted Inputs creation, instance inference execution with outcomes inspection",
     image: "/images/solution-ai-llmop.jpg",
     cta: "/solution/llmop",
     topics: [
       {
-        name: "Distillation & Fine-Tune",
+        name: "Share and deploy your LLMs",
         icon: <Layers className="w-6 h-6 text-blue-600" />,
-        description: "Model optimization for efficience and capability"
+        description: "Publish models for better accessibility"
       },
       {
-        name: "Explanability & Observability",
-        icon: <GanttChart className="w-6 h-6 text-blue-600" />,
-        description: "Turn Blackbox logic to explanable reasoning"
+        name: "Manage your source inputs",
+        icon: <FileText className="w-6 h-6 text-blue-600" />,
+        description: "Prepare your prompts randomly or in a batch"
       },
       {
-        name: "Security & Protection",
-        icon: <Shield className="w-6 h-6 text-blue-600" />,
+        name: "Inference with self-defined parameters",
+        icon: <ServerCog className="w-6 h-6 text-blue-600" />, 
         description: [
-    "Defending against risk and prevent the data leakage"
+    "Model Inference while managing parameters"
   ] // Newline separated
       },
       {
@@ -140,8 +140,15 @@ export default function SolutionsOverview() {
                 </>
               )}
 
-              {/* Regular button for solutions without topics */}
-              {!solution.topics && (
+              {/* Conditional button for AI Visual Recognition */}
+              {solution.id === 'ai-visual-recognition' ? (
+                <button
+                  disabled
+                  className="inline-block mt-6 px-8 py-3 bg-gray-400 !text-white font-medium rounded-lg cursor-not-allowed"
+                >
+                  Coming Soon
+                </button>
+              ) : !solution.topics && (
                 <Link
                   href={solution.cta}
                   className="inline-block mt-6 px-8 py-3 bg-blue-600 !text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"
@@ -153,7 +160,7 @@ export default function SolutionsOverview() {
           </div>
         ))}
       </div>
-    <Layout/> 
+      <Layout/> 
     </div>
   );
 }

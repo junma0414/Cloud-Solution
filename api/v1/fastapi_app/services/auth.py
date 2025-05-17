@@ -6,6 +6,9 @@ import logging
 import os
 import traceback
 
+from datetime import datetime , timezone # This imports the datetime class
+
+
 logger = logging.getLogger(__name__)
 security = HTTPBearer()
 
@@ -56,6 +59,21 @@ async def verify_api_key(request: Request):
 
         if not record:
             raise HTTPException(status_code=403, detail="Invalid API key")
+
+        try:
+            update_response = supabase.table('api_keys') \
+                .update({
+                    'last_used': datetime.now(timezone.utc).isoformat()
+                }) \
+                .eq('id', record['id']) \
+                .execute()
+            
+            if hasattr(update_response, 'error') and update_response.error:
+                logger.error(f"Failed to update last_used: {update_response.error}")
+                # Don't fail the request, just log the error
+        except Exception as update_error:
+            logger.error(f"Error updating last_used: {str(update_error)}\n{traceback.format_exc()}")
+
 
         return {
             "auth_info": {

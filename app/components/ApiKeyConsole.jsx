@@ -188,7 +188,13 @@ const [newKeyName, setNewKeyName] = useState(''); // Add this line
                   </td>
                   <td className="p-3 font-mono text-sm">{key.maskedKey}</td>
                   <td className="p-3">{key.createdAt}</td>
-                  <td className="p-3">{key.lastUsed}</td>
+                  <td className="p-3"> {key.lastUsed === 'Never used' ? (
+                      <span className="text-gray-400">Never used</span>
+                    ) : (
+                      <span >
+                        {key.lastUsed}
+                      </span>
+                    )}</td>
                   <td className="p-3">
                     <div className="flex space-x-2">
                       <button

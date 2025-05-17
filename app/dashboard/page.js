@@ -267,14 +267,7 @@ const totalNonCompleted = Object.values(dayTotals).reduce((sum, day) => sum + da
   <span>Flow</span>
 </button>
 
-   <button
-            className={`${styles.sidebarItem} ${activeTab === 'risk' ? styles.active : ''}`}
-            onClick={() => setActiveTab('risk')}
-          >
-            <HiExclamationCircle className={styles.sidebarIcon} />
-            <span>Risk Monitoring</span>
-          </button>
-
+  
 
 <button
   className={`${styles.sidebarItem} ${activeTab === 'operations' ? styles.active : ''}`}

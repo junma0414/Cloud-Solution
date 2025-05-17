@@ -46,7 +46,7 @@ def ensure_safe_path(base_path: str, target_path: str) -> str:
         raise ValueError("Path traversal attempt detected")
     return full_path
 
-# delete folder recursively
+''' #delete folder recursively
 def delete_path_recursive(path: str):
     """Recursively delete a directory using only os module"""
     if not os.path.exists(path):
@@ -66,6 +66,7 @@ def delete_path_recursive(path: str):
             os.rmdir(dir_path)
     os.rmdir(path)
     return True
+    '''
 
 #@modal.asgi_app()
 async def process_folder_upload(zip_content: bytes, target_path: str):
@@ -240,14 +241,6 @@ def handle_task():
                 raise Exception("Deletion failed")
 
 
-            app_stop = modal.App.lookup(modelName)
-            if app_stop:
-                app_stop.stop()  # Stop the app
-            else:
-                print(f"App {modelName} not found")
-
-
-
 
             return {
                 "status": "success",
@@ -301,50 +294,7 @@ def handle_task():
             "status":"success"
         }
 
-    '''
-    @app.post("/api/deploy")
-    async def deploy_app(request: DeploymentRequest = Body(...)):
-        try:
-            # Validate model_name to prevent path traversal
-            if not request.model_name.isidentifier():
-                raise ValueError("Invalid model name format")
-
-            modal_path=shutil.which('modal')
-
-            if not modal_path:
-                raise HTTPException(
-                status_code=500,
-                detail="Modal CLI not found. Install with: pip install modal-client"
-            )
-        
-            script_path = Path(f"/tmp/{request.model_name}.py")
-            script_path.write_text(request.script, encoding='utf-8')
-        
-            result = subprocess.run(
-                [modal_path, "deploy", str(script_path)],
-                capture_output=True,
-                text=True,
-                check=False
-            )
-        
-            if result.returncode != 0:
-                raise RuntimeError(result.stderr)
-            
-            return {
-                "status": "success",
-                "deployment_id": request.model_name,
-                "logs": result.stdout
-            }
-        
-        except Exception as e:
-            raise HTTPException(
-                status_code=400,
-                detail={
-                    "error": str(e),
-                    "type": type(e).__name__
-                }
-            )
-    '''
+   
   
     return app
 

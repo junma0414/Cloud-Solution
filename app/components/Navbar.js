@@ -108,19 +108,24 @@ const handlePasswordReset = async () => {
   return (
     <nav className={styles.navbar}>
       <div className={styles.container}>
-        {/* Logo */}
-        <Link href="/" className="flex items-center pb-4">
-          <Image
-            src={logo}
-            alt="AI Solution Logo"
-            width={150}
-            height={100}
-            priority
-          />
-        </Link>
+          {/* Logo - forced left */}
+    <div className={styles.logoContainer}>
+      <Link href="/">
+        <Image
+          src={logo}
+          alt="AI Solution Logo"
+          width={150}
+          height={40} // Adjusted for better proportion
+          priority
+          className={styles.logoImage}
+        />
+      </Link>
+    </div>
+
+
 
         {/* Navigation Links */}
-        <div className={styles.links}>
+        <div className={styles.navLinks}>
           <Link
             href="/"
             className={`${styles.link} ${mounted && pathname === '/' ? styles.active : ''}`}
