@@ -447,7 +447,7 @@ const handleViewFlow = () => {
           </div>
         </div>
       </div>
-
+ <br/>
       <div className={styles.chartRow}>
         <h4>NER Entity Frequency</h4>
         <div className={styles.fullWidthChartContainer}>

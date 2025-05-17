@@ -5,12 +5,19 @@ import styles from './Charts.module.css';
 
 export default function DonutChart({ data, width = 240, height = 240 }) {
   const ref = useRef();
+  const tooltipRef = useRef();
 
   useEffect(() => {
     if (!data || data.length === 0) return;
 
     const svg = d3.select(ref.current);
     svg.selectAll('*').remove();
+
+    // Clean up any existing tooltip
+    if (tooltipRef.current) {
+      tooltipRef.current.remove();
+      tooltipRef.current = null;
+    }
 
     // Calculate dimensions
     const chartHeight = height * 0.7;
@@ -34,7 +41,7 @@ export default function DonutChart({ data, width = 240, height = 240 }) {
       .value(d => d.value)
       .sort(null);
 
-    // Arc generators for different label positions
+    // Arc generators
     const arc = d3.arc()
       .innerRadius(radius - thickness)
       .outerRadius(radius);
@@ -43,7 +50,7 @@ export default function DonutChart({ data, width = 240, height = 240 }) {
       .innerRadius(radius * 1.1)
       .outerRadius(radius * 1.1);
 
-    // Create donut slices
+    // Create donut slices with hover effects
     const arcs = chartGroup.selectAll('path')
       .data(pie(data))
       .enter()
@@ -51,13 +58,41 @@ export default function DonutChart({ data, width = 240, height = 240 }) {
       .attr('d', arc)
       .attr('fill', d => color(d.data.name))
       .attr('stroke', '#fff')
-      .attr('stroke-width', 1);
+      .attr('stroke-width', 1)
+      .on('mouseover', function(event, d) {
+        d3.select(this)
+          .attr('stroke-width', 2)
+          .attr('stroke', '#333');
 
-    // Add value labels - inside if space permits, outside otherwise
+        // Create or update tooltip
+        if (!tooltipRef.current) {
+          tooltipRef.current = document.createElement('div');
+          tooltipRef.current.className = styles.tooltip;
+          document.body.appendChild(tooltipRef.current);
+        }
+
+        const tooltip = d3.select(tooltipRef.current)
+          .html(`${d.data.name}: ${d.data.value}`)
+          .style('opacity', 1)
+          .style('left', `${event.pageX + 10}px`)
+          .style('top', `${event.pageY - 28}px`);
+      })
+      .on('mouseout', function() {
+        d3.select(this)
+          .attr('stroke-width', 1)
+          .attr('stroke', '#fff');
+
+        if (tooltipRef.current) {
+          d3.select(tooltipRef.current)
+            .style('opacity', 0);
+        }
+      });
+
+    // Original data labels implementation
     arcs.each(function(d) {
       const centroid = arc.centroid(d);
       const outerCentroid = outerArc.centroid(d);
-      const isLargeEnough = (d.endAngle - d.startAngle) > 0.2; // Minimum angle for inner label
+      const isLargeEnough = (d.endAngle - d.startAngle) > 0.2;
       
       const labelPos = isLargeEnough ? centroid : outerCentroid;
       const anchor = isLargeEnough ? 'middle' : 'start';
@@ -74,7 +109,7 @@ export default function DonutChart({ data, width = 240, height = 240 }) {
         .text(d.data.value);
     });
 
-    // Add center text with total
+    // Center total text
     const total = data.reduce((sum, d) => sum + d.value, 0);
     chartGroup.append('text')
       .attr('text-anchor', 'middle')
@@ -84,7 +119,7 @@ export default function DonutChart({ data, width = 240, height = 240 }) {
       .style('fill', '#333')
       .text(total);
 
-    // Add compact legend beneath the chart (only names)
+    // Legend implementation
     const legendGroup = svg.append('g')
       .attr('transform', `translate(0, ${radius * 2 + 10})`);
 
@@ -106,15 +141,51 @@ export default function DonutChart({ data, width = 240, height = 240 }) {
     legendItems.append('rect')
       .attr('width', 10)
       .attr('height', 10)
-      .attr('fill', (d, i) => color(d.name));
+      .attr('fill', (d, i) => color(d.name))
+      .on('mouseover', function(event, d) {
+        chartGroup.selectAll('path')
+          .filter(p => p.data.name === d.name)
+          .attr('stroke-width', 2)
+          .attr('stroke', '#333');
+
+        if (!tooltipRef.current) {
+          tooltipRef.current = document.createElement('div');
+          tooltipRef.current.className = styles.tooltip;
+          document.body.appendChild(tooltipRef.current);
+        }
+
+        d3.select(tooltipRef.current)
+          .html(`${d.name}: ${d.value}`)
+          .style('opacity', 1)
+          .style('left', `${event.pageX + 10}px`)
+          .style('top', `${event.pageY - 28}px`);
+      })
+      .on('mouseout', function() {
+        chartGroup.selectAll('path')
+          .filter(p => p.data.name === p.data.name)
+          .attr('stroke-width', 1)
+          .attr('stroke', '#fff');
+
+        if (tooltipRef.current) {
+          d3.select(tooltipRef.current)
+            .style('opacity', 0);
+        }
+      });
 
     legendItems.append('text')
       .attr('x', 15)
       .attr('y', 9)
       .style('font-size', '10px')
       .style('fill', '#555')
-      .text(d => d.name); // Only show name in legend
+      .text(d => d.name);
 
+    // Cleanup function
+    return () => {
+      if (tooltipRef.current) {
+        d3.select(tooltipRef.current).remove();
+        tooltipRef.current = null;
+      }
+    };
   }, [data, width, height]);
 
   return (

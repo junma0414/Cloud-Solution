@@ -5,6 +5,8 @@ import styles from './Dashboard.module.css';
 import { HiHome, HiTrendingUp, HiExclamationCircle,HiChat } from 'react-icons/hi';
 import { HiCog, HiDatabase, HiLightningBolt, HiSquare } from 'react-icons/hi';
 
+import { HiCodeBracket } from 'react-icons/hi2';
+
 import AnalysisTab from './AnalysisTab';
 import OperationsTab from './OperationsTab';
 //import FlowTab from './FlowTab';
@@ -234,7 +236,8 @@ const totalNonCompleted = Object.values(dayTotals).reduce((sum, day) => sum + da
       {/* Sidebar */}
       <div className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
-          <h3>GRC Dashboard</h3>
+
+       Dashboard
         </div>
         
         <nav className={styles.sidebarNav}>
@@ -277,7 +280,7 @@ const totalNonCompleted = Object.values(dayTotals).reduce((sum, day) => sum + da
   className={`${styles.sidebarItem} ${activeTab === 'operations' ? styles.active : ''}`}
   onClick={() => setActiveTab('operations')}
 >
-  <HiCog className={styles.sidebarIcon} />
+  <HiCodeBracket className={styles.sidebarIcon} />
   <span>Operations</span>
 </button>
 
@@ -298,7 +301,7 @@ const totalNonCompleted = Object.values(dayTotals).reduce((sum, day) => sum + da
                 <FlowTab />
               </Suspense>
             )}
- {activeTab === 'risk' && <div className={styles.tabContent}>Risk Monitoring (Coming Soon)</div>}
+ {/* {activeTab === 'risk' && <div className={styles.tabContent}>Risk Monitoring (Coming Soon)</div>}  */}
 {activeTab === 'operations' && <OperationsTab />}
           </>
         )}

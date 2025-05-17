@@ -62,6 +62,8 @@
   font-size: 12px;
   line-height: 1.4;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: absolute;
+  background: black;
 }
 
 .tooltip div {
@@ -261,3 +263,21 @@
   font-size: 11px;
 }
 
+
+.tooltip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: Arial, sans-serif;
+  pointer-events: none;
+  z-index: 1000;
+  transition: opacity 0.2s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.donutContainer {
+  position: relative;
+}

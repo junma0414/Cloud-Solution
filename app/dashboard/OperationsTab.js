@@ -1351,9 +1351,11 @@ const sanitizeName = (name) => {
   // Update metadata handler
   const handleMetadataChange = (e) => {
    const { name, value } = e.target;
+
+const sanitizedValue = value.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase();
   setModelMetadata(prev => ({
     ...prev,
-    [name]: name === 'name' ? sanitizeName(value) : value
+    [name]: sanitizedValue
   }));
   };
 
@@ -1426,14 +1428,22 @@ webkitdirectory="true"  // Add this for folder selection
         {folderFiles.length > 0 && (
            <div className={styles.uploadForm}>
             <div className={styles.formGroup}>
-              <label>Model Name (API endpoint)</label>
+              <label>Model As Service</label>
               <input
                 type="text"
                 name="name"
                 value={modelMetadata.name}
                 onChange={handleMetadataChange}
+ onKeyDown={(e) => {
+    // Prevent space and special characters from being typed
+    if (!/[a-zA-Z0-9-_]/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') {
+      e.preventDefault();
+    }
+  }}
                 placeholder="my-model-name"
                 className={styles.nameInput}
+	pattern="[a-zA-Z0-9-]+" // Only allows letters, numbers, and hyphens
+  	title="Only letters, numbers, and hyphens are allowed"
               />
             </div>
 
@@ -1573,16 +1583,16 @@ webkitdirectory="true"  // Add this for folder selection
             <table className={styles.modelTable}>
               <thead>
                 <tr>
-                  <th>Name</th>
-	  <th>Display Name</th>
-                  <th>Model Class</th>
- <th>Tokenizer Class </th>
- <th>Task Type </th>
+                  <th>Artifacts</th>
+	  <th>Service</th>
+                  <th>Model</th>
+ <th>Tokenizer </th>
+ <th>Task</th>
                   <th>Created By</th>
                   <th>Size</th>
                   <th>Uploaded</th>
                   <th>Status</th>
-                  <th>Endpoint</th>
+                  {/*<th>Endpoint</th> */}
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -1606,13 +1616,13 @@ webkitdirectory="true"  // Add this for folder selection
     {model.status || 'Uploading'}
   </span>
 </td>
-<td>
+{/* <td>
   {model.endpoint && (
     <a href={model.endpoint} target="_blank" rel="noopener noreferrer">
       View Endpoint
     </a>
   )}
-</td>
+</td> */}
                     <td>
                       <button 
                         onClick={() => deleteModel(model.id, model.modal_path)} 

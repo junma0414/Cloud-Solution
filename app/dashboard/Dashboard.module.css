@@ -132,8 +132,9 @@
 
 .sidebarHeader {
   padding: 0 20px 20px;
-  border-bottom: 1px solid #34495e;
-  margin-bottom: 20px;
+  border-bottom: 30 px solid #34495e;
+  margin-bottom: 0 px;
+  color: white;
 }
 
 .sidebarNav {
