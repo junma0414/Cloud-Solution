@@ -72,6 +72,7 @@ export async function POST(request) {
       data_source_name,
       data_source_type,
       created_by,
+     created_name,
       input_texts,
       params = {}
     } = requestBody;
@@ -180,6 +181,7 @@ export async function POST(request) {
         input_text: JSON.stringify(input_texts), // Properly stringify the array Array.isArray(input_texts) ? input_texts.join('\n') : input_texts,
         params: inferenceParams,
         created_by,
+        created_name,
         was_task_type: model_task_type,
         status: 'running',
         job_start_ts: new Date().toISOString()

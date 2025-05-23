@@ -70,7 +70,7 @@ function HomeTab({ homeData, loading }) {
       
       <div className={styles.statsRow}>
         <div className={styles.fullWidthChart}>
-          <h4>Daily API Calls (Last 30 Days)</h4>
+          <h4>Daily API Calls</h4>
          <LineChart
   data={(homeData.dailyCalls || []).map(d => ({
     date: d.date,  // fixed, use d.date not d.day

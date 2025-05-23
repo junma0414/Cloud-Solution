@@ -1,0 +1,695 @@
+.billcontainer {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0.1rem;
+padding-top: 80px !important;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4 rem;
+
+padding-top:80 px;
+}
+
+.subscriptionStatus {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.statusBadge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background-color: #e2e8f0;
+  color: #4a5568;
+}
+
+.statusBadge.active {
+  background-color: #48bb78;
+  color: white;
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 2rem;
+}
+
+.tab {
+  padding: 0.8rem 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  color: #718096;
+  position: relative;
+}
+
+.tab.active {
+  color: #3182ce;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #3182ce;
+}
+
+.usageSection {
+  display: grid;
+  gap: 2rem;
+}
+
+.usageCard {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.progressContainer {
+  margin: 1rem 0;
+}
+
+.progressBar {
+  height: 8px;
+  background-color: #edf2f7;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background-color: #3182ce;
+  border-radius: 4px;
+}
+
+.usageStats {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #4a5568;
+}
+
+.resetInfo {
+  font-size: 0.8rem;
+  color: #718096;
+  margin-top: 0.5rem;
+}
+
+.upgradeSection {
+  margin-top: 2rem;
+}
+
+.plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.planCard {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+  border: 1px solid #e2e8f0;
+}
+
+.planCard.featured {
+  border: 1px solid #3182ce;
+}
+
+.recommended {
+  position: absolute;
+  top: -10px;
+  right: 1rem;
+  background-color: #3182ce;
+  color: white;
+  padding: 0.2rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.planCard h4 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+.planCard .price {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 1rem 0;
+}
+
+.planCard .price span {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #718096;
+}
+
+.planCard ul {
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+}
+
+.planCard li {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+}
+
+.planCard li::before {
+  content: '✓';
+  color: #48bb78;
+  margin-right: 0.5rem;
+}
+
+.planButton {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: #3182ce;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.planButton:hover {
+  background-color: #2c5282;
+}
+
+.paymentSection {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.paymentMethods {
+  margin-bottom: 2rem;
+}
+
+.paymentMethod {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.methodIcon {
+  margin-right: 1rem;
+}
+
+.methodDetails {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.defaultBadge {
+  background-color: #e6fffa;
+  color: #319795;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.addPaymentButton {
+  padding: 0.8rem 1.5rem;
+  background-color: white;
+  color: #3182ce;
+  border: 1px solid #3182ce;
+  border-radius: 0.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.addPaymentButton:hover {
+  background-color: #ebf8ff;
+}
+
+.paymentProviderToggle {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.providerButton {
+  padding: 0.8rem 1.5rem;
+  background-color: white;
+  color: #4a5568;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.providerButton.active {
+  background-color: #3182ce;
+  color: white;
+  border-color: #3182ce;
+}
+
+.invoicesSection {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.invoicesTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.invoicesTable th, .invoicesTable td {
+  padding: 0.8rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.invoicesTable th {
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.downloadLink {
+  color: #3182ce;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.downloadLink:hover {
+  text-decoration: underline;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+}
+
+.modalClose {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #718096;
+}
+
+.paymentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cardElement {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+
+.cardPreview {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cardLogo {
+  flex-shrink: 0;
+}
+
+.cardDetails {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cardInput {
+  padding: 0.8rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.25rem;
+  width: 100%;
+}
+
+.cardRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.cardInputSmall {
+  padding: 0.8rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.25rem;
+  flex: 1;
+}
+
+.submitButton {
+  padding: 0.8rem;
+  background-color: #3182ce;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover {
+  background-color: #2c5282;
+}
+
+.chinesePaymentOptions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.paymentOption {
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+
+.paymentOption:hover {
+  border-color: #3182ce;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #718096;
+}
+
+.dropdownIcon {
+  margin-right: 8px;
+  font-size: 16px;
+  vertical-align: middle;
+  color: inherit; /* Makes the icon inherit the text color */
+}
+
+.dropdownItem {
+  display: flex;       /* Makes children align in a row */
+  align-items: center; /* Vertically centers icon and text */
+  gap: 8px;           /* Adds space between icon and text */
+  padding: 8px 16px;  /* Adjust padding as needed */
+  text-decoration: none;
+  color: inherit;
+}
+
+.dropdownIcon {
+  flex-shrink: 0;     /* Prevents icon from shrinking */
+  font-size: 12px;    /* Adjust icon size as needed */
+}
+
+.dropdownIcon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+
+/* Add these to your existing styles */
+.disabledMethod {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.comingSoonBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  color: #666;
+  background-color: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+.disabledButton {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #e0e0e0 !important;
+  color: #666 !important;
+}
+
+.payNowButton {
+  background-color: #2a2a72;
+  color: white;
+}
+
+.payNowButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.payNowInfo {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.qrCodePlaceholder {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 1.5rem 0;
+}
+
+.qrCode {
+  width: 150px;
+  height: 150px;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #ccc;
+}
+
+.uenInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+}
+
+.uenInfo p {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+
+.paymentMethod {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.payButton {
+  position: absolute;
+  right: 1rem;
+  padding: 0.4rem 0.8rem;
+  background-color: #3182ce;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.disabledButton {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #e0e0e0 !important;
+  color: #666 !important;
+}
+
+.methodIcon img {
+  object-fit: contain;
+}
+
+/* Payment method card */
+.paymentMethod {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+/* Disabled Pay button */
+.disabledPayButton {
+  position: absolute;
+  right: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #e0e0e0;
+  color: #666;
+  border: none;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Disabled Add Payment button */
+.disabledAddButton {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: #e0e0e0;
+  color: #666;
+  border: none;
+  border-radius: 0.25rem;
+  font-weight: 600;
+  cursor: not-allowed;
+  opacity: 0.7;
+  margin-top: 1rem;
+}
+
+/* Default payment badge */
+.defaultBadge {
+  background-color: #e6fffa;
+  color: #319795;
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: auto; /* Pushes badge to right */
+  margin-right: 120px; /* Makes space for Pay button */
+}
+
+.paymentMethod {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  background-color: white;
+  position: relative; /* Keep this for absolute positioning */
+}
+
+/* Disabled Pay Button */
+.disabledPayButton {
+  position: absolute;
+  right: 1rem;
+  padding: 0.5rem 1.5rem;
+  background-color: #f5f5f5;
+  color: #a0a0a0;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: not-allowed;
+  min-width: 80px;
+  text-align: center;
+}
+
+/* Disabled Add Payment Button */
+.disabledAddButton {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: #f5f5f5;
+  color: #a0a0a0;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: not-allowed;
+  margin-top: 1rem;
+  text-align: center;
+  box-shadow: none;
+  transition: none;
+}
+
+/* Button States - Make it clear they're unclickable */
+.disabledPayButton:hover,
+.disabledPayButton:active,
+.disabledPayButton:focus,
+.disabledAddButton:hover,
+.disabledAddButton:active,
+.disabledAddButton:focus {
+  background-color: #f5f5f5;
+  color: #a0a0a0;
+  border-color: #e0e0e0;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Payment Method Details */
+.methodDetails {
+  flex: 1;
+  margin-left: 1rem;
+}
+
+.methodDetails span {
+  display: block;
+  font-size: 0.9rem;
+  color: #4a5568;
+}
+
+.methodDetails span:first-child {
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}

@@ -7,6 +7,8 @@ import Image from 'next/image';
 import logo from '../../public/main.png';
 import { useState, useEffect } from 'react';
 
+import { MdPayment,MdDashboard,MdOutlineKey ,MdLogout } from 'react-icons/md'; // Material Design
+
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
@@ -184,17 +186,19 @@ const handlePasswordReset = async () => {
       className={styles.dropdownItem}
       onClick={() => setShowProfileDropdown(false)}
     >
-      Dashboard
+      <MdDashboard  className={styles.dropdownIcon} />
+<span>Dashboard</span>
     </Link>
     <Link 
-  href="/usage" 
-  className={`${styles.dropdownItem} ${styles.disabledItem}`}
+  href="/billing" 
+ className={styles.dropdownItem}   // className={`${styles.dropdownItem} ${styles.disabledItem}`} */}
   onClick={(e) => {
-    e.preventDefault();
+  //  e.preventDefault();
     setShowProfileDropdown(false);
   }}
 >
-  Usage
+
+   <MdPayment  className={styles.dropdownIcon} /><span>Billing and Usage</span>
 </Link>
 
     <Link 
@@ -202,13 +206,13 @@ const handlePasswordReset = async () => {
       className={styles.dropdownItem}
       onClick={() => setShowProfileDropdown(false)}
     >
-      API Keys
+      <MdOutlineKey  className={styles.dropdownIcon} /><span>API Keys</span>
     </Link>
     <button 
       className={styles.dropdownItem}
       onClick={handleLogout}
     >
-      Log Out
+      <MdLogout  className={styles.dropdownIcon} /> <span>Log Out</span>
     </button>
   </div>
 )}

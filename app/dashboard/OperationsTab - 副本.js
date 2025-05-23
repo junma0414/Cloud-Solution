@@ -151,54 +151,6 @@ if (checkData.exists) {
     // 3. Upload files in chunks
    // const CHUNK_SIZE = 50 * 1024 * 1024; // 50MB chunks
    const CHUNK_SIZE = 4 * 1024 * 1024; //4MB to meet the free plan of vercel 
-   const MAX_PARALLEL_UPLOADS = 3; 
-
-   let progress=0;
-
-
-    const uploadFile = async (file) => {
-      const fileSize = file.size;
-      const totalChunks = Math.ceil(fileSize / CHUNK_SIZE);
-      const relativePath = file.webkitRelativePath || `${folderName}/${file.name}`;
-      
-      // Upload all chunks for this file
-      const chunkPromises = [];
-      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-        const chunk = file.slice(chunkIndex * CHUNK_SIZE, Math.min((chunkIndex + 1) * CHUNK_SIZE, fileSize));
-        
-        const formData = new FormData();
-        formData.append('file', chunk, relativePath);
-        formData.append('session_id', session_id);
-        formData.append('chunk_index', chunkIndex);
-        formData.append('action', 'upload_chunk');
-        formData.append('original_filename', file.name);
-        formData.append('relativePath', relativePath);
-
-        // Add with retry logic
-        chunkPromises.push(
-          retryableUpload(formData, apiKey)
-        );
-      }
-      
-      await Promise.all(chunkPromises);
-      return { file: file.name, status: 'completed' };
-
-    progress = ((chunkIndex + 1) / totalChunks) * 100;
-    setUploadProgress(Math.round(progress));
-      
-    };
-
-   const limit = pLimit(MAX_PARALLEL_UPLOADS);
-    const uploadPromises = files.map(file => 
-      limit(() => uploadFile(file))
-    );
-    
-    const results = await Promise.all(uploadPromises);
-
-
-
-   
-   {/* 
     for (const file of files) {
       const fileSize = file.size;
       const totalChunks = Math.ceil(fileSize / CHUNK_SIZE);
@@ -216,7 +168,7 @@ if (checkData.exists) {
         formData.append('session_id', session_id);
         formData.append('chunk_index', chunkIndex);
         formData.append('action', 'upload_chunk');
-    formData.append('original_filename', file.name);
+formData.append('original_filename', file.name);
 formData.append('relativePath', relativePath);
 
         const uploadResponse = await fetch('/api/modal/upload', {
@@ -235,8 +187,8 @@ formData.append('relativePath', relativePath);
         const progress = ((chunkIndex + 1) / totalChunks) * 100;
         setUploadProgress(Math.round(progress));
       }
-    }  */}
-        
+    }
+       
     // 4. Complete upload
 
       console.log("completing uploading");
@@ -285,61 +237,6 @@ formData.append('relativePath', relativePath);
     throw error;
   }
 };
-
-// Helper function for retryable uploads
-const retryableUpload = async (formData, apiKey, maxRetries = 3) => {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      const response = await fetch('/api/modal/upload', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${apiKey}` },
-        body: formData
-      });
-      
-      if (!response.ok) throw new Error(`Upload failed: ${response.status}`);
-      return await response.json();
-    } catch (error) {
-      if (attempt === maxRetries) throw error;
-      await new Promise(resolve => setTimeout(resolve, 1000 * attempt)); // Exponential backoff
-    }
-  }
-};
-
-// Replace your current pLimit implementation with this:
-const pLimit = (concurrency) => {
-  const queue = [];
-  let activeCount = 0;
-
-  const next = () => {
-    activeCount--;
-    if (queue.length > 0) {
-      queue.shift()();
-    }
-  };
-
-  const run = async (fn, resolve, reject) => {
-    activeCount++;
-    try {
-      const result = await fn();
-      resolve(result);
-    } catch (error) {
-      reject(error);
-    }
-    next();
-  };
-
-  const enqueue = (fn, resolve, reject) => {
-    queue.push(() => run(fn, resolve, reject));
-    if (activeCount < concurrency && queue.length > 0) {
-      queue.shift()();
-    }
-  };
-
-  return (fn) => new Promise((resolve, reject) => {
-    enqueue(fn, resolve, reject);
-  });
-};
-
 
 const deleteModel = async (id, modalPath) => {
   if (!confirm('Are you sure you want to delete this model folder? This action cannot be undone.')) return;
@@ -640,7 +537,195 @@ const uploadFileToModal = async (file, apiKey, uploadId, CHUNK_SIZE, onProgress)
   }
 };
 
+{/*
+const handleModelUpload = async ({ folder, metadata = {}, ...props }) => {
+  // Get folderName either from props or extract from files
+  const folderName = props.folderName || 
+                    (folder[0]?.webkitRelativePath?.split('/')[0]) || 
+                    `model-${Date.now()}`;
+  
+  if (!folder || folder.length === 0) {
+    setUploadError('No files found in the selected folder');
+    return;
+  }
 
+
+  setUploadedFileName(folderName);
+
+  setUploadStatus('checking');
+  setUploadError(null);
+
+  // Validate file types in folder - SAFER VERSION
+  const validExtensions = ['.tar.gz', '.gz', '.tar', '.bin', '.pt', '.safetensors', '.json', '.txt','.pth','.model'];
+  const invalidFiles = folder.filter(file => {
+    // Skip if file or file.name is undefined
+    if (!file || !file.name) return true; 
+    
+    const fileName = file.name.toLowerCase();
+    return !validExtensions.some(ext => fileName.endsWith(ext));
+  });
+
+  if (invalidFiles.length > 0) {
+    const invalidNames = invalidFiles.map(f => f?.name || 'unnamed file').join(', ');
+    setUploadError(
+      `Invalid file types found: ${invalidNames}. ` +
+      `Allowed extensions: ${validExtensions.join(', ')}`
+    );
+    return;
+  }
+
+  // Check total size
+  const MAX_SIZE = 100 * 1024 * 1024 * 1024; // 100GB
+  const totalSize = folder.reduce((sum, file) => sum + file.size, 0);
+  if (totalSize > MAX_SIZE) {
+    setUploadError(`Total size too large. Max size is ${MAX_SIZE / 1024 / 1024 / 1024} GB`);
+    return;
+  }
+
+  // Check for duplicate model name
+  if (metadata.name) {
+    const { data: existingModels, error } = await supabase
+      .from('models')
+      .select('display_name')
+      .eq('display_name', metadata.name)
+      .limit(1);
+    
+    if (error) throw error;
+    if (existingModels?.length > 0) {
+      setUploadStatus('error');
+      setUploadError(`Model(endpoint) name "${metadata.name}" is already in use. Please choose a different name.`);
+      return;
+    }
+  }
+
+  // Check for duplicate folder name in storage
+  const apiKey = process.env.NEXT_PUBLIC_MODAL_KEY;
+  const checkResponse = await fetch('/api/modal/upload', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ 
+      action: 'check_exists',
+      fileName: folderName,
+      checkType: 'volume'
+    })
+  });
+  
+  const { exists } = await checkResponse.json();
+
+   console.log(`folder  check in modal:`, folderName, exists);
+  if (exists) {
+    setUploadStatus('error');
+    setUploadError(`Folder "${folderName}" exists in system. Please rename your file before uploading.`);
+    return;
+  }
+
+  // Proceed with upload if all checks pass
+  const CHUNK_SIZE = 50 * 1024 * 1024;
+  const uploadId = `upload-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
+  try {
+    setIsLoading(true);
+    setUploadProgress(0);
+
+  
+
+    // Upload file
+    setUploadStatus('uploading');
+    //await uploadFileToModal(folder, apiKey, uploadId, CHUNK_SIZE);
+const uploadResult = await uploadFolderToModal(folder, apiKey, folderName, CHUNK_SIZE);
+
+
+  // Insert into Supabase
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data: insertedModel, error: insertError } = await supabase
+      .from('models')
+      .insert({
+       name: folderName,
+       type: 'llm',
+        display_name: metadata.name,
+        size: totalSize,
+         modal_path: `modal://llm-models/${folderName}`,
+        model_class: metadata.model_class,
+        tokenizer_class: metadata.tokenizer_class,
+       task_type: metadata.task_type,
+         format: 'folder',
+created_by: user.id,
+        created_user: user.email,
+        uploaded_at: new Date().toISOString(),
+        status: 'Uploading'
+      })
+      .select()
+      .single();
+
+    if (insertError) throw insertError;
+
+
+    // Deploy model
+    setUploadStatus('deploying');
+    const deployResponse = await fetch('/api/modal/upload', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'deploy',
+        modelName: metadata.name,
+        modelClass: metadata.model_class,
+       tokenizerClass: metadata.tokenizer_class,
+       taskType: metadata.task_type,
+       folderName: folderName,
+      })
+    });
+
+   
+    if (!deployResponse.ok) {
+      throw new Error('Deployment request failed');
+    }
+
+    const deploymentResult = await deployResponse.json();
+ console.log("response for deployment is:" deploymentResult);
+    
+    // Update model with endpoint info
+    const { error: updateError } = await supabase
+      .from('models')
+      .update({
+        status: 'Deployed',
+        endpoint: deploymentResult.endpoint,
+        model_type: metadata.type,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', insertedModel.id);
+
+    if (updateError) throw updateError;
+
+    setUploadStatus('complete');
+    await fetchData('model');
+
+  } catch (error) {
+    console.error('Upload failed:', error);
+    setUploadStatus('error');
+    setUploadError(error.message);
+await fetchData('model');
+    
+    // Cleanup if needed
+    await fetch('/api/modal/upload', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ action: 'cleanup', uploadId })
+    }).catch(console.error);  
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+*/}
 const uploadFolderToModal = async (files, apiKey, folderName) => {
   const uploadId = `folder-upload-${Date.now()}`;
   const formData = new FormData();
@@ -811,7 +896,6 @@ formData.append('folderName', folderName);
           description,
           status: 'ready',
           created_by: user.id || null, 
-          created_name:user.email,
           uploaded_at: new Date().toISOString()
         })
         .select();
@@ -1033,7 +1117,7 @@ const handleRunInference = async (payload) => {
               onUpload={handleDataSourceUpload}
               onDelete={handleDataSourceDelete}
               isLoading={isDataSourceLoading}
-    setActiveSubTab={setActiveSubTab}
+	setActiveSubTab={setActiveSubTab}
             />
           )}
         </>
@@ -1264,26 +1348,16 @@ const sanitizeName = (name) => {
 };
 
 
+  // Update metadata handler
+  const handleMetadataChange = (e) => {
+   const { name, value } = e.target;
 
- // Update metadata handler - FIXED VERSION
-const handleMetadataChange = (e) => {
-  const { name, value } = e.target;
-  
-  // Only sanitize the model name, not the class selections
-  if (name === 'name') {
-    const sanitizedValue = value.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase();
-    setModelMetadata(prev => ({
-      ...prev,
-      [name]: sanitizedValue
-    }));
-  } else {
-    // For other fields (model_class, tokenizer_class, task_type), keep the original value
-    setModelMetadata(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  }
-};
+const sanitizedValue = value.replace(/[^a-zA-Z0-9-_]/g, '').toLowerCase();
+  setModelMetadata(prev => ({
+    ...prev,
+    [name]: sanitizedValue
+  }));
+  };
 
   // Auto-generate model name from filename
  useEffect(() => {
@@ -1368,8 +1442,8 @@ webkitdirectory="true"  // Add this for folder selection
   }}
                 placeholder="my-model-name"
                 className={styles.nameInput}
-    pattern="[a-zA-Z0-9-]+" // Only allows letters, numbers, and hyphens
-    title="Only letters, numbers, and hyphens are allowed"
+	pattern="[a-zA-Z0-9-]+" // Only allows letters, numbers, and hyphens
+  	title="Only letters, numbers, and hyphens are allowed"
               />
             </div>
 
@@ -1510,7 +1584,7 @@ webkitdirectory="true"  // Add this for folder selection
               <thead>
                 <tr>
                   <th>Artifacts</th>
-      <th>Service</th>
+	  <th>Service</th>
                   <th>Model</th>
  <th>Tokenizer </th>
  <th>Task</th>
@@ -1898,7 +1972,7 @@ const handleUpload = async () => {
         
       // If exists and overwrite is false - warn user
       if (existingSources && existingSources.length > 0 ) {
-    if(!overwrite) {
+  	if(!overwrite) {
         const shouldRename = confirm(
           `A data source named "${name}" already exists. Would you like to rename this one?`
         );
@@ -1954,7 +2028,6 @@ const handleUpload = async () => {
           description,
           status: 'ready',
           created_by: user.id,
-         created_user:user.email,
           uploaded_at: new Date().toISOString()
         })
         .select();
@@ -2016,7 +2089,6 @@ const handleUpload = async () => {
           description,
           status: 'ready',
           created_by: user.id,
-         created_user:user.email,
           uploaded_at: new Date().toISOString()
         })
         .select();
@@ -2707,7 +2779,31 @@ console.log("relevent Params are: ", relevantParams);
     </div>
   );
 
- 
+  // Process input text based on source type
+{/* const processInputText = (source) => {
+  if (!source) return [];
+  
+  if (source.type === 'single') {   
+    // For QA tasks, parse the input as JSON if it's in dictionary format
+    if (selectedModelData?.task_type === 'question_answering') {
+      try {
+        const parsed = JSON.parse(source.input);
+        if (parsed.question && parsed.context) {
+          return [parsed]; // Return as array with one dictionary item
+        }
+      } catch (e) {
+        // If not valid JSON, treat as regular text
+        console.log('Input is not in QA dictionary format');
+      }
+    }
+    // Default behavior for non-QA or invalid JSON
+    return source.input.split('\n').filter(line => line.trim());
+  } else if (source.type === 'batch') {
+    return [source.name]; // Placeholder for batch files
+  }
+  return [];
+}; */}
+
 // In InferenceSubTab component
 const processInputText = async (source) => {
   if (!source) {
@@ -2856,7 +2952,143 @@ const getFilteredParams = () => {
   );
 };
 
+{/*
+// Update the handleRun function to handle QA inputs differently
+const handleRun = async () => {
+  if (!selectedModel || !selectedSource) {
+    setError('Please select both a model and data source');
+    return;
+  }
 
+  const model = models.find(m => m.id === selectedModel);
+  const source = sources.find(s => s.id === selectedSource);
+
+  if (!model || !source) {
+    setError('Invalid model or data source selected');
+    return;
+  }
+
+  setError(null);
+  setIsRunning(true);
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) throw new Error("Not authenticated");
+
+  try {
+    let inputTexts = Array.isArray(inputPreview) ? inputPreview : [inputPreview];
+    
+    // Special handling for QA tasks
+    if (model.task_type === 'question_answering') {
+      // Handle concatenated JSON objects (with commas)
+      if (inputTexts.length === 1 && typeof inputTexts[0] === 'string' && 
+          inputTexts[0].trim().startsWith('{') && inputTexts[0].includes('},{')) {
+        try {
+          // Convert to valid JSON array format
+          const jsonArrayString = `[${inputTexts[0]}]`;
+          const parsedArray = JSON.parse(jsonArrayString);
+          
+          inputTexts = parsedArray.map(item => {
+            if (item.question && item.context) {
+              return {
+                question: String(item.question).trim(),
+                context: String(item.context).trim()
+              };
+            }
+            throw new Error('Missing question or context in one of the objects');
+          });
+        } catch (e) {
+          throw new Error(`Failed to parse concatenated JSON: ${e.message}`);
+        }
+      }
+      // Handle newline-separated JSON objects
+      else if (inputTexts.length === 1 && typeof inputTexts[0] === 'string' && 
+               inputTexts[0].includes('\n')) {
+        inputTexts = inputTexts[0]
+          .split('\n')
+          .filter(line => line.trim().length > 0)
+          .map(line => {
+            try {
+              const parsed = JSON.parse(line.trim());
+              if (!parsed.question || !parsed.context) {
+                throw new Error('Missing question or context');
+              }
+              return {
+                question: String(parsed.question).trim(),
+                context: String(parsed.context).trim()
+              };
+            } catch (e) {
+              throw new Error(`Invalid JSON line: ${line}\nError: ${e.message}`);
+            }
+          });
+      }
+      // Handle single QA pair cases (existing logic)
+      else {
+        // Normalize to array
+        if (!Array.isArray(inputTexts)) {
+          inputTexts = [inputTexts];
+        }
+
+        inputTexts = inputTexts.map((input, index) => {
+          // Handle object case
+          if (typeof input === 'object' && input !== null) {
+            if (input.question && input.context) {
+              return {
+                question: String(input.question).trim(),
+                context: String(input.context).trim()
+              };
+            }
+            throw new Error(`Item ${index}: Missing question or context`);
+          }
+          
+          // Handle string case
+          if (typeof input === 'string') {
+            try {
+              const parsed = JSON.parse(input.trim());
+              if (parsed.question && parsed.context) {
+                return {
+                  question: String(parsed.question).trim(),
+                  context: String(parsed.context).trim()
+                };
+              }
+              throw new Error('Missing question or context in JSON');
+            } catch (e) {
+              throw new Error(`Invalid JSON format: ${e.message}`);
+            }
+          }
+          
+          throw new Error(`Unsupported input type: ${typeof input}`);
+        });
+      }
+    }
+
+
+   console.log("[debug in handleRun ] input texts are", inputTexts);
+    const filteredParams = getFilteredParams();
+
+    const payload = {
+      model_id: selectedModel,
+      model_name: model.name,
+      model_display_name: model.display_name,
+      model_class: model.model_class,
+      model_task_type: model.task_type,
+      endpoint: model.endpoint,
+      data_source_id: selectedSource,
+      data_source_name: source.name,
+      data_source_type: source.type,
+      created_by: user.email,
+      input_texts: inputTexts,
+      params: filteredParams
+    };
+
+    const result = await onRunInference(payload);
+    setCurrentJob(result);
+
+  } catch (err) {
+    console.error('Inference error:', err);
+    setError(err.message || 'Failed to run inference');
+  } finally {
+    setIsRunning(false);
+  }
+};  */}
 
 const handleRun = async () => {
   if (!selectedModel || !selectedSource) {
@@ -2925,8 +3157,7 @@ const { data: { user }, error: authError } = await supabase.auth.getUser();
       data_source_id: selectedSource,
       data_source_name: source.name,
       data_source_type: source.type,
-      created_by: user.id,
-     created_name: user.email,
+      created_by: user.email,
       input_texts: inputTexts, // List of {question, context} pairs
       params: filteredParams
     };
@@ -2955,6 +3186,72 @@ const { data: { user }, error: authError } = await supabase.auth.getUser();
 
 
 
+ {/* const handleViewResults = (job) => {
+    setViewingResults({
+        inputs: JSON.stringify(job.input_text,null,2),// || [job.input_text], //inputs: job.input_texts || [job.input_text], // Handle both array and single string
+      output:JSON.stringify(job.results,null,2),     //output: job.results.predictions,
+      params: job.params
+    });
+  }; */}
+
+{/*
+const handleViewResults = (job) => {
+  console.log('Raw job.input_text as type of :', job.input_text, typeof job.input_text); // Debug log
+  
+  let inputDisplay;
+  let outputDisplay;
+
+  try {
+    // Handle input display
+    if (job.model_task_type === 'question_answering') {
+      // If input_text is already an object (common case)
+      if (typeof job.input_text === 'object' && job.input_text !== null) {
+        inputDisplay = `Question: ${job.input_text.question}\nContext: ${job.input_text.context}`;
+      } 
+      // If input_text is a JSON string
+      else if (typeof job.input_text === 'string') {
+        const parsed = JSON.parse(job.input_text);
+        inputDisplay = `Question: ${parsed.question}\nContext: ${parsed.context}`;
+      } else {
+        inputDisplay = 'Invalid QA input format';
+      }
+    } else {
+      // For non-QA tasks
+      if (typeof job.input_text === 'string') {
+        inputDisplay = job.input_text;
+      } else {
+        inputDisplay = JSON.stringify(job.input_text, null, 2);
+      }
+    }
+
+    // Handle output display
+    if (typeof job.results === 'string') {
+      try {
+        // Try to parse if it might be JSON
+        outputDisplay = JSON.stringify(JSON.parse(job.results), null, 2);
+      } catch {
+        outputDisplay = job.results;
+      }
+    } else {
+      outputDisplay = JSON.stringify(job.results, null, 2);
+    }
+
+    setViewingResults({
+      inputs: inputDisplay,
+      output: outputDisplay,
+      params: job.params ? JSON.stringify(job.params, null, 2) : 'No params'
+    });
+
+  } catch (e) {
+    console.error('Error displaying results:', e);
+    setViewingResults({
+      inputs: `Error displaying input: ${e.message}`,
+      output: `Error displaying output: ${e.message}`,
+      params: 'No params'
+    });
+  }
+};
+*/}
 
 const handleViewResults = (job) => {
   console.log('Raw job.input_text:', job.input_text, typeof job.input_text); // Debug log
@@ -3399,7 +3696,6 @@ const handleDownloadResults = (job) => {
                   <th>Display Name</th>
                   <th>Start Time</th>
                   <th>Finish Time</th>
-                   <th>User</th>
                   <th>Duration</th>
                   <th>Status</th>
                   <th>Actions</th>
@@ -3412,7 +3708,6 @@ const handleDownloadResults = (job) => {
                     <td>{job.model_display_name}</td>
                     <td>{new Date(job.job_start_ts).toLocaleString()}</td>
                     <td>{job.job_finish_ts ? new Date(job.job_finish_ts).toLocaleString() : 'N/A'}</td>
-                   <td>{job.created_name}</td>
                     <td>
                       {job.job_finish_ts && job.job_start_ts 
                         ? `${new Date(job.job_finish_ts) - new Date(job.job_start_ts)}ms`

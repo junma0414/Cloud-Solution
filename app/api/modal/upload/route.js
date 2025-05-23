@@ -56,7 +56,8 @@ console.log("formData sending to modal :", modalFormData);
             headers: {
               'Authorization': `Bearer ${MODAL_API_KEY}`
             },
-            body: modalFormData
+            body: modalFormData,
+          signal: AbortSignal.timeout(30000) // 30s timeout
           }); 
 
           if (!response.ok) {
