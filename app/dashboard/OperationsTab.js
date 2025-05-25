@@ -811,7 +811,7 @@ formData.append('folderName', folderName);
           description,
           status: 'ready',
           created_by: user.id || null, 
-          created_name:user.email,
+          created_user:user.email,
           uploaded_at: new Date().toISOString()
         })
         .select();
@@ -956,13 +956,19 @@ USING (
 
 const handleRunInference = async (payload) => {
   setIsLoading(true);
+
+const { data: { session } } = await supabase.auth.getSession();
+
+console.log("[debug]session:", session);
+
   try {
     const response = await fetch('/api/modal/run-inference', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_MODAL_KEY}`,
+     //   'Authorization': `Bearer ${process.env.NEXT_PUBLIC_MODAL_KEY}`,
         'Content-Type': 'application/json',
       },
+     credentials: 'include',
       body: JSON.stringify(payload)
     });
 
@@ -2930,6 +2936,8 @@ const { data: { user }, error: authError } = await supabase.auth.getUser();
       input_texts: inputTexts, // List of {question, context} pairs
       params: filteredParams
     };
+ 
+ console.log("[front end debug]payload: ", payload);
 
     const result = await onRunInference(payload);
     setCurrentJob(result);

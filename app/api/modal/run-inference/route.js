@@ -1,5 +1,15 @@
-import { NextResponse } from 'next/server';
+import { NextResponse} from 'next/server';
 import { supabase } from '../../../lib/supabase/client';
+
+//import { cookies } from 'next/headers';
+
+//import { cookies, headers } from 'next/headers';
+
+//import { createServerActionClient } from '@supabase/auth-helpers-nextjs';
+
+//import { createServerClient } from '@supabase/auth-helpers-nextjs';
+
+
 
 // Parameter configuration for each task type
 const TASK_PARAMETERS = {
@@ -55,6 +65,9 @@ const TASK_PARAMETERS = {
 };
 
 export async function POST(request) {
+
+
+
   let job;
   try {
     const requestBody = await request.json();
@@ -169,19 +182,26 @@ export async function POST(request) {
       }
     }
 
+     console.log("[debug] responseBody: ", requestBody);
+
+
+
+
+
+
     // Create job record
     const { data: createdJob, error: insertError } = await supabase
       .from('inference_jobs')
       .insert({
-        model_name,
-        model_display_name,
-        endpoint,
-        data_source_name,
-        data_source_type,
+        model_name: model_name,
+        model_display_name: model_display_name ,
+        endpoint: endpoint,
+        data_source_name: data_source_name,
+        data_source_type: data_source_type,
         input_text: JSON.stringify(input_texts), // Properly stringify the array Array.isArray(input_texts) ? input_texts.join('\n') : input_texts,
         params: inferenceParams,
-        created_by,
-        created_name,
+       created_by: created_by,
+        created_name: created_name,
         was_task_type: model_task_type,
         status: 'running',
         job_start_ts: new Date().toISOString()
@@ -189,7 +209,10 @@ export async function POST(request) {
       .select()
       .single();
 
-    if (insertError) throw insertError;
+    if (insertError) {
+         console.log("[insert error]", insertError); 
+          throw insertError;
+}
     job = createdJob;
 
     // Prepare inference request dynamically based on task type

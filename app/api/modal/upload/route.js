@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 
-const USER_NAME = 'junma0614';
+//const USER_NAME = 'junma0614';
+
+const USER_NAME = process.env.MODAL_EP_USER_NAME;
 
 const githubToken = process.env.GH_TOKEN;
 const repo = "junma0414/modalApp"; //process.env.GITHUB_REPO; // e.g., "junma0614/modal-deploy-service"

@@ -36,7 +36,7 @@
 }
 
 .subTabContent {
-  padding: 20px 0;
+  padding: 5px 0;
 }
 
 .upload-section, .manual-section {
@@ -1559,6 +1559,7 @@ align-items:center;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
+  width:800px;
 }
 
 .runButton:hover {
@@ -1589,6 +1590,7 @@ align-items:center;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+ width: 1000px;
 }
 
 .jobTable {
@@ -1597,7 +1599,8 @@ align-items:center;
 }
 
 .jobTable th, .jobTable td {
-  padding: 12px 15px;
+  padding: 6px 10px;
+  font-size:12px;
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
@@ -1830,7 +1833,7 @@ align-items:center;
 
 .paramGroup {
   flex: 1;
-  min-width: 200px;
+  width: 200px;
 }
 
 .paramInput {
@@ -2133,7 +2136,7 @@ background: white;
 
 .paramGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+   grid-template-columns: repeat(2, 1fr); /* exactly 2 columns */
   gap: 1.5rem;
 }
 
@@ -2182,12 +2185,20 @@ background: white;
   margin: 2rem 0;
 }
 
-/* Update your existing styles to match */
+/* Update your existing styles to match 
 .section {
   background: white;
   padding: 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+} */
+
+.section {
+  margin-bottom: 20px;
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  width:450px;
 }
 
 /* Keep your existing paramGrid, paramGroup, etc. styles */
