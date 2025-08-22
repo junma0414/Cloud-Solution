@@ -6,6 +6,9 @@ import { supabase } from '../lib/supabase/client';
 import { HiCog, HiServer, HiLightBulb, HiCube } from 'react-icons/hi2';
 import { HiOutlineUpload } from 'react-icons/hi';
 
+import Cookies from 'js-cookie';
+
+
 export default function OperationsTab() {
   const [activeSubTab, setActiveSubTab] = useState('model');
   const [models, setModels] = useState([]);
@@ -146,7 +149,13 @@ if (checkData.exists) {
 
     const { session_id } = await sessionResponse.json();
 
-     console.log("finishing upload session  with session_id: ", session_id);
+   let sessionId = session_id;
+
+     console.log("finishing upload session  with session_id: ", sessionId);
+
+//for testing to stop the program
+//throw new Error("🛑 Stopping upload: session_id confirmed but halting for debug");
+
 
     // 3. Upload files in chunks
    // const CHUNK_SIZE = 50 * 1024 * 1024; // 50MB chunks
@@ -168,7 +177,7 @@ if (checkData.exists) {
         
         const formData = new FormData();
         formData.append('file', chunk, relativePath);
-        formData.append('session_id', session_id);
+        formData.append('session_id', sessionId);
         formData.append('chunk_index', chunkIndex);
         formData.append('action', 'upload_chunk');
         formData.append('original_filename', file.name);
@@ -954,10 +963,31 @@ USING (
 //////////////////////////////////////////////////////////
 /////////////////////////////////////run inference
 
-const handleRunInference = async (payload) => {
+{/*const handleRunInference = async (payload) => {
   setIsLoading(true);
 
 const { data: { session } } = await supabase.auth.getSession();
+
+ if (!session?.access_token || !session?.refresh_token) {
+    console.error("Session is missing tokens.");
+    return;
+  }
+  // ✅ Set tokens with exact expected names
+  Cookies.set('sb-access-token', session.access_token, {
+    path: '/',
+    sameSite: 'Lax',
+  secure: false, // ✅ Required for localhost
+
+  });
+
+  Cookies.set('sb-refresh-token', session.refresh_token, {
+    path: '/',
+    sameSite: 'Lax',
+  secure: false, // ✅ Required for localhost
+
+  });
+
+ const accessToken=session.access_token;
 
 console.log("[debug]session:", session);
 
@@ -966,7 +996,8 @@ console.log("[debug]session:", session);
       method: 'POST',
       headers: {
      //   'Authorization': `Bearer ${process.env.NEXT_PUBLIC_MODAL_KEY}`,
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${accessToken}`  // ✅ Add this line
       },
      credentials: 'include',
       body: JSON.stringify(payload)
@@ -984,6 +1015,121 @@ console.log("[debug]session:", session);
   } catch (error) {
     console.error('Inference error:', error);
     throw error;
+  } finally {
+    setIsLoading(false);
+  }
+};*/}
+
+const handleRunInference = async (payload) => {
+  setIsLoading(true);
+
+  const {
+    model_id,
+    model_name,
+    model_display_name,
+    model_task_type,
+    endpoint,
+    data_source_id,
+    data_source_name,
+    data_source_type,
+    input_texts,
+    params = {}
+  } = payload;
+
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+  if (!user) {
+    console.error("User not authenticated", userError);
+    return;
+  }
+
+  const jobInsert = {
+   // model_id,
+    model_name,
+    model_display_name,
+    was_task_type:model_task_type,
+    endpoint,
+   // data_source_id,
+    data_source_name,
+    data_source_type,
+    created_by: user.id,
+    created_name: user.email,
+    input_text:input_texts,
+    params,
+    status: 'running',
+    job_start_ts: new Date().toISOString()
+  };
+
+  const { data: job, error: insertError } = await supabase
+    .from('inference_jobs')
+    .insert(jobInsert)
+    .select()
+    .single();
+
+  if (insertError) {
+    console.error("Failed to insert job:", insertError);
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/modal/run-inference', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        input_texts,
+        model_task_type,
+        endpoint,
+        params
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) throw new Error(result.error || 'Inference failed');
+
+   console.log("[DEBUG]updating job ", job.id);
+
+  const { data: updatedJob, error: updateError } = await supabase
+  .from('inference_jobs')
+  .update({
+    results: result,
+    status: 'completed',
+    job_finish_ts: new Date().toISOString()
+  })
+  .eq('id', job.id)
+  .select()
+  .single();
+
+console.log("[DEBUG] update error:", updateError);
+console.log("[DEBUG] updated job:", updatedJob);
+
+if (updateError) {
+  console.error("[DEBUG] Update error:", updateError);
+}
+
+    console.log("Inference successful:", result);
+//fetchJobs();  // re-fetch job list
+await fetchData('inference');
+
+
+  } catch (err) {
+    console.error("Inference failed:", err);
+    await supabase
+      .from('inference_jobs')
+      .update({
+        status: 'failed',
+        error_message: err.message,
+        job_finish_ts: new Date().toISOString()
+      })
+      .eq('id', job.id);
+       
+//fetchJobs();  // re-fetch job list
+await fetchData('inference');
+
+
+
   } finally {
     setIsLoading(false);
   }
@@ -1374,7 +1520,7 @@ webkitdirectory="true"  // Add this for folder selection
   }}
                 placeholder="my-model-name"
                 className={styles.nameInput}
-    pattern="[a-zA-Z0-9-]+" // Only allows letters, numbers, and hyphens
+    pattern="[a-zA-Z0-9\-]+" // Only allows letters, numbers, and hyphens
     title="Only letters, numbers, and hyphens are allowed"
               />
             </div>

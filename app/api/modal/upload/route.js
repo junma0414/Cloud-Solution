@@ -129,7 +129,10 @@ console.log("formData sending to modal :", modalFormData);
           target_path: body.target_path
         })
       });
+
+
       responseData = await response.json();
+     console.log("[debug]responseData");
       return NextResponse.json({ 
         ...responseData, 
         success: true 
