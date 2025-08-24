@@ -5,6 +5,10 @@ from .database import supabase
 #from .services.auth import verify_api_key
 import logging
 
+import os
+import traceback
+from datetime import datetime, timezone
+
 logging.basicConfig(level=logging.DEBUG) 
 
 logger = logging.getLogger(__name__)
