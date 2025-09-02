@@ -43,8 +43,7 @@ export default function Home() {
               </video>
             </div>
           </section>
-        </main>
-      {/* Structured Data */}
+            {/* Structured Data */}
       <Script id="ld-json-homepage" type="application/ld+json">
         {JSON.stringify({
           "@context": "https://schema.org",
@@ -68,8 +67,8 @@ export default function Home() {
           }
         })}
       </Script>
-
-{/* end of json-ld */}
+        </main>
+    
       </Layout>
     </div>
   );
