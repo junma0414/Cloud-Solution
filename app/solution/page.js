@@ -1,18 +1,11 @@
 // app/solution/page.jsx
 import Link from 'next/link';
 import Image from 'next/image';
-import Script from "next/script";
 import Layout from '../components/Layout';
 
 import { 
-  Gauge,         // NER icon
-  Scale,         // Bias & Fairness icon
-  BrainCircuit,  // Hallucination icon
-  TrendingUp,    // Driftness icon
-  Layers,        // Model icon
-  FileText,    // data input icon <FileText />
-  ServerCog,        // inference  icon
-  Puzzle         // Integration icon
+  Gauge, Scale, BrainCircuit, TrendingUp,
+  Layers, FileText, ServerCog, Puzzle
 } from 'lucide-react';
 
 const solutions = [
@@ -23,57 +16,23 @@ const solutions = [
     image: "/images/solution-ai-gcr.jpg",
     cta: "/solution/llmtrack",
     topics: [
-      {
-        name: "Entity Recognization",
-        icon: <Gauge className="w-6 h-6 text-blue-600" />,
-        description: "Investigate the key terms"
-      },
-      {
-        name: "Bias & Fairness",
-        icon: <Scale className="w-6 h-6 text-blue-600" />,
-        description: "Mitigate system biases"
-      },
-      {
-        name: "Hallucination",
-        icon: <BrainCircuit className="w-6 h-6 text-blue-600" />,
-        description: "Reduce false information"
-      },
-      {
-        name: "Driftness",
-        icon: <TrendingUp className="w-6 h-6 text-blue-600" />,
-        description: "Track performance changes"
-      }
+      { name: "Entity Recognization", icon: <Gauge className="w-6 h-6 text-blue-600" />, description: "Investigate the key terms" },
+      { name: "Bias & Fairness", icon: <Scale className="w-6 h-6 text-blue-600" />, description: "Mitigate system biases" },
+      { name: "Hallucination", icon: <BrainCircuit className="w-6 h-6 text-blue-600" />, description: "Reduce false information" },
+      { name: "Driftness", icon: <TrendingUp className="w-6 h-6 text-blue-600" />, description: "Track performance changes" }
     ]
   },
-     {
+  {
     id: 'llmop',
     title: "LLM Operations (LLMOp)",
     description: "A integrated simulation platform to share artifects among team by streamlining deployment of Language Model, lightweighted Inputs creation, instance inference execution with outcomes inspection",
     image: "/images/solution-ai-llmop.jpg",
     cta: "/solution/llmop",
     topics: [
-      {
-        name: "Share and deploy your LLMs",
-        icon: <Layers className="w-6 h-6 text-blue-600" />,
-        description: "Publish models for better accessibility"
-      },
-      {
-        name: "Manage your source inputs",
-        icon: <FileText className="w-6 h-6 text-blue-600" />,
-        description: "Prepare your prompts randomly or in a batch"
-      },
-      {
-        name: "Inference with self-defined parameters",
-        icon: <ServerCog className="w-6 h-6 text-blue-600" />, 
-        description: [
-    "Model Inference while managing parameters"
-  ] // Newline separated
-      },
-      {
-        name: "Business Integration",
-        icon: <Puzzle className="w-6 h-6 text-blue-600" />,
-        description: "Seamless application interoperablility"
-      }
+      { name: "Share and deploy your LLMs", icon: <Layers className="w-6 h-6 text-blue-600" />, description: "Publish models for better accessibility" },
+      { name: "Manage your source inputs", icon: <FileText className="w-6 h-6 text-blue-600" />, description: "Prepare your prompts randomly or in a batch" },
+      { name: "Inference with self-defined parameters", icon: <ServerCog className="w-6 h-6 text-blue-600" />, description: "Model Inference while managing parameters" },
+      { name: "Business Integration", icon: <Puzzle className="w-6 h-6 text-blue-600" />, description: "Seamless application interoperablility" }
     ]
   },
   {
@@ -83,11 +42,9 @@ const solutions = [
     image: "/images/solution-ai-vision.jpg",
     cta: "/solution/ai-visual-recognition"
   }
-//add more solution here
 ];
 
 export default function SolutionsOverview() {
-    // ✅ JSON-LD Schema (CollectionPage + SoftwareApplication items)
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -101,10 +58,7 @@ export default function SolutionsOverview() {
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
       "description": s.description,
-      "publisher": {
-        "@type": "Organization",
-        "name": "Obserpedia"
-      }
+      "publisher": { "@type": "Organization", "name": "Obserpedia" }
     }))
   };
 
@@ -130,51 +84,33 @@ export default function SolutionsOverview() {
             {/* Text Column */}
             <div className="w-full md:w-3/5 space-y-6">
               <h2 className="text-2xl font-bold text-gray-900">{solution.title}</h2>
-              <p className="text-lg text-gray-600 leading-relaxed">
-                {solution.description}
-              </p>
+              <p className="text-lg text-gray-600 leading-relaxed">{solution.description}</p>
 
-              {/* Topics Grid for solutions that have them */}
               {solution.topics && (
                 <>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
                     {solution.topics.map((topic) => (
-                      <div 
-                        key={topic.name} 
-                        className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center"
-                      >
-                        <div className="p-2 bg-blue-50 rounded-full mb-2">
-                          {topic.icon}
-                        </div>
+                      <div key={topic.name} className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow flex flex-col items-center text-center">
+                        <div className="p-2 bg-blue-50 rounded-full mb-2">{topic.icon}</div>
                         <h3 className="!text-sm font-semibold">{topic.name}</h3>
                         <p className="!text-[12px] text-gray-500 mt-1 whitespace-pre-line text-left">{topic.description}</p>
                       </div>
                     ))}
                   </div>
                   <div className="flex justify-center mt-6">
-                    <Link
-                      href={solution.cta}
-                      className="px-6 py-2 bg-blue-600 !text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                    >
+                    <Link href={solution.cta} className="px-6 py-2 bg-blue-600 !text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
                       Explore Solution
                     </Link>
                   </div>
                 </>
               )}
 
-              {/* Conditional button for AI Visual Recognition */}
               {solution.id === 'ai-visual-recognition' ? (
-                <button
-                  disabled
-                  className="inline-block mt-6 px-8 py-3 bg-gray-400 !text-white font-medium rounded-lg cursor-not-allowed"
-                >
+                <button disabled className="inline-block mt-6 px-8 py-3 bg-gray-400 !text-white font-medium rounded-lg cursor-not-allowed">
                   Coming Soon
                 </button>
               ) : !solution.topics && (
-                <Link
-                  href={solution.cta}
-                  className="inline-block mt-6 px-8 py-3 bg-blue-600 !text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                >
+                <Link href={solution.cta} className="inline-block mt-6 px-8 py-3 bg-blue-600 !text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
                   Explore Solution
                 </Link>
               )}
@@ -182,7 +118,14 @@ export default function SolutionsOverview() {
           </div>
         ))}
       </div>
-      <Layout/> 
+
+      <Layout />
+
+      {/* ✅ Structured Data (server-rendered for Google) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
     </div>
   );
 }
