@@ -86,6 +86,27 @@ const solutions = [
 ];
 
 export default function SolutionsOverview() {
+    // ✅ JSON-LD Schema (CollectionPage + SoftwareApplication items)
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Obserpedia AI Solutions",
+    "url": "https://www.obserpedia.com/solution",
+    "description": "Overview of AI monitoring, governance, and operations solutions by Obserpedia.",
+    "hasPart": solutions.map((s) => ({
+      "@type": "SoftwareApplication",
+      "name": s.title,
+      "url": `https://www.obserpedia.com${s.cta}`,
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "description": s.description,
+      "publisher": {
+        "@type": "Organization",
+        "name": "Obserpedia"
+      }
+    }))
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-20 space-y-16">

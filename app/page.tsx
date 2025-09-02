@@ -44,6 +44,32 @@ export default function Home() {
             </div>
           </section>
         </main>
+      {/* Structured Data */}
+      <Script id="ld-json-homepage" type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "Obserpedia",
+          "url": "https://www.obserpedia.com",
+          "logo": "https://www.obserpedia.com/logo.png",
+          "description": "Obserpedia provides AI monitoring, risk auditing, and compliance solutions for LLMs and enterprise AI systems."
+        })}
+      </Script>
+
+      <Script id="ld-json-website" type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "url": "https://www.obserpedia.com",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://www.obserpedia.com/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        })}
+      </Script>
+
+{/* end of json-ld */}
       </Layout>
     </div>
   );
