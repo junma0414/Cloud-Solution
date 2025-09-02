@@ -2,6 +2,8 @@
 import Navbar from './components/Navbar.js';
 import styles from './page.module.css';
 import Layout from './components/Layout';
+import Script from "next/script";
+
 
 export default function Home() {
   return (
